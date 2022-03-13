@@ -3,6 +3,7 @@ package task3.prog1;
 import java.util.Random;
 
 // Variant 4
+
 public class Main {
     public static void main(String[] args) {
         Random randGenerator = new Random();

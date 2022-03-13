@@ -1,5 +1,7 @@
 package task3.prog3;
 
+//Variant 1 - car
+
 public class Main {
     public static void main(String[] args) {
         AssemblyStepChassis assemblyChassis = new AssemblyStepChassis();

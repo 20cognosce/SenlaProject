@@ -1,6 +1,7 @@
 package task3.prog2;
 
 // Variant 1
+
 public class Main {
     public static void main(String[] args) {
         Bouquet bouquet = new Bouquet();
