@@ -1,0 +1,138 @@
+@startuml
+class task4.prog1.Hotel {
+~ RoomManager roomManager
+~ ServiceManager serviceManager
+~ GuestRoomManager guestRoomManager
+- Hotel getOuter()
+}
+class task4.prog1.Hotel.RoomManager {
+- LinkedHashMap<Integer,Room> rooms
+- <<Create>> RoomManager()
+~ void loadRoomsDatabase()
+~ void addNewRoom(Room)
+~ Room getRoomByNumber(Integer)
+~ String getRoomsAsString()
+~ String getRoomsAsString(LinkedHashMap<Integer,Room>)
++ LinkedHashMap<Integer,Room> sortRooms(LinkedHashMap<Integer,Room>,Comparator<Room>)
+~ LinkedHashMap<Integer,Room> getRooms()
+~ LinkedHashMap<Integer,Room> getFreeRooms()
+~ LinkedHashMap<Integer,Room> getFreeRooms(LocalDateTime)
+- LinkedHashMap<Room,ArrayList<Guest>> convertGuestsRoomsToRoomsGuests()
+}
+class task4.prog1.Hotel.ServiceManager {
+- LinkedHashMap<String,Service> services
+- <<Create>> ServiceManager()
+~ void loadServicesDatabase()
+~ void addNewService(Service)
+~ Service getServiceByName(String)
++ String getServicesPriceList()
++ String getServicesPriceList(Comparator<Service>)
++ String getServicesOfGuest(Guest)
++ String getServicesOfGuest(Guest,Comparator<Service>)
+}
+class task4.prog1.Hotel.GuestRoomManager {
+- LinkedHashMap<Guest,Room> guestsRooms
+- <<Create>> GuestRoomManager()
+~ void loadGuestsDatabase()
+~ LinkedHashMap<Guest,Room> getGuestsRooms()
+~ void addGuest(Room,Guest)
+~ void removeGuest(Guest)
+~ String getGuestsRoomsAsString(LinkedHashMap<Guest,Room>)
++ LinkedHashMap<Guest,Room> sortGuestsRooms(LinkedHashMap<Guest,Room>,Comparator<Guest>)
++ Guest getGuestByName(String)
+}
+class task4.prog1.Guest {
+- String fullName
+- String passport
+- LocalDateTime checkInTime
+- LocalDateTime checkOutTime
+- ArrayList<Service> orderedServices
+- int payment
++ <<Create>> Guest(String,String,LocalDateTime,LocalDateTime)
++ String getFullName()
++ String getPassport()
++ void orderService(Hotel,String)
++ LocalDateTime getCheckInTime()
++ void setCheckInTime(LocalDateTime)
++ LocalDateTime getCheckOutTime()
++ void setCheckOutTime(LocalDateTime)
++ ArrayList<Service> getOrderedServices()
++ String getOrderedServicesAsString()
++ int getPayment()
++ void setPayment(int)
+}
+enum task4.prog1.ServiceCategory {
++  LOCAL_FOOD
++  DELIVERY_FOOD
++  ACCESSORIES
+}
+class task4.prog1.Room {
+- int CAPACITY
+- int ROOM_NUMBER
+- int STARS_NUMBER
+- ArrayList<Guest> guestsCurrentList
+- ArrayList<Guest> guestsAllTimeList
+- RoomStatus roomCurrentStatus
+- int price
+- String details
++ <<Create>> Room(int,int,int,RoomStatus,int)
++ int getCapacity()
++ int getRoomNumber()
++ RoomStatus getRoomCurrentStatus()
++ ArrayList<Guest> getGuestsCurrentList()
++ int getPrice()
++ void setPrice(int)
++ void setRoomCurrentStatus(RoomStatus)
+~ void addGuest(Guest)
+~ void removeGuest(Guest)
++ String getGuestsListAsString(ArrayList<Guest>)
++ String toString()
++ int getStarsNumber()
++ String getDetails()
++ void setDetails(String)
++ ArrayList<Guest> getLastNGuests(int)
+}
+class task4.prog1.Main {
++ {static} void main(String[])
+}
+class task4.prog1.Service {
+- String serviceName
+- int price
+- ServiceCategory category
+- LocalDateTime orderTime
+~ <<Create>> Service(String,int,ServiceCategory)
+~ String getServiceName()
+~ void execute(Guest)
++ int getPrice()
++ void setPrice(int)
++ ServiceCategory getCategory()
++ LocalDateTime getOrderTime()
++ void setOrderTime(LocalDateTime)
++ String toString()
++ Service clone()
+}
+enum task4.prog1.RoomStatus {
++  UNDER_REPAIR
++  FREE
++  CLEANING
++  BUSY
+}
+
+
+task4.prog1.Hotel +..> task4.prog1.Hotel.RoomManager
+task4.prog1.Hotel +..> task4.prog1.Hotel.ServiceManager
+task4.prog1.Hotel +..> task4.prog1.Hotel.GuestRoomManager
+task4.prog1.Cloneable <|.. task4.prog1.Service
+task4.prog1.Hotel.ServiceManager o..> task4.prog1.Service
+task4.prog1.Service *-- task4.prog1.ServiceCategory
+task4.prog1.Room *-- task4.prog1.RoomStatus
+task4.prog1.Hotel.RoomManager o..> task4.prog1.Room
+task4.prog1.Hotel.GuestRoomManager o..> task4.prog1.Room
+task4.prog1.Hotel.GuestRoomManager o..> task4.prog1.Guest
+task4.prog1.Main --> task4.prog1.Hotel
+task4.prog1.Hotel.ServiceManager ..> task4.prog1.Guest
+task4.prog1.Hotel.RoomManager ..> task4.prog1.Hotel
+task4.prog1.Service ..> task4.prog1.Guest
+task4.prog1.Guest o..> task4.prog1.Service
+task4.prog1.Room o..> task4.prog1.Guest
+@enduml
