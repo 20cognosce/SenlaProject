@@ -20,7 +20,7 @@ public class Bouquet {
         return out.toString();
     }
 
-    int getPrice() {
+    public int getPrice() {
         return currentBouquet.stream().mapToInt(Flower::getTotalPrice).sum();
     }
 }
