@@ -3,7 +3,7 @@ package task3.prog2;
 import java.util.ArrayList;
 
 public class Bouquet {
-    private final ArrayList<Flower> currentBouquet = new ArrayList<>();
+    private final List<Flower> currentBouquet = new ArrayList<>();
 
     void add(Flower flower) {
         currentBouquet.add(flower);
