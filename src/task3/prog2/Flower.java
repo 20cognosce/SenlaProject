@@ -27,11 +27,6 @@ public abstract class Flower {
         this.price = price;
     }
 
-    public void setPrice(int increment, int decrement) {
-        this.price += increment;
-        this.price -= decrement;
-    }
-
     @Override
     public abstract String toString();
 
