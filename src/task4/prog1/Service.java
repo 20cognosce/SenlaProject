@@ -3,24 +3,24 @@ package task4.prog1;
 import java.time.LocalDateTime;
 
 public class Service implements Cloneable {
-    private final String serviceName;
+    private final String name;
     private int price;
     private final ServiceCategory category;
     private LocalDateTime orderTime;
 
     Service(String serviceName, int price, ServiceCategory category) {
-        this.serviceName = serviceName;
+        this.name = serviceName;
         this.price = price;
         this.category = category;
     }
 
-    String getServiceName() {
-        return this.serviceName;
+    String getName() {
+        return this.name;
     }
 
     void execute(Guest guest) {
         LocalDateTime time = LocalDateTime.now();
-        System.out.println("Услуга: " + getServiceName() + " для " + guest.getFullName()
+        System.out.println("Услуга: " + getName() + " для " + guest.getFullName()
                 + " исполнена. Цена услуги: " + getPrice() + "; Дата: " + time);
         orderTime = time;
     }
@@ -47,7 +47,7 @@ public class Service implements Cloneable {
 
     @Override
     public String toString() {
-        return getServiceName() + "; Категория: " + getCategory() + "; Цена: " + getPrice();
+        return getName() + "; Категория: " + getCategory() + "; Цена: " + getPrice();
     }
 
     @Override

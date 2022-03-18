@@ -6,21 +6,21 @@ class task4.prog1.Hotel {
 - Hotel getOuter()
 }
 class task4.prog1.Hotel.RoomManager {
-- LinkedHashMap<Integer,Room> rooms
+- Map<Integer,Room> rooms
 - <<Create>> RoomManager()
 ~ void loadRoomsDatabase()
 ~ void addNewRoom(Room)
 ~ Room getRoomByNumber(Integer)
 ~ String getRoomsAsString()
-~ String getRoomsAsString(LinkedHashMap<Integer,Room>)
-+ LinkedHashMap<Integer,Room> sortRooms(LinkedHashMap<Integer,Room>,Comparator<Room>)
-~ LinkedHashMap<Integer,Room> getRooms()
-~ LinkedHashMap<Integer,Room> getFreeRooms()
-~ LinkedHashMap<Integer,Room> getFreeRooms(LocalDateTime)
-- LinkedHashMap<Room,ArrayList<Guest>> convertGuestsRoomsToRoomsGuests()
+~ String getRoomsAsString(Map<Integer,Room>)
++ Map<Integer,Room> sortRooms(Map<Integer,Room>,Comparator<Room>)
+~ Map<Integer,Room> getRooms()
+~ Map<Integer,Room> getFreeRooms()
+~ Map<Integer,Room> getFreeRooms(LocalDateTime)
+- Map<Room,List<Guest>> convertGuestsRoomsToRoomsGuests()
 }
 class task4.prog1.Hotel.ServiceManager {
-- LinkedHashMap<String,Service> services
+- Map<String,Service> services
 - <<Create>> ServiceManager()
 ~ void loadServicesDatabase()
 ~ void addNewService(Service)
@@ -31,14 +31,14 @@ class task4.prog1.Hotel.ServiceManager {
 + String getServicesOfGuest(Guest,Comparator<Service>)
 }
 class task4.prog1.Hotel.GuestRoomManager {
-- LinkedHashMap<Guest,Room> guestsRooms
+- Map<Guest,Room> guestsRooms
 - <<Create>> GuestRoomManager()
 ~ void loadGuestsDatabase()
-~ LinkedHashMap<Guest,Room> getGuestsRooms()
+~ Map<Guest,Room> getGuestsRooms()
 ~ void addGuest(Room,Guest)
 ~ void removeGuest(Guest)
-~ String getGuestsRoomsAsString(LinkedHashMap<Guest,Room>)
-+ LinkedHashMap<Guest,Room> sortGuestsRooms(LinkedHashMap<Guest,Room>,Comparator<Guest>)
+~ String getGuestsRoomsAsString(Map<Guest,Room>)
++ Map<Guest,Room> sortGuestsRooms(Map<Guest,Room>,Comparator<Guest>)
 + Guest getGuestByName(String)
 }
 class task4.prog1.Guest {
@@ -46,7 +46,7 @@ class task4.prog1.Guest {
 - String passport
 - LocalDateTime checkInTime
 - LocalDateTime checkOutTime
-- ArrayList<Service> orderedServices
+- List<Service> orderedServices
 - int payment
 + <<Create>> Guest(String,String,LocalDateTime,LocalDateTime)
 + String getFullName()
@@ -56,7 +56,7 @@ class task4.prog1.Guest {
 + void setCheckInTime(LocalDateTime)
 + LocalDateTime getCheckOutTime()
 + void setCheckOutTime(LocalDateTime)
-+ ArrayList<Service> getOrderedServices()
++ List<Service> getOrderedServices()
 + String getOrderedServicesAsString()
 + int getPayment()
 + void setPayment(int)
@@ -70,8 +70,8 @@ class task4.prog1.Room {
 - int CAPACITY
 - int ROOM_NUMBER
 - int STARS_NUMBER
-- ArrayList<Guest> guestsCurrentList
-- ArrayList<Guest> guestsAllTimeList
+- List<Guest> guestsCurrentList
+- List<Guest> guestsAllTimeList
 - RoomStatus roomCurrentStatus
 - int price
 - String details
@@ -79,29 +79,29 @@ class task4.prog1.Room {
 + int getCapacity()
 + int getRoomNumber()
 + RoomStatus getRoomCurrentStatus()
-+ ArrayList<Guest> getGuestsCurrentList()
++ List<Guest> getGuestsCurrentList()
 + int getPrice()
 + void setPrice(int)
 + void setRoomCurrentStatus(RoomStatus)
 ~ void addGuest(Guest)
 ~ void removeGuest(Guest)
-+ String getGuestsListAsString(ArrayList<Guest>)
++ String getGuestsListAsString(List<Guest>)
 + String toString()
 + int getStarsNumber()
 + String getDetails()
 + void setDetails(String)
-+ ArrayList<Guest> getLastNGuests(int)
++ List<Guest> getLastNGuests(int)
 }
 class task4.prog1.Main {
 + {static} void main(String[])
 }
 class task4.prog1.Service {
-- String serviceName
+- String name
 - int price
 - ServiceCategory category
 - LocalDateTime orderTime
 ~ <<Create>> Service(String,int,ServiceCategory)
-~ String getServiceName()
+~ String getName()
 ~ void execute(Guest)
 + int getPrice()
 + void setPrice(int)

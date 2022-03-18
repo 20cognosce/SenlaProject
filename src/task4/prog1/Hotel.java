@@ -18,8 +18,9 @@ public class Hotel {
     }
 
     public class RoomManager {
-        private RoomManager(){};
-        private final LinkedHashMap<Integer, Room> rooms = new LinkedHashMap<>();
+        private RoomManager(){}
+
+        private final Map<Integer, Room> rooms = new LinkedHashMap<>();
 
         void loadRoomsDatabase() {
             Room room1 = new Room (1,2,3, FREE, 2000);
@@ -49,41 +50,41 @@ public class Hotel {
             return out.toString();
         }
 
-        String getRoomsAsString(LinkedHashMap<Integer, Room> subTable) {
+        String getRoomsAsString(Map<Integer, Room> subTable) {
             StringBuilder out = new StringBuilder();
             subTable.values().forEach(room -> out.append(room.toString()));
             return out.toString();
         }
 
-        public LinkedHashMap<Integer, Room> sortRooms(
-                LinkedHashMap<Integer, Room> roomsTableToSort, Comparator<Room> comparator) {
+        public Map<Integer, Room> sortRooms(
+                Map<Integer, Room> roomsTableToSort, Comparator<Room> comparator) {
             /*I tried a lot of options. HashMap sorts items by the key, so for saving sorting result I must use
              * LinkedHashMap. .collect(Collectors.toMap(...)) returns Map, which is unsuitable for LinkedHashMap.
              * It would work to use .collect(toList) and then forEach(roomsTable.put(room.getRoomNumber(), room)) by the way
              */
 
-            LinkedHashMap<Integer, Room> sorted = new LinkedHashMap<>();
+            Map<Integer, Room> sorted = new LinkedHashMap<>();
             roomsTableToSort.values().stream().sorted(comparator)
                     .forEach(room -> sorted.put(room.getRoomNumber(), room));
             return sorted;
         }
 
-        LinkedHashMap<Integer, Room> getRooms() {
+        Map<Integer, Room> getRooms() {
             return rooms;
         }
 
-        LinkedHashMap<Integer, Room> getFreeRooms() {
-            LinkedHashMap<Integer, Room> freeRooms = new LinkedHashMap<>();
+        Map<Integer, Room> getFreeRooms() {
+            Map<Integer, Room> freeRooms = new LinkedHashMap<>();
             rooms.forEach((key, value) -> {
                 if (value.getRoomCurrentStatus() == FREE) freeRooms.put(key, value);
             });
             return freeRooms;
         }
 
-        LinkedHashMap<Integer, Room> getFreeRooms(LocalDateTime asAtSpecificDate) {
-            LinkedHashMap<Integer, Room> freeRooms = new LinkedHashMap<>();
-            LinkedHashMap<Integer, Room> rooms = getRooms();
-            LinkedHashMap<Room, ArrayList<Guest>> roomsGuests = convertGuestsRoomsToRoomsGuests();
+        Map<Integer, Room> getFreeRooms(LocalDateTime asAtSpecificDate) {
+            Map<Integer, Room> freeRooms = new LinkedHashMap<>();
+            Map<Integer, Room> rooms = getRooms();
+            Map<Room, List<Guest>> roomsGuests = convertGuestsRoomsToRoomsGuests();
 
             rooms.values().forEach(room -> {
                 if (!roomsGuests.containsKey(room)) {
@@ -101,8 +102,8 @@ public class Hotel {
             return freeRooms;
         }
 
-        private LinkedHashMap<Room, ArrayList<Guest>> convertGuestsRoomsToRoomsGuests() {
-            LinkedHashMap<Guest, Room> guestsRooms = getOuter().guestRoomManager.getGuestsRooms();
+        private Map<Room, List<Guest>> convertGuestsRoomsToRoomsGuests() {
+            Map<Guest, Room> guestsRooms = getOuter().guestRoomManager.getGuestsRooms();
             return new LinkedHashMap<>(guestsRooms.entrySet().stream()
                     .collect(Collectors.groupingBy(Map.Entry::getValue)).values().stream()
                     .collect(Collectors.toMap(
@@ -118,9 +119,10 @@ public class Hotel {
         }
     }
 
-    public class ServiceManager {
-        private ServiceManager(){};
-        private final LinkedHashMap<String, Service> services = new LinkedHashMap<>();
+    public static class ServiceManager {
+        private ServiceManager(){}
+
+        private final Map<String, Service> services = new LinkedHashMap<>();
 
         void loadServicesDatabase() {
             Service service1 = new Service("Завтрак в номер", 500, ServiceCategory.LOCAL_FOOD);
@@ -128,24 +130,25 @@ public class Hotel {
             Service service3 = new Service("Ужин в номер", 800, ServiceCategory.LOCAL_FOOD);
             Service service4 = new Service("Принести доставку в номер", 100, ServiceCategory.DELIVERY_FOOD);
             Service service5 = new Service("Дополнительный набор для душа", 200, ServiceCategory.ACCESSORIES);
-            services.put(service1.getServiceName(), service1);
-            services.put(service2.getServiceName(), service2);
-            services.put(service3.getServiceName(), service3);
-            services.put(service4.getServiceName(), service4);
-            services.put(service5.getServiceName(), service5);
+            services.put(service1.getName(), service1);
+            services.put(service2.getName(), service2);
+            services.put(service3.getName(), service3);
+            services.put(service4.getName(), service4);
+            services.put(service5.getName(), service5);
         }
 
         void addNewService(Service service) {
-            services.put(service.getServiceName(), service);
+            services.put(service.getName(), service);
         }
-        Service getServiceByName(String serviceName) {
-            return services.get(serviceName);
+
+        Service getServiceByName(String name) {
+            return services.get(name);
         }
 
         public String getServicesPriceList() {
             StringBuilder out = new StringBuilder();
             services.values().forEach(service -> out
-                    .append(service.getServiceName()).append("; Категория: ").append(service.getCategory())
+                    .append(service.getName()).append("; Категория: ").append(service.getCategory())
                     .append("; Цена: ").append(service.getPrice()).append("\n"));
             return out.toString();
         }
@@ -159,30 +162,28 @@ public class Hotel {
 
         public String getServicesOfGuest(Guest guest) {
             StringBuilder out = new StringBuilder("Гость: " + guest.getFullName() + "\nЗаказы:\n");
-            guest.getOrderedServices().forEach((service) -> {
-                out.append(service.toString()).append("; Дата: ")
-                        .append(service.getOrderTime()
-                                .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME))
-                        .append("\n");
-            });
+            guest.getOrderedServices().forEach((service) -> out.append(service.toString()).append("; Дата: ")
+                    .append(service.getOrderTime()
+                            .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME))
+                    .append("\n"));
             return out.toString();
         }
 
         public String getServicesOfGuest(Guest guest, Comparator<Service> comparator) {
             StringBuilder out = new StringBuilder("Гость: " + guest.getFullName() + "\nЗаказы:\n");
-            guest.getOrderedServices().stream().sorted(comparator).forEach((service) -> {
-                out.append(service.toString()).append("; Дата: ")
-                        .append(service.getOrderTime()
-                                .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME))
-                        .append("\n");
-            });
+            guest.getOrderedServices().stream().sorted(comparator).forEach((service) -> out
+                    .append(service.toString()).append("; Дата: ")
+                    .append(service.getOrderTime()
+                            .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME))
+                    .append("\n"));
             return out.toString();
         }
     }
 
-    public class GuestRoomManager {
-        private GuestRoomManager(){};
-        private final LinkedHashMap<Guest, Room> guestsRooms = new LinkedHashMap<>();
+    public static class GuestRoomManager {
+        private GuestRoomManager(){}
+
+        private final Map<Guest, Room> guestsRooms = new LinkedHashMap<>();
 
         void loadGuestsDatabase() {
             Guest guest1 = new Guest("Ivanov Ivan Ivanovich", "1111 222222",
@@ -207,7 +208,7 @@ public class Hotel {
             guestsRooms.put(guest5, null);
         }
 
-        LinkedHashMap<Guest, Room> getGuestsRooms() {
+        Map<Guest, Room> getGuestsRooms() {
             return guestsRooms;
         }
 
@@ -228,7 +229,7 @@ public class Hotel {
             }
         }
 
-        String getGuestsRoomsAsString(LinkedHashMap<Guest, Room> subTable) {
+        String getGuestsRoomsAsString(Map<Guest, Room> subTable) {
             StringBuilder out = new StringBuilder();
             subTable.forEach((key, value) -> out.append("Гость: ").append(key.getFullName())
                     .append("; Номер: ").append(value.getRoomNumber())
@@ -237,9 +238,9 @@ public class Hotel {
             return out.toString();
         }
 
-        public LinkedHashMap<Guest, Room> sortGuestsRooms(LinkedHashMap<Guest, Room> roomsTableToSort,
+        public Map<Guest, Room> sortGuestsRooms(Map<Guest, Room> roomsTableToSort,
                                                           Comparator<Guest> comparator) {
-            LinkedHashMap<Guest, Room> sorted = new LinkedHashMap<>();
+            Map<Guest, Room> sorted = new LinkedHashMap<>();
             roomsTableToSort.keySet().stream().sorted(comparator)
                     .forEach(guest -> sorted.put(guest, guestsRooms.get(guest)));
             return sorted;

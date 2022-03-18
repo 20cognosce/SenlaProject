@@ -2,13 +2,14 @@ package task4.prog1;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Guest {
     private final String fullName;
     private final String passport;
     private LocalDateTime checkInTime;
     private LocalDateTime checkOutTime;
-    private ArrayList<Service> orderedServices;
+    private List<Service> orderedServices;
     private int payment;
 
     public Guest(String fullName, String passport, LocalDateTime checkInTime, LocalDateTime checkOutTime) {
@@ -52,7 +53,7 @@ public class Guest {
         this.checkOutTime = checkOutTime;
     }
 
-    public ArrayList<Service> getOrderedServices() {
+    public List<Service> getOrderedServices() {
         return orderedServices;
     }
 

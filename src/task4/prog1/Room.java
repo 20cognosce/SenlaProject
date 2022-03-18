@@ -1,6 +1,7 @@
 package task4.prog1;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static task4.prog1.RoomStatus.*;
 
@@ -8,8 +9,8 @@ public class Room {
     private final int CAPACITY;
     private final int ROOM_NUMBER;
     private final int STARS_NUMBER;
-    private final ArrayList<Guest> guestsCurrentList;
-    private final ArrayList<Guest> guestsAllTimeList;
+    private final List<Guest> guestsCurrentList;
+    private final List<Guest> guestsAllTimeList;
     private RoomStatus roomCurrentStatus;
     private int price;
     private String details;
@@ -36,7 +37,7 @@ public class Room {
         return roomCurrentStatus;
     }
 
-    public ArrayList<Guest> getGuestsCurrentList() {
+    public List<Guest> getGuestsCurrentList() {
         return guestsCurrentList;
     }
 
@@ -53,7 +54,7 @@ public class Room {
     }
 
     void addGuest(Guest guest) throws RuntimeException {
-        if (getRoomCurrentStatus().equals(RoomStatus.UNDER_REPAIR) || getRoomCurrentStatus().equals(RoomStatus.CLEANING)) {
+        if (getRoomCurrentStatus() == RoomStatus.UNDER_REPAIR || getRoomCurrentStatus() == RoomStatus.CLEANING) {
             throw new RuntimeException("Room status does not allow to settle guests now");
         }
         if (getCapacity() <= getGuestsCurrentList().size()) {
@@ -73,7 +74,7 @@ public class Room {
         if (getGuestsCurrentList().isEmpty()) setRoomCurrentStatus(FREE);
     }
 
-    public String getGuestsListAsString(ArrayList<Guest> guestList) {
+    public String getGuestsListAsString(List<Guest> guestList) {
         StringBuilder out = new StringBuilder("Список гостей в номере " + this.getRoomNumber() + ":\n");
         guestList.forEach(guest -> out.append(guest.getFullName()).append("\n"));
         return out.toString();
@@ -98,7 +99,7 @@ public class Room {
         this.details = details;
     }
 
-    public ArrayList<Guest> getLastNGuests(int N) {
+    public List<Guest> getLastNGuests(int N) {
         int lastGuestIndex = guestsAllTimeList.size() - 1;
         ArrayList<Guest> out = new ArrayList<>();
         for (int i = 0; i < N; i++) {

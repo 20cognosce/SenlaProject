@@ -77,6 +77,8 @@ public class Main {
                         + "; Дата въезда: " + guest.getCheckInTime()
                         + "; Дата выезда: " + guest.getCheckOutTime())
         );
+        System.out.println(
+                "--------------------------------------------------------------------------------------------------");
 
         // Цены услуг и номеров (сортировать по разделу, цене);
         hotel.serviceManager.getServicesPriceList();
@@ -101,6 +103,7 @@ public class Main {
         }
         guest1.orderService(hotel, "Принести доставку в номер");
         System.out.println();
+
         System.out.println(hotel.serviceManager
                 .getServicesOfGuest(guest1, Comparator.comparing(Service::getOrderTime).reversed()));
         System.out.println(hotel.serviceManager
