@@ -1,6 +1,7 @@
 package task3.prog2;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Bouquet {
     private final List<Flower> currentBouquet = new ArrayList<>();

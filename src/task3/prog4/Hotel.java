@@ -2,7 +2,8 @@ package task3.prog4;
 
 import java.util.HashMap;
 
-import static task3.prog4.RoomStatus.*;
+import static task3.prog4.RoomStatus.FREE;
+import static task3.prog4.RoomStatus.UNDER_REPAIR;
 
 public class Hotel {
     private final HashMap<Integer, Room> roomsTable = new HashMap<>();
@@ -25,16 +26,16 @@ public class Hotel {
         Service service1 = new Service("Завтрак в номер", 500);
         Service service2 = new Service("Обед в номер", 600);
         Service service3 = new Service("Ужин в номер", 800);
-        servicesTable.put(service1.getServiceName(), service1);
-        servicesTable.put(service2.getServiceName(), service2);
-        servicesTable.put(service3.getServiceName(), service3);
+        servicesTable.put(service1.getName(), service1);
+        servicesTable.put(service2.getName(), service2);
+        servicesTable.put(service3.getName(), service3);
     }
 
     void addNewRoom(Room room) {
         roomsTable.put(room.getRoomNumber(), room);
     }
     void addNewService(Service service) {
-        servicesTable.put(service.getServiceName(), service);
+        servicesTable.put(service.getName(), service);
     }
 
     Service getServiceByName(String serviceName) {

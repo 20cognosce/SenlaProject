@@ -46,7 +46,7 @@ public class Room {
     }
 
     void addGuest(Guest guest) {
-        if (getRoomCurrentStatus() == RoomStatus.UNDER_REPAIR || getRoomCurrentStatus == RoomStatus.CLEANING) {
+        if (getRoomCurrentStatus() == RoomStatus.UNDER_REPAIR || getRoomCurrentStatus() == RoomStatus.CLEANING) {
             System.out.println("Room status does not allow to settle guests now");
             return;
         }

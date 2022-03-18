@@ -16,7 +16,7 @@ public class Rose extends Flower {
     };
 
     public Rose(String color, Boolean isSpiked, int quantity) {
-        super(color, (BASE_PRICE + isSpiked.compareTo(true) * 50), quantity);
+        super(color, BASE_PRICE + Boolean.compare(Boolean.FALSE.equals(isSpiked), false) * 50, quantity);
         this.spiked = isSpiked;
     }
 }
