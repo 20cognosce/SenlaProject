@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
         Hotel hotel = new Hotel();
         hotel.roomManager.loadRoomsDatabase();
-        hotel.serviceManager.loadServicesDatabase();
+        hotel.maintenanceManager.loadMaintenancesDatabase();
         hotel.guestManager.loadGuestsDatabase();
 
         // Список свободных номеров (сортировать по цене, вместимости, количеству звезд);
@@ -81,37 +81,37 @@ public class Main {
                 "--------------------------------------------------------------------------------------------------");
 
         // Цены услуг и номеров (сортировать по разделу, цене);
-        hotel.serviceManager.getServicesPriceList();
-        System.out.println(hotel.serviceManager.getServicesPriceList());
-        System.out.println(hotel.serviceManager.getServicesPriceList(Comparator.comparing(Maintenance::getPrice)));
-        System.out.println(hotel.serviceManager.getServicesPriceList(Comparator.comparing(Maintenance::getCategory))
+        hotel.maintenanceManager.getMaintenancesPriceList();
+        System.out.println(hotel.maintenanceManager.getMaintenancesPriceList());
+        System.out.println(hotel.maintenanceManager.getMaintenancesPriceList(Comparator.comparing(Maintenance::getPrice)));
+        System.out.println(hotel.maintenanceManager.getMaintenancesPriceList(Comparator.comparing(Maintenance::getCategory))
                 + "--------------------------------------------------------------------------------------------------");
 
         // Посмотреть список услуг постояльца и их цену (сортировать по цене, по дате);
-        guest1.orderService(hotel, "Завтрак в номер");
-        guest1.orderService(hotel, "Завтрак в номер");
+        guest1.orderMaintenance(hotel, "Завтрак в номер");
+        guest1.orderMaintenance(hotel, "Завтрак в номер");
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        guest1.orderService(hotel, "Обед в номер");
+        guest1.orderMaintenance(hotel, "Обед в номер");
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        guest1.orderService(hotel, "Принести доставку в номер");
+        guest1.orderMaintenance(hotel, "Принести доставку в номер");
         System.out.println();
 
-        System.out.println(hotel.serviceManager
+        System.out.println(hotel.maintenanceManager
                 .getMaintenancesOfGuest(guest1, Comparator.comparing(Maintenance::getOrderTime).reversed()));
-        System.out.println(hotel.serviceManager
+        System.out.println(hotel.maintenanceManager
                 .getMaintenancesOfGuest(guest1, Comparator.comparing(Maintenance::getPrice))
                 + "--------------------------------------------------------------------------------------------------");
 
         // Сумму оплаты за номер которую должен оплатить постоялец;
-        // TODO: Цены заказанных услуг входят в сумму оплаты за номер (Guest::orderService method)
+        // Цены заказанных услуг входят в сумму оплаты за номер (Guest::orderMaintenance method)
         System.out.println("Счёт для гостя " + guest1.getFullName()
                 + ": " + guest1.getPayment()
                 + "\nСтоимость номера: " + guest1.getRoom().getPrice() + "\n"

@@ -1,70 +1,83 @@
 @startuml
 class task4.prog1.Hotel {
 ~ RoomManager roomManager
-~ ServiceManager serviceManager
-~ GuestRoomManager guestRoomManager
-- Hotel getOuter()
+~ MaintenanceManager maintenanceManager
+~ GuestManager guestManager
 }
 class task4.prog1.Hotel.RoomManager {
-- Map<Integer,Room> rooms
+- List<Room> rooms
 - <<Create>> RoomManager()
 ~ void loadRoomsDatabase()
 ~ void addNewRoom(Room)
 ~ Room getRoomByNumber(Integer)
 ~ String getRoomsAsString()
-~ String getRoomsAsString(Map<Integer,Room>)
-+ Map<Integer,Room> sortRooms(Map<Integer,Room>,Comparator<Room>)
-~ Map<Integer,Room> getRooms()
-~ Map<Integer,Room> getFreeRooms()
-~ Map<Integer,Room> getFreeRooms(LocalDateTime)
-- Map<Room,List<Guest>> convertGuestsRoomsToRoomsGuests()
+~ String getRoomsAsString(List<Room>)
++ List<Room> sortRooms(List<Room>,Comparator<Room>)
+~ List<Room> getRooms()
+~ List<Room> getFreeRooms()
+~ List<Room> getFreeRooms(LocalDateTime)
 }
-class task4.prog1.Hotel.ServiceManager {
-- Map<String,Service> services
-- <<Create>> ServiceManager()
-~ void loadServicesDatabase()
-~ void addNewService(Service)
-~ Service getServiceByName(String)
-+ String getServicesPriceList()
-+ String getServicesPriceList(Comparator<Service>)
-+ String getServicesOfGuest(Guest)
-+ String getServicesOfGuest(Guest,Comparator<Service>)
+class task4.prog1.Hotel.MaintenanceManager {
+- List<Maintenance> maintenances
+- <<Create>> MaintenanceManager()
+~ void loadMaintenancesDatabase()
+~ void addNewMaintenance(Maintenance)
+~ Maintenance getMaintenanceByName(String)
++ String getMaintenancesPriceList()
++ String getMaintenancesPriceList(Comparator<Maintenance>)
++ String getMaintenancesOfGuest(Guest)
++ String getMaintenancesOfGuest(Guest,Comparator<Maintenance>)
 }
-class task4.prog1.Hotel.GuestRoomManager {
-- Map<Guest,Room> guestsRooms
-- <<Create>> GuestRoomManager()
+class task4.prog1.Hotel.GuestManager {
+- List<Guest> guests
+- <<Create>> GuestManager()
 ~ void loadGuestsDatabase()
-~ Map<Guest,Room> getGuestsRooms()
-~ void addGuest(Room,Guest)
+~ List<Guest> getGuests()
+~ void addGuest(Guest)
+~ void addGuestToRoom(Room,Guest)
 ~ void removeGuest(Guest)
-~ String getGuestsRoomsAsString(Map<Guest,Room>)
-+ Map<Guest,Room> sortGuestsRooms(Map<Guest,Room>,Comparator<Guest>)
+~ String getGuestsAsString(List<Guest>)
++ List<Guest> sortGuests(List<Guest>,Comparator<Guest>)
 + Guest getGuestByName(String)
 }
 class task4.prog1.Guest {
 - String fullName
 - String passport
+- Room room
 - LocalDateTime checkInTime
 - LocalDateTime checkOutTime
-- List<Service> orderedServices
+- List<Maintenance> orderedMaintenances
 - int payment
-+ <<Create>> Guest(String,String,LocalDateTime,LocalDateTime)
++ <<Create>> Guest(String,String,LocalDateTime,LocalDateTime,Room)
 + String getFullName()
 + String getPassport()
-+ void orderService(Hotel,String)
++ void orderMaintenance(Hotel,String)
 + LocalDateTime getCheckInTime()
 + void setCheckInTime(LocalDateTime)
 + LocalDateTime getCheckOutTime()
 + void setCheckOutTime(LocalDateTime)
-+ List<Service> getOrderedServices()
-+ String getOrderedServicesAsString()
++ List<Maintenance> getOrderedMaintenances()
++ String getOrderedMaintenancesAsString()
 + int getPayment()
 + void setPayment(int)
++ Room getRoom()
++ void setRoom(Room)
 }
-enum task4.prog1.ServiceCategory {
-+  LOCAL_FOOD
-+  DELIVERY_FOOD
-+  ACCESSORIES
+class task4.prog1.Maintenance {
+- String name
+- int price
+- MaintenanceCategory category
+- LocalDateTime orderTime
+~ <<Create>> Maintenance(String,int,MaintenanceCategory)
+~ String getName()
+~ void execute(Guest)
++ int getPrice()
++ void setPrice(int)
++ MaintenanceCategory getCategory()
++ LocalDateTime getOrderTime()
++ void setOrderTime(LocalDateTime)
++ String toString()
++ Maintenance clone()
 }
 class task4.prog1.Room {
 - int CAPACITY
@@ -95,21 +108,10 @@ class task4.prog1.Room {
 class task4.prog1.Main {
 + {static} void main(String[])
 }
-class task4.prog1.Service {
-- String name
-- int price
-- ServiceCategory category
-- LocalDateTime orderTime
-~ <<Create>> Service(String,int,ServiceCategory)
-~ String getName()
-~ void execute(Guest)
-+ int getPrice()
-+ void setPrice(int)
-+ ServiceCategory getCategory()
-+ LocalDateTime getOrderTime()
-+ void setOrderTime(LocalDateTime)
-+ String toString()
-+ Service clone()
+enum task4.prog1.MaintenanceCategory {
++  LOCAL_FOOD
++  DELIVERY_FOOD
++  ACCESSORIES
 }
 enum task4.prog1.RoomStatus {
 +  UNDER_REPAIR
@@ -120,19 +122,19 @@ enum task4.prog1.RoomStatus {
 
 
 task4.prog1.Hotel +..> task4.prog1.Hotel.RoomManager
-task4.prog1.Hotel +..> task4.prog1.Hotel.ServiceManager
-task4.prog1.Hotel +..> task4.prog1.Hotel.GuestRoomManager
-task4.prog1.Cloneable <|.. task4.prog1.Service
-task4.prog1.Hotel.ServiceManager o..> task4.prog1.Service
-task4.prog1.Service *-- task4.prog1.ServiceCategory
+task4.prog1.Hotel +..> task4.prog1.Hotel.MaintenanceManager
+task4.prog1.Hotel +..> task4.prog1.Hotel.GuestManager
+task4.prog1.Cloneable <|.. task4.prog1.Maintenance
+task4.prog1.Hotel.MaintenanceManager o..> task4.prog1.Maintenance
+task4.prog1.Maintenance *-- task4.prog1.MaintenanceCategory
 task4.prog1.Room *-- task4.prog1.RoomStatus
 task4.prog1.Hotel.RoomManager o..> task4.prog1.Room
-task4.prog1.Hotel.GuestRoomManager o..> task4.prog1.Room
-task4.prog1.Hotel.GuestRoomManager o..> task4.prog1.Guest
+task4.prog1.Hotel.GuestManager ..> task4.prog1.Room
+task4.prog1.Hotel.GuestManager o..> task4.prog1.Guest
 task4.prog1.Main --> task4.prog1.Hotel
-task4.prog1.Hotel.ServiceManager ..> task4.prog1.Guest
-task4.prog1.Hotel.RoomManager ..> task4.prog1.Hotel
-task4.prog1.Service ..> task4.prog1.Guest
-task4.prog1.Guest o..> task4.prog1.Service
+task4.prog1.Hotel.MaintenanceManager ..> task4.prog1.Guest
+task4.prog1.Maintenance ..> task4.prog1.Guest
+task4.prog1.Guest o..> task4.prog1.Maintenance
 task4.prog1.Room o..> task4.prog1.Guest
+task4.prog1.Guest o..> task4.prog1.Room
 @enduml

@@ -10,7 +10,7 @@ import static task4.prog1.RoomStatus.*;
 
 public class Hotel {
     RoomManager roomManager = new RoomManager();
-    MaintenanceManager serviceManager = new MaintenanceManager();
+    MaintenanceManager maintenanceManager = new MaintenanceManager();
     GuestManager guestManager = new GuestManager();
 
     public static class RoomManager {
@@ -98,28 +98,28 @@ public class Hotel {
     public static class MaintenanceManager {
         private MaintenanceManager(){}
 
-        private final List<Maintenance> services = new ArrayList<>();
+        private final List<Maintenance> maintenances = new ArrayList<>();
 
-        void loadServicesDatabase() {
-            Maintenance service1 = new Maintenance("Завтрак в номер", 500, MaintenanceCategory.LOCAL_FOOD);
-            Maintenance service2 = new Maintenance("Обед в номер", 600, MaintenanceCategory.LOCAL_FOOD);
-            Maintenance service3 = new Maintenance("Ужин в номер", 800, MaintenanceCategory.LOCAL_FOOD);
-            Maintenance service4 = new Maintenance("Принести доставку в номер", 100, MaintenanceCategory.DELIVERY_FOOD);
-            Maintenance service5 = new Maintenance("Дополнительный набор для душа", 200, MaintenanceCategory.ACCESSORIES);
-            services.add(service1);
-            services.add(service2);
-            services.add(service3);
-            services.add(service4);
-            services.add(service5);
+        void loadMaintenancesDatabase() {
+            Maintenance maintenance1 = new Maintenance("Завтрак в номер", 500, MaintenanceCategory.LOCAL_FOOD);
+            Maintenance maintenance2 = new Maintenance("Обед в номер", 600, MaintenanceCategory.LOCAL_FOOD);
+            Maintenance maintenance3 = new Maintenance("Ужин в номер", 800, MaintenanceCategory.LOCAL_FOOD);
+            Maintenance maintenance4 = new Maintenance("Принести доставку в номер", 100, MaintenanceCategory.DELIVERY_FOOD);
+            Maintenance maintenance5 = new Maintenance("Дополнительный набор для душа", 200, MaintenanceCategory.ACCESSORIES);
+            maintenances.add(maintenance1);
+            maintenances.add(maintenance2);
+            maintenances.add(maintenance3);
+            maintenances.add(maintenance4);
+            maintenances.add(maintenance5);
         }
 
-        void addNewMaintenance(Maintenance service) {
-            services.add(service);
+        void addNewMaintenance(Maintenance maintenance) {
+            maintenances.add(maintenance);
         }
 
-        Maintenance getServiceByName(String name) throws NoSuchElementException {
-            Maintenance result = services.stream()
-                    .filter(service -> (name.equals(service.getName())))
+        Maintenance getMaintenanceByName(String name) throws NoSuchElementException {
+            Maintenance result = maintenances.stream()
+                    .filter(maintenance -> (name.equals(maintenance.getName())))
                     .findFirst().orElse(null);
             if (result == null) {
                 throw new NoSuchElementException();
@@ -127,25 +127,25 @@ public class Hotel {
             return result;
         }
 
-        public String getServicesPriceList() {
+        public String getMaintenancesPriceList() {
             StringBuilder out = new StringBuilder();
-            services.forEach(service -> out
-                    .append(service.getName()).append("; Категория: ").append(service.getCategory())
-                    .append("; Цена: ").append(service.getPrice()).append("\n"));
+            maintenances.forEach(maintenance -> out
+                    .append(maintenance.getName()).append("; Категория: ").append(maintenance.getCategory())
+                    .append("; Цена: ").append(maintenance.getPrice()).append("\n"));
             return out.toString();
         }
 
-        public String getServicesPriceList(Comparator<Maintenance> comparator) {
+        public String getMaintenancesPriceList(Comparator<Maintenance> comparator) {
             StringBuilder out = new StringBuilder();
-            services.stream().sorted(comparator)
-                    .forEach(service -> out.append(service.toString()).append("\n"));
+            maintenances.stream().sorted(comparator)
+                    .forEach(maintenance -> out.append(maintenance.toString()).append("\n"));
             return out.toString();
         }
 
         public String getMaintenancesOfGuest(Guest guest) {
             StringBuilder out = new StringBuilder("Гость: " + guest.getFullName() + "\nЗаказы:\n");
-            guest.getOrderedServices().forEach((service) -> out.append(service.toString()).append("; Дата: ")
-                    .append(service.getOrderTime()
+            guest.getOrderedMaintenances().forEach((maintenance) -> out.append(maintenance.toString()).append("; Дата: ")
+                    .append(maintenance.getOrderTime()
                             .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME))
                     .append("\n"));
             return out.toString();
@@ -153,9 +153,9 @@ public class Hotel {
 
         public String getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator) {
             StringBuilder out = new StringBuilder("Гость: " + guest.getFullName() + "\nЗаказы:\n");
-            guest.getOrderedServices().stream().sorted(comparator).forEach((service) -> out
-                    .append(service.toString()).append("; Дата: ")
-                    .append(service.getOrderTime()
+            guest.getOrderedMaintenances().stream().sorted(comparator).forEach((maintenance) -> out
+                    .append(maintenance.toString()).append("; Дата: ")
+                    .append(maintenance.getOrderTime()
                             .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME))
                     .append("\n"));
             return out.toString();

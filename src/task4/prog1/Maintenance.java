@@ -8,8 +8,8 @@ public class Maintenance implements Cloneable {
     private final MaintenanceCategory category;
     private LocalDateTime orderTime;
 
-    Maintenance(String serviceName, int price, MaintenanceCategory category) {
-        this.name = serviceName;
+    Maintenance(String maintenanceName, int price, MaintenanceCategory category) {
+        this.name = maintenanceName;
         this.price = price;
         this.category = category;
     }

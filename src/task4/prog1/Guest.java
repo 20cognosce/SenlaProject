@@ -10,7 +10,7 @@ public class Guest {
     private Room room;
     private LocalDateTime checkInTime;
     private LocalDateTime checkOutTime;
-    private List<Maintenance> orderedServices;
+    private List<Maintenance> orderedMaintenances;
     private int payment;
 
     public Guest(String fullName, String passport, LocalDateTime checkInTime, LocalDateTime checkOutTime, Room room) {
@@ -29,14 +29,14 @@ public class Guest {
         return passport;
     }
 
-    public void orderService(Hotel hotel, String serviceName) {
-        if (orderedServices == null) {
-            orderedServices = new ArrayList<>();
+    public void orderMaintenance(Hotel hotel, String maintenanceName) {
+        if (orderedMaintenances == null) {
+            orderedMaintenances = new ArrayList<>();
         }
-        Maintenance currentService = hotel.serviceManager.getServiceByName(serviceName).clone();
-        currentService.execute(this);
-        orderedServices.add(currentService);
-        setPayment(getPayment() + currentService.getPrice());
+        Maintenance currentMaintenance = hotel.maintenanceManager.getMaintenanceByName(maintenanceName).clone();
+        currentMaintenance.execute(this);
+        orderedMaintenances.add(currentMaintenance);
+        setPayment(getPayment() + currentMaintenance.getPrice());
     }
 
     public LocalDateTime getCheckInTime() {
@@ -55,11 +55,11 @@ public class Guest {
         this.checkOutTime = checkOutTime;
     }
 
-    public List<Maintenance> getOrderedServices() {
-        return orderedServices;
+    public List<Maintenance> getOrderedMaintenances() {
+        return orderedMaintenances;
     }
 
-    public String getOrderedServicesAsString() {
+    public String getOrderedMaintenancesAsString() {
         return "";
     }
 
