@@ -2,13 +2,13 @@ package task4.prog1;
 
 import java.time.LocalDateTime;
 
-public class Service implements Cloneable {
+public class Maintenance implements Cloneable {
     private final String name;
     private int price;
-    private final ServiceCategory category;
+    private final MaintenanceCategory category;
     private LocalDateTime orderTime;
 
-    Service(String serviceName, int price, ServiceCategory category) {
+    Maintenance(String serviceName, int price, MaintenanceCategory category) {
         this.name = serviceName;
         this.price = price;
         this.category = category;
@@ -33,7 +33,7 @@ public class Service implements Cloneable {
         this.price = price;
     }
 
-    public ServiceCategory getCategory() {
+    public MaintenanceCategory getCategory() {
         return category;
     }
 
@@ -51,10 +51,10 @@ public class Service implements Cloneable {
     }
 
     @Override
-    public Service clone() {
+    public Maintenance clone() {
         try {
             // TODO: copy mutable state here, so the clone can't change the internals of the original
-            return (Service) super.clone();
+            return (Maintenance) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }

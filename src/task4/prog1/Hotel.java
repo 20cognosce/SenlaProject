@@ -1,26 +1,22 @@
 package task4.prog1;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static task4.prog1.RoomStatus.*;
 
 public class Hotel {
     RoomManager roomManager = new RoomManager();
-    ServiceManager serviceManager = new ServiceManager();
-    GuestRoomManager guestRoomManager = new GuestRoomManager();
+    MaintenanceManager serviceManager = new MaintenanceManager();
+    GuestManager guestManager = new GuestManager();
 
-    private Hotel getOuter() {
-        return Hotel.this;
-    }
-
-    public class RoomManager {
+    public static class RoomManager {
         private RoomManager(){}
 
-        private final Map<Integer, Room> rooms = new LinkedHashMap<>();
+        private final List<Room> rooms = new ArrayList<>();
 
         void loadRoomsDatabase() {
             Room room1 = new Room (1,2,3, FREE, 2000);
@@ -29,138 +25,124 @@ public class Hotel {
             Room room4 = new Room (4,6,4, CLEANING, 7500);
             Room room5 = new Room (5,4,5, FREE, 8000);
             room5.setDetails("Огромное джакузи с видом на Москва Сити");
-            rooms.put(room1.getRoomNumber(), room1);
-            rooms.put(room2.getRoomNumber(), room2);
-            rooms.put(room3.getRoomNumber(), room3);
-            rooms.put(room4.getRoomNumber(), room4);
-            rooms.put(room5.getRoomNumber(), room5);
+            rooms.add(room1);
+            rooms.add(room2);
+            rooms.add(room3);
+            rooms.add(room4);
+            rooms.add(room5);
         }
 
         void addNewRoom(Room room) {
-            rooms.put(room.getRoomNumber(), room);
+            rooms.add(room);
         }
 
-        Room getRoomByNumber(Integer roomNumber) {
-            return rooms.get(roomNumber);
+        Room getRoomByNumber(Integer roomNumber) throws NoSuchElementException {
+            Room result = rooms.stream()
+                    .filter(room -> (roomNumber.equals(room.getRoomNumber())))
+                    .findFirst().orElse(null);
+            if (result == null) {
+                throw new NoSuchElementException();
+            }
+            return result;
         }
 
         String getRoomsAsString() {
             StringBuilder out = new StringBuilder();
-            rooms.values().forEach(room -> out.append(room.toString()));
+            rooms.forEach(room -> out.append(room.toString()));
             return out.toString();
         }
 
-        String getRoomsAsString(Map<Integer, Room> subTable) {
+        String getRoomsAsString(List<Room> subList) {
             StringBuilder out = new StringBuilder();
-            subTable.values().forEach(room -> out.append(room.toString()));
+            subList.forEach(room -> out.append(room.toString()));
             return out.toString();
         }
 
-        public Map<Integer, Room> sortRooms(
-                Map<Integer, Room> roomsTableToSort, Comparator<Room> comparator) {
-            /*I tried a lot of options. HashMap sorts items by the key, so for saving sorting result I must use
-             * LinkedHashMap. .collect(Collectors.toMap(...)) returns Map, which is unsuitable for LinkedHashMap.
-             * It would work to use .collect(toList) and then forEach(roomsTable.put(room.getRoomNumber(), room)) by the way
-             */
-
-            Map<Integer, Room> sorted = new LinkedHashMap<>();
-            roomsTableToSort.values().stream().sorted(comparator)
-                    .forEach(room -> sorted.put(room.getRoomNumber(), room));
+        public List<Room> sortRooms(
+                List<Room> roomsListToSort, Comparator<Room> comparator) {
+            List<Room> sorted = new ArrayList<>();
+            roomsListToSort.stream().sorted(comparator)
+                    .forEach(sorted::add);
             return sorted;
         }
 
-        Map<Integer, Room> getRooms() {
+        List<Room> getRooms() {
             return rooms;
         }
 
-        Map<Integer, Room> getFreeRooms() {
-            Map<Integer, Room> freeRooms = new LinkedHashMap<>();
-            rooms.forEach((key, value) -> {
-                if (value.getRoomCurrentStatus() == FREE) freeRooms.put(key, value);
+        List<Room> getFreeRooms() {
+            List<Room> freeRooms = new ArrayList<>();
+            rooms.forEach((room) -> {
+                if (room.getRoomCurrentStatus() == FREE) freeRooms.add(room);
             });
             return freeRooms;
         }
 
-        Map<Integer, Room> getFreeRooms(LocalDateTime asAtSpecificDate) {
-            Map<Integer, Room> freeRooms = new LinkedHashMap<>();
-            Map<Integer, Room> rooms = getRooms();
-            Map<Room, List<Guest>> roomsGuests = convertGuestsRoomsToRoomsGuests();
+        List<Room> getFreeRooms(LocalDateTime asAtSpecificDate) {
+            List<Room> freeRooms = new ArrayList<>();
+            List<Room> rooms = getRooms();
 
-            rooms.values().forEach(room -> {
-                if (!roomsGuests.containsKey(room)) {
-                    freeRooms.put(room.getRoomNumber(), room);
-                } else {
-                    boolean isFree = true;
-                    for (Guest guest : roomsGuests.get(room)) {
-                        if (!guest.getCheckInTime().isAfter(asAtSpecificDate) &&
-                                guest.getCheckOutTime().isAfter(asAtSpecificDate)) isFree = false;
-                    }
-                    if (isFree) freeRooms.put(room.getRoomNumber(), room);
+            rooms.forEach(room -> {
+                boolean isFree = true;
+                for (Guest guest : room.getGuestsCurrentList()) {
+                    if (!guest.getCheckInTime().isAfter(asAtSpecificDate) &&
+                            guest.getCheckOutTime().isAfter(asAtSpecificDate)) isFree = false;
                 }
+                if (isFree) freeRooms.add(room);
             });
 
             return freeRooms;
-        }
-
-        private Map<Room, List<Guest>> convertGuestsRoomsToRoomsGuests() {
-            Map<Guest, Room> guestsRooms = getOuter().guestRoomManager.getGuestsRooms();
-            return new LinkedHashMap<>(guestsRooms.entrySet().stream()
-                    .collect(Collectors.groupingBy(Map.Entry::getValue)).values().stream()
-                    .collect(Collectors.toMap(
-                                    item -> item.get(0).getValue(),
-                                    item -> new ArrayList<>(
-                                            item.stream()
-                                                    .map(Map.Entry::getKey)
-                                                    .collect(Collectors.toList())
-                                    )
-                            )
-                    )
-            );
         }
     }
 
-    public static class ServiceManager {
-        private ServiceManager(){}
+    public static class MaintenanceManager {
+        private MaintenanceManager(){}
 
-        private final Map<String, Service> services = new LinkedHashMap<>();
+        private final List<Maintenance> services = new ArrayList<>();
 
         void loadServicesDatabase() {
-            Service service1 = new Service("Завтрак в номер", 500, ServiceCategory.LOCAL_FOOD);
-            Service service2 = new Service("Обед в номер", 600, ServiceCategory.LOCAL_FOOD);
-            Service service3 = new Service("Ужин в номер", 800, ServiceCategory.LOCAL_FOOD);
-            Service service4 = new Service("Принести доставку в номер", 100, ServiceCategory.DELIVERY_FOOD);
-            Service service5 = new Service("Дополнительный набор для душа", 200, ServiceCategory.ACCESSORIES);
-            services.put(service1.getName(), service1);
-            services.put(service2.getName(), service2);
-            services.put(service3.getName(), service3);
-            services.put(service4.getName(), service4);
-            services.put(service5.getName(), service5);
+            Maintenance service1 = new Maintenance("Завтрак в номер", 500, MaintenanceCategory.LOCAL_FOOD);
+            Maintenance service2 = new Maintenance("Обед в номер", 600, MaintenanceCategory.LOCAL_FOOD);
+            Maintenance service3 = new Maintenance("Ужин в номер", 800, MaintenanceCategory.LOCAL_FOOD);
+            Maintenance service4 = new Maintenance("Принести доставку в номер", 100, MaintenanceCategory.DELIVERY_FOOD);
+            Maintenance service5 = new Maintenance("Дополнительный набор для душа", 200, MaintenanceCategory.ACCESSORIES);
+            services.add(service1);
+            services.add(service2);
+            services.add(service3);
+            services.add(service4);
+            services.add(service5);
         }
 
-        void addNewService(Service service) {
-            services.put(service.getName(), service);
+        void addNewMaintenance(Maintenance service) {
+            services.add(service);
         }
 
-        Service getServiceByName(String name) {
-            return services.get(name);
+        Maintenance getServiceByName(String name) throws NoSuchElementException {
+            Maintenance result = services.stream()
+                    .filter(service -> (name.equals(service.getName())))
+                    .findFirst().orElse(null);
+            if (result == null) {
+                throw new NoSuchElementException();
+            }
+            return result;
         }
 
         public String getServicesPriceList() {
             StringBuilder out = new StringBuilder();
-            services.values().forEach(service -> out
+            services.forEach(service -> out
                     .append(service.getName()).append("; Категория: ").append(service.getCategory())
                     .append("; Цена: ").append(service.getPrice()).append("\n"));
             return out.toString();
         }
 
-        public String getServicesPriceList(Comparator<Service> comparator) {
+        public String getServicesPriceList(Comparator<Maintenance> comparator) {
             StringBuilder out = new StringBuilder();
-            services.values().stream().sorted(comparator)
+            services.stream().sorted(comparator)
                     .forEach(service -> out.append(service.toString()).append("\n"));
             return out.toString();
         }
 
-        public String getServicesOfGuest(Guest guest) {
+        public String getMaintenancesOfGuest(Guest guest) {
             StringBuilder out = new StringBuilder("Гость: " + guest.getFullName() + "\nЗаказы:\n");
             guest.getOrderedServices().forEach((service) -> out.append(service.toString()).append("; Дата: ")
                     .append(service.getOrderTime()
@@ -169,7 +151,7 @@ public class Hotel {
             return out.toString();
         }
 
-        public String getServicesOfGuest(Guest guest, Comparator<Service> comparator) {
+        public String getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator) {
             StringBuilder out = new StringBuilder("Гость: " + guest.getFullName() + "\nЗаказы:\n");
             guest.getOrderedServices().stream().sorted(comparator).forEach((service) -> out
                     .append(service.toString()).append("; Дата: ")
@@ -180,75 +162,84 @@ public class Hotel {
         }
     }
 
-    public static class GuestRoomManager {
-        private GuestRoomManager(){}
+    public static class GuestManager {
+        private GuestManager(){}
 
-        private final Map<Guest, Room> guestsRooms = new LinkedHashMap<>();
+        private final List<Guest> guests = new ArrayList<>();
 
         void loadGuestsDatabase() {
             Guest guest1 = new Guest("Ivanov Ivan Ivanovich", "1111 222222",
                     LocalDateTime.of(2022, 3, 2, 14, 0),
-                    LocalDateTime.of(2022, 3, 5, 12, 0));
+                    LocalDateTime.of(2022, 3, 5, 12, 0), null);
             Guest guest2 = new Guest("Ivanova Maria Ivanovna", "3333 444444",
                     LocalDateTime.of(2022, 3, 2, 14, 0),
-                    LocalDateTime.of(2022, 3, 5, 12, 0));
+                    LocalDateTime.of(2022, 3, 5, 12, 0), null);
             Guest guest3 = new Guest("Petrov Petr Petrovich", "5555 666666",
                     LocalDateTime.of(2022, 3, 1, 14, 0),
-                    LocalDateTime.of(2022, 3, 14, 12, 0));
+                    LocalDateTime.of(2022, 3, 14, 12, 0), null);
             Guest guest4 = new Guest("Abramov Nikita Alexandrovich", "7777 888888",
                     LocalDateTime.of(2022, 3, 1, 14, 0),
-                    LocalDateTime.of(2022, 4, 1, 12, 0));
+                    LocalDateTime.of(2022, 4, 1, 12, 0), null);
             Guest guest5 = new Guest("Yakovleva Margarita Vladimirovna", "9999 000000",
                     LocalDateTime.of(2022, 3, 1, 14, 0),
-                    LocalDateTime.of(2022, 3, 14, 12, 0));
-            guestsRooms.put(guest1, null);
-            guestsRooms.put(guest2, null);
-            guestsRooms.put(guest3, null);
-            guestsRooms.put(guest4, null);
-            guestsRooms.put(guest5, null);
+                    LocalDateTime.of(2022, 3, 14, 12, 0), null);
+            guests.add(guest1);
+            guests.add(guest2);
+            guests.add(guest3);
+            guests.add(guest4);
+            guests.add(guest5);
         }
 
-        Map<Guest, Room> getGuestsRooms() {
-            return guestsRooms;
+        List<Guest> getGuests() {
+            return guests;
         }
 
-        void addGuest(Room room, Guest guest) {
-            try {
-                room.addGuest(guest);
-                guestsRooms.put(guest, room);
-            } catch (RuntimeException e) {
-                System.out.println(e.getMessage());
+        void addGuest(Guest guest) {
+            if (guests.contains(guest)) {
+                throw new KeyAlreadyExistsException("Guest already exists");
             }
+            guests.add(guest);
         }
+
+        void addGuestToRoom(Room room, Guest guest) {
+            if (!guests.contains(guest)) {
+                guests.add(guest);
+            }
+            guest.setRoom(room);
+            room.addGuest(guest);
+        }
+
         void removeGuest(Guest guest) {
+            Room temp;
             try {
-                guestsRooms.get(guest).removeGuest(guest);
-                guestsRooms.remove(guest);
+                temp = guest.getRoom();
             } catch (RuntimeException e) {
-                System.out.println(e.getMessage());
+                guests.remove(guest); //if guest's room if null
+                return;
             }
+            temp.removeGuest(guest);
+            guests.remove(guest);
         }
 
-        String getGuestsRoomsAsString(Map<Guest, Room> subTable) {
+        String getGuestsAsString(List<Guest> subList) {
             StringBuilder out = new StringBuilder();
-            subTable.forEach((key, value) -> out.append("Гость: ").append(key.getFullName())
-                    .append("; Номер: ").append(value.getRoomNumber())
-                    .append("; Дата заезда: ").append(key.getCheckInTime())
-                    .append("; Дата освобождения: ").append(key.getCheckOutTime()).append("\n"));
+            subList.forEach((guest) -> out.append("Гость: ").append(guest.getFullName())
+                    .append("; Номер: ").append(guest.getRoom().getRoomNumber())
+                    .append("; Дата заезда: ").append(guest.getCheckInTime())
+                    .append("; Дата освобождения: ").append(guest.getCheckOutTime()).append("\n"));
             return out.toString();
         }
 
-        public Map<Guest, Room> sortGuestsRooms(Map<Guest, Room> roomsTableToSort,
-                                                          Comparator<Guest> comparator) {
-            Map<Guest, Room> sorted = new LinkedHashMap<>();
-            roomsTableToSort.keySet().stream().sorted(comparator)
-                    .forEach(guest -> sorted.put(guest, guestsRooms.get(guest)));
+        public List<Guest> sortGuests(List<Guest> roomsTableToSort, Comparator<Guest> comparator) {
+            List<Guest> sorted = new ArrayList<>();
+            roomsTableToSort.stream().sorted(comparator)
+                    .forEach(sorted::add);
             return sorted;
         }
 
         public Guest getGuestByName(String fullName) throws NoSuchElementException {
-            Guest result = guestsRooms.keySet().stream()
-                    .filter(guest -> (guest.getFullName().equals(fullName)))
+            Guest result = guests.stream()
+                    .filter(guest -> (fullName.equals(guest.getFullName())))
                     .findFirst().orElse(null);
             if (result == null) {
                 throw new NoSuchElementException();

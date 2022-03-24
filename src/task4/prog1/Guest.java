@@ -7,16 +7,18 @@ import java.util.List;
 public class Guest {
     private final String fullName;
     private final String passport;
+    private Room room;
     private LocalDateTime checkInTime;
     private LocalDateTime checkOutTime;
-    private List<Service> orderedServices;
+    private List<Maintenance> orderedServices;
     private int payment;
 
-    public Guest(String fullName, String passport, LocalDateTime checkInTime, LocalDateTime checkOutTime) {
+    public Guest(String fullName, String passport, LocalDateTime checkInTime, LocalDateTime checkOutTime, Room room) {
         this.fullName = fullName;
         this.passport = passport;
         this.checkInTime = checkInTime;
         this.checkOutTime = checkOutTime;
+        this.room = room;
     };
 
     public String getFullName() {
@@ -31,7 +33,7 @@ public class Guest {
         if (orderedServices == null) {
             orderedServices = new ArrayList<>();
         }
-        Service currentService = hotel.serviceManager.getServiceByName(serviceName).clone();
+        Maintenance currentService = hotel.serviceManager.getServiceByName(serviceName).clone();
         currentService.execute(this);
         orderedServices.add(currentService);
         setPayment(getPayment() + currentService.getPrice());
@@ -53,7 +55,7 @@ public class Guest {
         this.checkOutTime = checkOutTime;
     }
 
-    public List<Service> getOrderedServices() {
+    public List<Maintenance> getOrderedServices() {
         return orderedServices;
     }
 
@@ -67,5 +69,13 @@ public class Guest {
 
     public void setPayment(int payment) {
         this.payment = payment;
+    }
+
+    public Room getRoom() throws NullPointerException {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
     }
 }

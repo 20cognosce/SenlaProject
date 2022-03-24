@@ -8,7 +8,7 @@ public class Main {
         Hotel hotel = new Hotel();
         hotel.roomManager.loadRoomsDatabase();
         hotel.serviceManager.loadServicesDatabase();
-        hotel.guestRoomManager.loadGuestsDatabase();
+        hotel.guestManager.loadGuestsDatabase();
 
         // Список свободных номеров (сортировать по цене, вместимости, количеству звезд);
         System.out.println(hotel.roomManager.getRoomsAsString(hotel.roomManager.getFreeRooms()));
@@ -21,20 +21,20 @@ public class Main {
                 + "--------------------------------------------------------------------------------------------------");
 
         Room bookedRoom1 = hotel.roomManager.getRoomByNumber(1);
-        Guest guest1 = hotel.guestRoomManager.getGuestByName("Ivanov Ivan Ivanovich");
-        Guest guest2 = hotel.guestRoomManager.getGuestByName("Ivanova Maria Ivanovna");
-        hotel.guestRoomManager.addGuest(bookedRoom1, guest1);
-        hotel.guestRoomManager.addGuest(bookedRoom1, guest2);
+        Guest guest1 = hotel.guestManager.getGuestByName("Ivanov Ivan Ivanovich");
+        Guest guest2 = hotel.guestManager.getGuestByName("Ivanova Maria Ivanovna");
+        hotel.guestManager.addGuestToRoom(bookedRoom1, guest1);
+        hotel.guestManager.addGuestToRoom(bookedRoom1, guest2);
         guest1.setPayment(bookedRoom1.getPrice());
         Room bookedRoom2 = hotel.roomManager.getRoomByNumber(2);
-        Guest guest3 = hotel.guestRoomManager.getGuestByName("Petrov Petr Petrovich");
-        Guest guest4 = hotel.guestRoomManager.getGuestByName("Yakovleva Margarita Vladimirovna");
-        hotel.guestRoomManager.addGuest(bookedRoom2, guest3);
-        hotel.guestRoomManager.addGuest(bookedRoom2, guest4);
+        Guest guest3 = hotel.guestManager.getGuestByName("Petrov Petr Petrovich");
+        Guest guest4 = hotel.guestManager.getGuestByName("Yakovleva Margarita Vladimirovna");
+        hotel.guestManager.addGuestToRoom(bookedRoom2, guest3);
+        hotel.guestManager.addGuestToRoom(bookedRoom2, guest4);
         guest3.setPayment(bookedRoom2.getPrice());
         Room bookedRoom5 = hotel.roomManager.getRoomByNumber(5);
-        Guest guest5 = hotel.guestRoomManager.getGuestByName("Abramov Nikita Alexandrovich");
-        hotel.guestRoomManager.addGuest(bookedRoom5, guest5);
+        Guest guest5 = hotel.guestManager.getGuestByName("Abramov Nikita Alexandrovich");
+        hotel.guestManager.addGuestToRoom(bookedRoom5, guest5);
         guest5.setPayment(bookedRoom5.getPrice());
 
         // Список номеров (сортировать по цене, вместимости, количеству звезд);
@@ -48,19 +48,19 @@ public class Main {
                 + "--------------------------------------------------------------------------------------------------");
 
         //Список постояльцев и их номеров (сортировать по алфавиту, дате освобождения номера);
-        System.out.println(hotel.guestRoomManager.getGuestsRoomsAsString(
-                hotel.guestRoomManager.getGuestsRooms()));
-        System.out.println(hotel.guestRoomManager.getGuestsRoomsAsString(
-                hotel.guestRoomManager.sortGuestsRooms(
-                hotel.guestRoomManager.getGuestsRooms(), Comparator.comparing(Guest::getFullName))));
-        System.out.println(hotel.guestRoomManager.getGuestsRoomsAsString(
-                hotel.guestRoomManager.sortGuestsRooms(
-                hotel.guestRoomManager.getGuestsRooms(), Comparator.comparing(Guest::getCheckOutTime)))
+        System.out.println(hotel.guestManager.getGuestsAsString(
+                hotel.guestManager.getGuests()));
+        System.out.println(hotel.guestManager.getGuestsAsString(
+                hotel.guestManager.sortGuests(
+                hotel.guestManager.getGuests(), Comparator.comparing(Guest::getFullName))));
+        System.out.println(hotel.guestManager.getGuestsAsString(
+                hotel.guestManager.sortGuests(
+                hotel.guestManager.getGuests(), Comparator.comparing(Guest::getCheckOutTime)))
                 + "--------------------------------------------------------------------------------------------------");
 
         // Общее число свободных номеров; Общее число постояльцев;
         System.out.println("Общее число свободных номеров: " + hotel.roomManager.getFreeRooms().size());
-        System.out.println("Общее число постояльцев: " + hotel.guestRoomManager.getGuestsRooms().size() + "\n"
+        System.out.println("Общее число постояльцев: " + hotel.guestManager.getGuests().size() + "\n"
                 + "--------------------------------------------------------------------------------------------------");
 
         // Список номеров которые будут свободны по определенной дате в будущем;
@@ -83,8 +83,8 @@ public class Main {
         // Цены услуг и номеров (сортировать по разделу, цене);
         hotel.serviceManager.getServicesPriceList();
         System.out.println(hotel.serviceManager.getServicesPriceList());
-        System.out.println(hotel.serviceManager.getServicesPriceList(Comparator.comparing(Service::getPrice)));
-        System.out.println(hotel.serviceManager.getServicesPriceList(Comparator.comparing(Service::getCategory))
+        System.out.println(hotel.serviceManager.getServicesPriceList(Comparator.comparing(Maintenance::getPrice)));
+        System.out.println(hotel.serviceManager.getServicesPriceList(Comparator.comparing(Maintenance::getCategory))
                 + "--------------------------------------------------------------------------------------------------");
 
         // Посмотреть список услуг постояльца и их цену (сортировать по цене, по дате);
@@ -105,16 +105,16 @@ public class Main {
         System.out.println();
 
         System.out.println(hotel.serviceManager
-                .getServicesOfGuest(guest1, Comparator.comparing(Service::getOrderTime).reversed()));
+                .getMaintenancesOfGuest(guest1, Comparator.comparing(Maintenance::getOrderTime).reversed()));
         System.out.println(hotel.serviceManager
-                .getServicesOfGuest(guest1, Comparator.comparing(Service::getPrice))
+                .getMaintenancesOfGuest(guest1, Comparator.comparing(Maintenance::getPrice))
                 + "--------------------------------------------------------------------------------------------------");
 
         // Сумму оплаты за номер которую должен оплатить постоялец;
         // TODO: Цены заказанных услуг входят в сумму оплаты за номер (Guest::orderService method)
         System.out.println("Счёт для гостя " + guest1.getFullName()
                 + ": " + guest1.getPayment()
-                + "\nСтоимость номера: " + hotel.guestRoomManager.getGuestsRooms().get(guest1).getPrice() + "\n"
+                + "\nСтоимость номера: " + guest1.getRoom().getPrice() + "\n"
                 + "--------------------------------------------------------------------------------------------------");
 
         // Посмотреть детали отдельного номера.

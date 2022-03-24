@@ -1,5 +1,5 @@
 package task4.prog1;
 
-public enum ServiceCategory {
+public enum MaintenanceCategory {
     LOCAL_FOOD, DELIVERY_FOOD, ACCESSORIES;
 }
