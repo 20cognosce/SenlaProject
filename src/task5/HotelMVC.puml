@@ -1,0 +1,141 @@
+@startuml
+class task5.dao.Maintenance {
+- String name
+- int price
+- MaintenanceCategory category
+- LocalDateTime orderTime
+~ <<Create>> Maintenance(String,int,MaintenanceCategory)
+~ String getName()
+~ void execute(Guest)
++ int getPrice()
++ void setPrice(int)
++ MaintenanceCategory getCategory()
++ LocalDateTime getOrderTime()
++ void setOrderTime(LocalDateTime)
++ String toString()
++ Maintenance clone()
+}
+enum task5.dao.MaintenanceCategory {
++  LOCAL_FOOD
++  DELIVERY_FOOD
++  ACCESSORIES
+}
+enum task5.dao.RoomStatus {
++  UNDER_REPAIR
++  FREE
++  CLEANING
++  BUSY
+}
+class task5.dao.Room {
+- int CAPACITY
+- int ROOM_NUMBER
+- int STARS_NUMBER
+- List<Guest> guestsCurrentList
+- List<Guest> guestsAllTimeList
+- RoomStatus roomCurrentStatus
+- int price
+- String details
++ <<Create>> Room(int,int,int,RoomStatus,int)
++ int getCapacity()
++ int getRoomNumber()
++ RoomStatus getRoomCurrentStatus()
++ List<Guest> getGuestsCurrentList()
++ int getPrice()
++ void setPrice(int)
++ void setRoomCurrentStatus(RoomStatus)
+~ void addGuest(Guest)
+~ void removeGuest(Guest)
++ String getGuestsListAsString(List<Guest>)
++ String toString()
++ int getStarsNumber()
++ String getDetails()
++ void setDetails(String)
++ List<Guest> getLastNGuests(int)
+}
+class task5.controller.Main {
++ {static} void main(String[])
+}
+class task5.service.Hotel {
+~ RoomManager roomManager
+~ MaintenanceManager maintenanceManager
+~ GuestManager guestManager
+}
+class task5.service.Hotel.RoomManager {
+- List<Room> rooms
+- <<Create>> RoomManager()
+~ void loadRoomsDatabase()
+~ void addNewRoom(Room)
+~ Room getRoomByNumber(Integer)
+~ String getRoomsAsString()
+~ String getRoomsAsString(List<Room>)
++ List<Room> sortRooms(List<Room>,Comparator<Room>)
+~ List<Room> getRooms()
+~ List<Room> getFreeRooms()
+~ List<Room> getFreeRooms(LocalDateTime)
+}
+class task5.service.Hotel.MaintenanceManager {
+- List<Maintenance> maintenances
+- <<Create>> MaintenanceManager()
+~ void loadMaintenancesDatabase()
+~ void addNewMaintenance(Maintenance)
+~ Maintenance getMaintenanceByName(String)
++ String getMaintenancesPriceList()
++ String getMaintenancesPriceList(Comparator<Maintenance>)
++ String getMaintenancesOfGuest(Guest)
++ String getMaintenancesOfGuest(Guest,Comparator<Maintenance>)
+}
+class task5.service.Hotel.GuestManager {
+- List<Guest> guests
+- <<Create>> GuestManager()
+~ void loadGuestsDatabase()
+~ List<Guest> getGuests()
+~ void addGuest(Guest)
+~ void addGuestToRoom(Room,Guest)
+~ void removeGuest(Guest)
+~ String getGuestsAsString(List<Guest>)
++ List<Guest> sortGuests(List<Guest>,Comparator<Guest>)
++ Guest getGuestByName(String)
+}
+class task5.dao.Guest {
+- String fullName
+- String passport
+- Room room
+- LocalDateTime checkInTime
+- LocalDateTime checkOutTime
+- List<Maintenance> orderedMaintenances
+- int payment
++ <<Create>> Guest(String,String,LocalDateTime,LocalDateTime,Room)
++ String getFullName()
++ String getPassport()
++ void orderMaintenance(Hotel,String)
++ LocalDateTime getCheckInTime()
++ void setCheckInTime(LocalDateTime)
++ LocalDateTime getCheckOutTime()
++ void setCheckOutTime(LocalDateTime)
++ List<Maintenance> getOrderedMaintenances()
++ String getOrderedMaintenancesAsString()
++ int getPayment()
++ void setPayment(int)
++ Room getRoom()
++ void setRoom(Room)
+}
+
+
+
+task5.dao.Cloneable <|.. task5.dao.Maintenance
+task5.dao.Maintenance *-- task5.dao.MaintenanceCategory
+task5.dao.Room *-- task5.dao.RoomStatus
+task5.dao.Maintenance ..> task5.dao.Guest
+task5.dao.Guest o..> task5.dao.Maintenance
+task5.dao.Room o..> task5.dao.Guest
+task5.dao.Guest o..> task5.dao.Room
+task5.service.Hotel.RoomManager o..> task5.dao.Room
+task5.service.Hotel.GuestManager ..> task5.dao.Room
+task5.service.Hotel.GuestManager o..> task5.dao.Guest
+task5.service.Hotel.MaintenanceManager ..> task5.dao.Guest
+task5.service.Hotel.MaintenanceManager o..> task5.dao.Maintenance
+task5.service.Hotel +..> task5.service.Hotel.RoomManager
+task5.service.Hotel +..> task5.service.Hotel.MaintenanceManager
+task5.service.Hotel +..> task5.service.Hotel.GuestManager
+task5.controller.Main --> task5.service.Hotel
+@enduml
