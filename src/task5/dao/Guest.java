@@ -2,7 +2,7 @@ package task5.dao;
 
 import task5.service.Hotel;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,16 +10,16 @@ public class Guest {
     private final String fullName;
     private final String passport;
     private Room room;
-    private LocalDateTime checkInTime;
-    private LocalDateTime checkOutTime;
+    private LocalDate checkInDate;
+    private LocalDate checkOutDate;
     private List<Maintenance> orderedMaintenances;
     private int payment;
 
-    public Guest(String fullName, String passport, LocalDateTime checkInTime, LocalDateTime checkOutTime, Room room) {
+    public Guest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, Room room) {
         this.fullName = fullName;
         this.passport = passport;
-        this.checkInTime = checkInTime;
-        this.checkOutTime = checkOutTime;
+        this.checkInDate = checkInTime;
+        this.checkOutDate = checkOutTime;
         this.room = room;
     };
 
@@ -35,26 +35,26 @@ public class Guest {
         if (orderedMaintenances == null) {
             orderedMaintenances = new ArrayList<>();
         }
-        Maintenance currentMaintenance = hotel.maintenanceManager.getMaintenanceByName(maintenanceName).clone();
+        Maintenance currentMaintenance = hotel.getMaintenanceManager().getMaintenanceByName(maintenanceName).clone();
         currentMaintenance.execute(this);
         orderedMaintenances.add(currentMaintenance);
         setPayment(getPayment() + currentMaintenance.getPrice());
     }
 
-    public LocalDateTime getCheckInTime() {
-        return checkInTime;
+    public LocalDate getCheckInDate() {
+        return checkInDate;
     }
 
-    public void setCheckInTime(LocalDateTime checkInTime) {
-        this.checkInTime = checkInTime;
+    public void setCheckInDate(LocalDate checkInDate) {
+        this.checkInDate = checkInDate;
     }
 
-    public LocalDateTime getCheckOutTime() {
-        return checkOutTime;
+    public LocalDate getCheckOutDate() {
+        return checkOutDate;
     }
 
-    public void setCheckOutTime(LocalDateTime checkOutTime) {
-        this.checkOutTime = checkOutTime;
+    public void setCheckOutDate(LocalDate checkOutDate) {
+        this.checkOutDate = checkOutDate;
     }
 
     public List<Maintenance> getOrderedMaintenances() {

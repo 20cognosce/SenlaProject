@@ -5,15 +5,15 @@ import task5.dao.Maintenance;
 import task5.dao.Room;
 import task5.service.Hotel;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 
 public class Main {
     public static void main(String[] args) {
-        Hotel hotel = new Hotel();
-        hotel.roomManager.loadRoomsDatabase();
-        hotel.maintenanceManager.loadMaintenancesDatabase();
-        hotel.guestManager.loadGuestsDatabase();
+        MenuController menuController = new MenuController();
+        menuController.run();
+        /*
 
         // Список свободных номеров (сортировать по цене, вместимости, количеству звезд);
         System.out.println(hotel.roomManager.getRoomsAsString(hotel.roomManager.getFreeRooms()));
@@ -25,21 +25,8 @@ public class Main {
                 hotel.roomManager.getFreeRooms(), Comparator.comparingInt(Room::getStarsNumber)))
                 + "--------------------------------------------------------------------------------------------------");
 
-        Room bookedRoom1 = hotel.roomManager.getRoomByNumber(1);
-        Guest guest1 = hotel.guestManager.getGuestByName("Ivanov Ivan Ivanovich");
-        Guest guest2 = hotel.guestManager.getGuestByName("Ivanova Maria Ivanovna");
-        hotel.guestManager.addGuestToRoom(bookedRoom1, guest1);
-        hotel.guestManager.addGuestToRoom(bookedRoom1, guest2);
-        guest1.setPayment(bookedRoom1.getPrice());
-        Room bookedRoom2 = hotel.roomManager.getRoomByNumber(2);
-        Guest guest3 = hotel.guestManager.getGuestByName("Petrov Petr Petrovich");
-        Guest guest4 = hotel.guestManager.getGuestByName("Yakovleva Margarita Vladimirovna");
-        hotel.guestManager.addGuestToRoom(bookedRoom2, guest3);
-        hotel.guestManager.addGuestToRoom(bookedRoom2, guest4);
+        guest1.setPayment(bookedRoom1.getPrice())
         guest3.setPayment(bookedRoom2.getPrice());
-        Room bookedRoom5 = hotel.roomManager.getRoomByNumber(5);
-        Guest guest5 = hotel.guestManager.getGuestByName("Abramov Nikita Alexandrovich");
-        hotel.guestManager.addGuestToRoom(bookedRoom5, guest5);
         guest5.setPayment(bookedRoom5.getPrice());
 
         // Список номеров (сортировать по цене, вместимости, количеству звезд);
@@ -54,13 +41,11 @@ public class Main {
 
         //Список постояльцев и их номеров (сортировать по алфавиту, дате освобождения номера);
         System.out.println(hotel.guestManager.getGuestsAsString(
-                hotel.guestManager.getGuests()));
-        System.out.println(hotel.guestManager.getGuestsAsString(
                 hotel.guestManager.sortGuests(
                 hotel.guestManager.getGuests(), Comparator.comparing(Guest::getFullName))));
         System.out.println(hotel.guestManager.getGuestsAsString(
                 hotel.guestManager.sortGuests(
-                hotel.guestManager.getGuests(), Comparator.comparing(Guest::getCheckOutTime)))
+                hotel.guestManager.getGuests(), Comparator.comparing(Guest::getCheckOutDate)))
                 + "--------------------------------------------------------------------------------------------------");
 
         // Общее число свободных номеров; Общее число постояльцев;
@@ -79,8 +64,8 @@ public class Main {
         // Посмотреть 3-х последних постояльцев номера и даты их пребывания;
         hotel.roomManager.getRoomByNumber(1).getLastNGuests(3).forEach(
                 guest -> System.out.println(guest.getFullName()
-                        + "; Дата въезда: " + guest.getCheckInTime()
-                        + "; Дата выезда: " + guest.getCheckOutTime())
+                        + "; Дата въезда: " + guest.getCheckInDate()
+                        + "; Дата выезда: " + guest.getCheckOutDate())
         );
         System.out.println(
                 "--------------------------------------------------------------------------------------------------");
@@ -124,6 +109,6 @@ public class Main {
 
         // Посмотреть детали отдельного номера.
         System.out.println(bookedRoom5.getDetails());
-
+        */
     }
 }
