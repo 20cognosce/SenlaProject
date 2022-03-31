@@ -3,13 +3,12 @@ package task5.controller;
 import java.util.Scanner;
 
 public class MenuController {
-    Builder builder;
+    Builder builder = new Builder();
     Navigator navigator;
 
     void run() {
-        Builder builder = new Builder();
         builder.buildMenu();
-        Navigator navigator = new Navigator(builder.getRootMenu());
+        navigator = new Navigator(builder.getRootMenu());
 
         Scanner scanner = new Scanner(System.in);
         navigator.printMenu();
@@ -27,5 +26,5 @@ public class MenuController {
             }
             navigator.printMenu();
         }
-    };
+    }
 }

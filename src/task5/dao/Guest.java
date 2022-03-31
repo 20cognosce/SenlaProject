@@ -1,10 +1,12 @@
 package task5.dao;
 
+import task5.controller.Main;
 import task5.service.Hotel;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Guest {
     private final String fullName;
@@ -13,7 +15,7 @@ public class Guest {
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private List<Maintenance> orderedMaintenances;
-    private int payment;
+    private int payment = 0;
 
     public Guest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, Room room) {
         this.fullName = fullName;
@@ -21,7 +23,10 @@ public class Guest {
         this.checkInDate = checkInTime;
         this.checkOutDate = checkOutTime;
         this.room = room;
-    };
+        if (!Objects.isNull(room)) {
+            payment = room.getPrice();
+        }
+    }
 
     public String getFullName() {
         return fullName;
@@ -31,11 +36,11 @@ public class Guest {
         return passport;
     }
 
-    public void orderMaintenance(Hotel hotel, String maintenanceName) {
+    public void orderMaintenance(Maintenance maintenance) {
         if (orderedMaintenances == null) {
             orderedMaintenances = new ArrayList<>();
         }
-        Maintenance currentMaintenance = hotel.getMaintenanceManager().getMaintenanceByName(maintenanceName).clone();
+        Maintenance currentMaintenance = maintenance.clone();
         currentMaintenance.execute(this);
         orderedMaintenances.add(currentMaintenance);
         setPayment(getPayment() + currentMaintenance.getPrice());
@@ -79,5 +84,29 @@ public class Guest {
 
     public void setRoom(Room room) {
         this.room = room;
+        if (!Objects.isNull(room) && room.getGuestsCurrentList().isEmpty()) {
+            setPayment(getPayment() + room.getPrice());
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder out = new StringBuilder();
+        Guest guest = this;
+            out.append("Гость: ").append(guest.getFullName())
+                    .append("; Паспорт: ").append(guest.getPassport())
+                    .append("; Номер: ");
+            try {
+                out.append(guest.getRoom().getRoomNumber());
+            } catch (NullPointerException e) {
+                out.append("без номера");
+            }
+            out.append("; Дата заезда: ").append(guest.getCheckInDate())
+                    .append("; Дата освобождения: ").append(guest.getCheckOutDate())
+                    .append("; Заказанные услуги: ").append(guest.getOrderedMaintenancesAsString())
+                    .append("; К оплате: ")
+                    .append(guest.getPayment())
+                    .append("\n");
+        return out.toString();
     }
 }

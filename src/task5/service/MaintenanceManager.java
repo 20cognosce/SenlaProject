@@ -46,8 +46,9 @@ public class MaintenanceManager {
     public String getMaintenancesPriceList() {
         StringBuilder out = new StringBuilder();
         maintenances.forEach(maintenance -> out
-                .append(maintenance.getName()).append("; Категория: ").append(maintenance.getCategory())
-                .append("; Цена: ").append(maintenance.getPrice()).append("\n"));
+                .append("Услуга: ").append(maintenance.getName())
+                .append("; Цена: ").append(maintenance.getPrice())
+                .append("; Категория: ").append(maintenance.getCategory()).append("\n"));
         return out.toString();
     }
 

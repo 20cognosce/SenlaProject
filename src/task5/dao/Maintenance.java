@@ -1,6 +1,8 @@
 package task5.dao;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class Maintenance implements Cloneable {
     private final String name;
@@ -20,8 +22,10 @@ public class Maintenance implements Cloneable {
 
     public void execute(Guest guest) {
         LocalDateTime time = LocalDateTime.now();
-        System.out.println("Услуга: " + getName() + " для " + guest.getFullName()
-                + " исполнена. Цена услуги: " + getPrice() + "; Дата: " + time);
+        System.out.println("Услуга " + getName()
+                + " для " + guest.getFullName()
+                + " исполнена. Цена услуги: " + getPrice()
+                + "; Дата: " + time.truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME));
         orderTime = time;
     }
 
@@ -47,7 +51,7 @@ public class Maintenance implements Cloneable {
 
     @Override
     public String toString() {
-        return getName() + "; Категория: " + getCategory() + "; Цена: " + getPrice();
+        return "Услуга: " + getName() + "; Цена: " + getPrice() + "; Категория: " + getCategory();
     }
 
     @Override

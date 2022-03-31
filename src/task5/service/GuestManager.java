@@ -21,29 +21,6 @@ public class GuestManager {
         return new Guest(fullName, passport, checkInTime, checkOutTime, room);
     }
 
-    public void loadGuestsDatabase() {
-        Guest guest1 = new Guest("Ivanov Ivan Ivanovich", "1111 222222",
-                LocalDate.of(2022, 3, 2),
-                LocalDate.of(2022, 3, 5), null);
-        Guest guest2 = new Guest("Ivanova Maria Ivanovna", "3333 444444",
-                LocalDate.of(2022, 3, 2),
-                LocalDate.of(2022, 3, 5), null);
-        Guest guest3 = new Guest("Petrov Petr Petrovich", "5555 666666",
-                LocalDate.of(2022, 3, 1),
-                LocalDate.of(2022, 3, 14), null);
-        Guest guest4 = new Guest("Abramov Nikita Alexandrovich", "7777 888888",
-                LocalDate.of(2022, 3, 1),
-                LocalDate.of(2022, 4, 1), null);
-        Guest guest5 = new Guest("Yakovleva Margarita Vladimirovna", "9999 000000",
-                LocalDate.of(2022, 3, 1),
-                LocalDate.of(2022, 3, 14), null);
-        guests.add(guest1);
-        guests.add(guest2);
-        guests.add(guest3);
-        guests.add(guest4);
-        guests.add(guest5);
-    }
-
     public List<Guest> getGuests() {
         return guests;
     }
@@ -78,14 +55,19 @@ public class GuestManager {
     public String getGuestsAsString(List<Guest> subList) {
         StringBuilder out = new StringBuilder();
         subList.forEach((guest) -> {
-            out.append("Гость: ").append(guest.getFullName()).append("; Номер: ");
+            out.append("Гость: ").append(guest.getFullName())
+                    .append("; Паспорт: ").append(guest.getPassport())
+                    .append("; Номер: ");
             try {
                 out.append(guest.getRoom().getRoomNumber());
             } catch (NullPointerException e) {
                 out.append("без номера");
             }
             out.append("; Дата заезда: ").append(guest.getCheckInDate())
-                    .append("; Дата освобождения: ").append(guest.getCheckOutDate()).append("\n");
+                    .append("; Дата выезда: ").append(guest.getCheckOutDate())
+                    .append("; К оплате: ")
+                    .append(guest.getPayment())
+                    .append("\n");
         });
         return out.toString();
     }

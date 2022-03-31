@@ -9,27 +9,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static task5.dao.RoomStatus.*;
 import static task5.dao.RoomStatus.FREE;
 
 public class RoomManager {
     RoomManager(){}
 
     private final List<Room> rooms = new ArrayList<>();
-
-    public void loadRoomsDatabase() {
-        Room room1 = new Room (1,2,3, FREE, 2000);
-        Room room2 = new Room (2,5,4, FREE, 5000);
-        Room room3 = new Room (3,3,4, UNDER_REPAIR, 3000);
-        Room room4 = new Room (4,6,4, CLEANING, 7500);
-        Room room5 = new Room (5,4,5, FREE, 8000);
-        room5.setDetails("Огромное джакузи с видом на Москва Сити");
-        rooms.add(room1);
-        rooms.add(room2);
-        rooms.add(room3);
-        rooms.add(room4);
-        rooms.add(room5);
-    }
 
     public void addNewRoom(Room room) {
         rooms.add(room);
@@ -57,8 +42,7 @@ public class RoomManager {
         return out.toString();
     }
 
-    public List<Room> sortRooms(
-            List<Room> roomsListToSort, Comparator<Room> comparator) {
+    public List<Room> sortRooms(List<Room> roomsListToSort, Comparator<Room> comparator) {
         List<Room> sorted = new ArrayList<>();
         roomsListToSort.stream().sorted(comparator)
                 .forEach(sorted::add);
