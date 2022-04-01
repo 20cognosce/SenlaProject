@@ -4,10 +4,7 @@ import task5.dao.Guest;
 import task5.dao.Room;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import static task5.dao.RoomStatus.FREE;
 
@@ -64,6 +61,10 @@ public class RoomManager {
     public List<Room> getFreeRooms(LocalDate asAtSpecificDate) {
         List<Room> freeRooms = new ArrayList<>();
         List<Room> rooms = getRooms();
+
+        if (Objects.equals(asAtSpecificDate, LocalDate.now())) {
+            return getFreeRooms();
+        }
 
         rooms.forEach(room -> {
             boolean isFree = true;

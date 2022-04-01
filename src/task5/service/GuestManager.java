@@ -36,8 +36,8 @@ public class GuestManager {
         if (!guests.contains(guest)) {
             guests.add(guest);
         }
-        guest.setRoom(room);
         room.addGuest(guest);
+        guest.setRoom(room);
     }
 
     public void removeGuest(Guest guest) {

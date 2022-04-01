@@ -183,33 +183,52 @@ public class Hotel {
             return INSTANCE;
         }
     }
-    public static class PrintGuestMaintenancesAction implements IAction {
-        private static final PrintGuestMaintenancesAction INSTANCE = new PrintGuestMaintenancesAction();
-        private PrintGuestMaintenancesAction(){}
+    public static class PrintGuestsAction implements IAction {
+        private static final PrintGuestsAction INSTANCE = new PrintGuestsAction(null);
+        protected PrintGuestsAction(Comparator<Guest> comparator){
+            this.comparator = comparator;
+        }
+
+        private final Comparator<Guest> comparator;
 
         @Override
         public void execute() {
-            Guest guest;
-            try {
-                guest = getGuestByInputName();
-            } catch (NoSuchElementException e) {
-                System.out.println(e.getMessage());
-                return;
+            if (Objects.isNull(this.comparator)) {
+                System.out.println(guestManager.getGuestsAsString(guestManager.getGuests()));
+            } else {
+                System.out.println(guestManager.getGuestsAsString(
+                        guestManager.sortGuests(guestManager.getGuests(), comparator)));
             }
-            System.out.println(guest.getOrderedMaintenancesAsString());
         }
 
         public static IAction getInstance() {
             return INSTANCE;
         }
     }
-    public static class PrintGuestsAction implements IAction {
-        private static final PrintGuestsAction INSTANCE = new PrintGuestsAction();
-        private PrintGuestsAction(){}
+    public static class PrintGuestsSortedNot extends PrintGuestsAction {
+        private static final PrintGuestsSortedNot INSTANCE = new PrintGuestsSortedNot();
+        private PrintGuestsSortedNot(){
+            super(null);
+        }
 
-        @Override
-        public void execute() {
-            System.out.println(guestManager.getGuestsAsString(guestManager.getGuests()));
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintGuestsSortedAlphabet extends PrintGuestsAction {
+        private static final PrintGuestsSortedAlphabet INSTANCE = new PrintGuestsSortedAlphabet();
+        private PrintGuestsSortedAlphabet(){
+            super(Comparator.comparing(Guest::getFullName));
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintGuestsSortedByCheckoutDate extends PrintGuestsAction {
+        private static final  PrintGuestsSortedByCheckoutDate INSTANCE = new  PrintGuestsSortedByCheckoutDate();
+        private  PrintGuestsSortedByCheckoutDate(){
+            super(Comparator.comparing(Guest::getCheckOutDate));
         }
 
         public static IAction getInstance() {
@@ -268,8 +287,9 @@ public class Hotel {
                 ++i;
             }
             while (roomStatusIndex < 1 || roomStatusIndex > roomStatuses.size()) {
-                roomStatusIndex = scanner.nextInt() - 1;
+                roomStatusIndex = scanner.nextInt();
             }
+            roomStatusIndex--;
 
             System.out.println("Введите суточную стоимость номера: ");
             price = scanner.nextInt();
@@ -326,10 +346,12 @@ public class Hotel {
             int i = 0;
             while (i < roomStatuses.size()) {
                 System.out.println(i + 1 + ". " + roomStatuses.get(i));
+                ++i;
             }
             while (roomStatusIndex < 1 || roomStatusIndex > roomStatuses.size()) {
-                roomStatusIndex = scanner.nextInt() - 1;
+                roomStatusIndex = scanner.nextInt();
             }
+            roomStatusIndex--;
 
             room.setRoomCurrentStatus(roomStatuses.get(roomStatusIndex));
         }
@@ -395,8 +417,13 @@ public class Hotel {
         }
     }
     public static class PrintFreeRoomsAction implements IAction {
-        private static final PrintFreeRoomsAction INSTANCE = new PrintFreeRoomsAction();
-        private PrintFreeRoomsAction(){}
+        private static final PrintFreeRoomsAction INSTANCE = new PrintFreeRoomsAction(null);
+        protected PrintFreeRoomsAction(Comparator<Room> comparator){
+            this.comparator = comparator;
+        }
+
+        Comparator<Room> comparator;
+
         @Override
         public void execute() {
             Scanner scanner = new Scanner(System.in);
@@ -405,7 +432,52 @@ public class Hotel {
             String str = scanner.nextLine();
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             specificDate = LocalDate.parse(str, dtf);
-            System.out.println(roomManager.getRoomsAsString(roomManager.getFreeRooms(specificDate)));
+            if (Objects.isNull(comparator)) {
+                System.out.println(roomManager.getRoomsAsString(roomManager.getFreeRooms(specificDate)));
+            } else {
+                System.out.println(roomManager.getRoomsAsString(
+                        roomManager.sortRooms(roomManager.getFreeRooms(specificDate), comparator)));
+            }
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintFreeRoomsSortedNot extends PrintFreeRoomsAction {
+        private static final PrintFreeRoomsSortedNot INSTANCE = new PrintFreeRoomsSortedNot();
+        private PrintFreeRoomsSortedNot(){
+            super(null);
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintFreeRoomsSortedByPrice extends PrintFreeRoomsAction {
+        private static final PrintFreeRoomsSortedByPrice INSTANCE = new PrintFreeRoomsSortedByPrice();
+        private PrintFreeRoomsSortedByPrice(){
+            super(Comparator.comparingInt(Room::getPrice));
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintFreeRoomsSortedByCapacity extends PrintFreeRoomsAction {
+        private static final PrintFreeRoomsSortedByCapacity INSTANCE = new PrintFreeRoomsSortedByCapacity();
+        private PrintFreeRoomsSortedByCapacity(){
+            super(Comparator.comparingInt(Room::getCapacity));
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintFreeRoomsSortedByStars extends PrintFreeRoomsAction {
+        private static final PrintFreeRoomsSortedByStars INSTANCE = new PrintFreeRoomsSortedByStars();
+        private PrintFreeRoomsSortedByStars(){
+            super(Comparator.comparingInt(Room::getStarsNumber));
         }
 
         public static IAction getInstance() {
@@ -413,12 +485,60 @@ public class Hotel {
         }
     }
     public static class PrintRoomsAction implements IAction {
-        private static final PrintRoomsAction INSTANCE = new PrintRoomsAction();
-        private PrintRoomsAction(){}
+        private static final PrintRoomsAction INSTANCE = new PrintRoomsAction(null);
+        protected PrintRoomsAction(Comparator<Room> comparator){
+            this.comparator = comparator;
+        }
+
+        private final Comparator<Room> comparator;
 
         @Override
         public void execute() {
+            if (Objects.isNull(this.comparator)) {
             System.out.println(roomManager.getRoomsAsString());
+            } else {
+                System.out.println(roomManager.getRoomsAsString(roomManager.sortRooms(roomManager.getRooms(), comparator)));
+            }
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintRoomsSortedNot extends PrintRoomsAction {
+        private static final PrintRoomsSortedNot INSTANCE = new PrintRoomsSortedNot();
+        private PrintRoomsSortedNot(){
+            super(null);
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintRoomsSortedByPrice extends PrintRoomsAction {
+        private static final PrintRoomsSortedByPrice INSTANCE = new PrintRoomsSortedByPrice();
+        private PrintRoomsSortedByPrice(){
+            super(Comparator.comparingInt(Room::getPrice));
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintRoomsSortedByCapacity extends PrintRoomsAction {
+        private static final  PrintRoomsSortedByCapacity INSTANCE = new  PrintRoomsSortedByCapacity();
+        private  PrintRoomsSortedByCapacity(){
+            super(Comparator.comparingInt(Room::getCapacity));
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintRoomsSortedByStars extends PrintRoomsAction {
+        private static final  PrintRoomsSortedByStars INSTANCE = new  PrintRoomsSortedByStars();
+        private  PrintRoomsSortedByStars(){
+            super(Comparator.comparingInt(Room::getStarsNumber));
         }
 
         public static IAction getInstance() {
@@ -437,7 +557,7 @@ public class Hotel {
                 System.out.println(e.getMessage());
                 return;
             }
-            System.out.println(room.toString() + "Текущий список гостей: "
+            System.out.println(room.toString() + "Текущий список гостей:\n"
                     + guestManager.getGuestsAsString(room.getGuestsCurrentList()));
         }
 
@@ -472,8 +592,9 @@ public class Hotel {
                 ++i;
             }
             while (maintenanceCategoryIndex < 1 || maintenanceCategoryIndex > maintenanceCategories.size()) {
-                maintenanceCategoryIndex = scanner.nextInt() - 1;
+                maintenanceCategoryIndex = scanner.nextInt();
             }
+            maintenanceCategoryIndex--;
 
             maintenanceManager.addNewMaintenance(new Maintenance(name, price, maintenanceCategories.get(maintenanceCategoryIndex)));
         }
@@ -506,11 +627,108 @@ public class Hotel {
         }
     }
     public static class PrintMaintenancesAction implements IAction {
-        private static final PrintMaintenancesAction INSTANCE = new PrintMaintenancesAction();
-        private PrintMaintenancesAction(){}
+        private static final PrintMaintenancesOfGuestAction INSTANCE = new PrintMaintenancesOfGuestAction(null);
+        protected PrintMaintenancesAction(Comparator<Maintenance> comparator) {
+            this.comparator = comparator;
+        }
+
+        private final Comparator<Maintenance> comparator;
         @Override
         public void execute() {
-            System.out.println(maintenanceManager.getMaintenancesPriceList());
+            if (Objects.isNull(comparator)) {
+                System.out.println(maintenanceManager.getMaintenancesPriceList());
+            } else {
+                System.out.println(maintenanceManager.getMaintenancesPriceList(comparator));
+            }
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintMaintenancesSortedNot extends PrintMaintenancesAction {
+        private static final PrintMaintenancesSortedNot INSTANCE = new PrintMaintenancesSortedNot();
+        private PrintMaintenancesSortedNot(){
+            super(null);
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintMaintenancesSortedByPrice extends PrintMaintenancesAction {
+        private static final PrintMaintenancesSortedByPrice INSTANCE = new PrintMaintenancesSortedByPrice();
+        private PrintMaintenancesSortedByPrice(){
+            super(Comparator.comparing(Maintenance::getPrice));
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintMaintenancesSortedByCategory extends PrintMaintenancesAction {
+        private static final PrintMaintenancesSortedByCategory INSTANCE = new PrintMaintenancesSortedByCategory();
+        private PrintMaintenancesSortedByCategory(){
+            super(Comparator.comparing(Maintenance::getCategory));
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintMaintenancesOfGuestAction implements IAction {
+        private static final PrintMaintenancesOfGuestAction INSTANCE = new PrintMaintenancesOfGuestAction(null);
+        protected PrintMaintenancesOfGuestAction(Comparator<Maintenance> comparator) {
+            this.comparator = comparator;
+        }
+
+        private final Comparator<Maintenance> comparator;
+
+        @Override
+        public void execute() {
+            Guest guest;
+            try {
+                guest = getGuestByInputName();
+            } catch (NoSuchElementException e) {
+                System.out.println(e.getMessage());
+                return;
+            }
+
+            if (Objects.isNull(comparator)) {
+                System.out.println(guest.getOrderedMaintenancesAsString());
+            } else {
+                System.out.println(maintenanceManager.getMaintenancesOfGuest(guest, comparator));
+            }
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintMaintenancesOfGuestSortedNot extends PrintMaintenancesOfGuestAction {
+        private static final PrintMaintenancesOfGuestSortedNot INSTANCE = new PrintMaintenancesOfGuestSortedNot();
+        private PrintMaintenancesOfGuestSortedNot(){
+            super(null);
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintMaintenancesOfGuestSortedByPrice extends PrintMaintenancesOfGuestAction {
+        private static final PrintMaintenancesOfGuestSortedByPrice INSTANCE = new PrintMaintenancesOfGuestSortedByPrice();
+        private PrintMaintenancesOfGuestSortedByPrice(){
+            super(Comparator.comparing(Maintenance::getPrice));
+        }
+
+        public static IAction getInstance() {
+            return INSTANCE;
+        }
+    }
+    public static class PrintMaintenancesOfGuestSortedByTime extends PrintMaintenancesOfGuestAction {
+        private static final PrintMaintenancesOfGuestSortedByTime INSTANCE = new PrintMaintenancesOfGuestSortedByTime();
+        private PrintMaintenancesOfGuestSortedByTime(){
+            super(Comparator.comparing(Maintenance::getOrderTime));
         }
 
         public static IAction getInstance() {

@@ -21,7 +21,8 @@ public class Navigator {
             System.out.println(ref.i + ". "  + menuItem.getTitle());
             ref.i++;
         });
-    };
+    }
+
     void navigate(Integer index) throws IndexOutOfBoundsException {
         if (index == -1) {
             Menu previousMenu = currentMenu.getMenuItems().get(0).getPreviousMenu();
@@ -52,7 +53,7 @@ public class Navigator {
         } else {
             currentMenu = currentMenu.getMenuItems().get(index - 1).getNextMenu();
         }
-    };
+    }
 }
 
 
