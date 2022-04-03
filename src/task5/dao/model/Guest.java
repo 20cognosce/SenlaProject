@@ -1,7 +1,4 @@
-package task5.dao;
-
-import task5.controller.Main;
-import task5.service.Hotel;
+package task5.dao.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,15 +6,20 @@ import java.util.List;
 import java.util.Objects;
 
 public class Guest {
+    private final int ID;
     private final String fullName;
     private final String passport;
     private Room room;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
-    private List<Maintenance> orderedMaintenances;
+    private final List<Maintenance> orderedMaintenances;
     private int payment = 0;
 
-    public Guest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, Room room) {
+    public Guest(int id,
+                 String fullName, String passport,
+                 LocalDate checkInTime, LocalDate checkOutTime,
+                 Room room) {
+        this.ID = id;
         this.fullName = fullName;
         this.passport = passport;
         this.checkInDate = checkInTime;
@@ -26,6 +28,7 @@ public class Guest {
         if (!Objects.isNull(room)) {
             payment = room.getPrice();
         }
+        this.orderedMaintenances = new ArrayList<>();
     }
 
     public String getFullName() {
@@ -34,16 +37,6 @@ public class Guest {
 
     public String getPassport() {
         return passport;
-    }
-
-    public void orderMaintenance(Maintenance maintenance) {
-        if (orderedMaintenances == null) {
-            orderedMaintenances = new ArrayList<>();
-        }
-        Maintenance currentMaintenance = maintenance.clone();
-        currentMaintenance.execute(this);
-        orderedMaintenances.add(currentMaintenance);
-        setPayment(getPayment() + currentMaintenance.getPrice());
     }
 
     public LocalDate getCheckInDate() {
@@ -63,11 +56,17 @@ public class Guest {
     }
 
     public List<Maintenance> getOrderedMaintenances() {
-        return orderedMaintenances;
+        return new ArrayList<>(orderedMaintenances);
+    }
+
+    public void addMaintenance(Maintenance maintenance) {
+        orderedMaintenances.add(maintenance);
     }
 
     public String getOrderedMaintenancesAsString() {
-        return "";
+        StringBuilder out = new StringBuilder();
+        getOrderedMaintenances().forEach(maintenance -> out.append(maintenance.toString()));
+        return out.toString();
     }
 
     public int getPayment() {
@@ -84,6 +83,11 @@ public class Guest {
 
     public void setRoom(Room room) {
         this.room = room;
+        updatePayment();
+    }
+
+    public void updatePayment() {
+        Room room = getRoom();
         if (!Objects.isNull(room) && room.getGuestsCurrentList().isEmpty()) {
             setPayment(getPayment() + room.getPrice());
         }
@@ -92,21 +96,24 @@ public class Guest {
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
-        Guest guest = this;
-            out.append("Гость: ").append(guest.getFullName())
-                    .append("; Паспорт: ").append(guest.getPassport())
-                    .append("; Номер: ");
+            out.append("id: ").append(getId())
+                    .append("Гость: ").append(getFullName())
+                    .append("; Паспорт: ").append(getPassport())
+                    .append("; Комната: ");
             try {
-                out.append(guest.getRoom().getRoomNumber());
+                out.append(getRoom().getRoomNumber());
             } catch (NullPointerException e) {
-                out.append("без номера");
+                out.append("без комнаты");
             }
-            out.append("; Дата заезда: ").append(guest.getCheckInDate())
-                    .append("; Дата освобождения: ").append(guest.getCheckOutDate())
-                    .append("; Заказанные услуги: ").append(guest.getOrderedMaintenancesAsString())
-                    .append("; К оплате: ")
-                    .append(guest.getPayment())
+            out.append("; Дата заезда: ").append(getCheckInDate())
+                    .append("; Дата освобождения: ").append(getCheckOutDate())
+                    .append("; Заказанные услуги: ").append(getOrderedMaintenancesAsString())
+                    .append("; К оплате: ").append(getPayment())
                     .append("\n");
         return out.toString();
+    }
+
+    public int getId() {
+        return ID;
     }
 }

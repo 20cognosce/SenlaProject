@@ -40,7 +40,7 @@ public class Navigator {
         if (Objects.isNull(currentMenu.getMenuItems().get(index - 1).getNextMenu())) {
             try {
                 currentMenu.getMenuItems().get(index - 1).doAction();
-            } catch (RuntimeException e) {
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
             System.out.println("Press Enter key to continue...");

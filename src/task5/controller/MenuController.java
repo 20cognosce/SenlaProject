@@ -1,12 +1,20 @@
 package task5.controller;
 
+import task5.service.GuestService;
+import task5.service.MaintenanceService;
+import task5.service.RoomService;
+
 import java.util.Scanner;
 
 public class MenuController {
-    Builder builder = new Builder();
+    Builder builder;
     Navigator navigator;
 
-    void run() {
+    public MenuController (GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
+        builder = new Builder(guestService, roomService, maintenanceService);
+    }
+
+    public void run() {
         builder.buildMenu();
         navigator = new Navigator(builder.getRootMenu());
 
@@ -19,8 +27,8 @@ public class MenuController {
 
             try {
                 navigator.navigate(index);
-            } catch (RuntimeException e) {
-                System.out.println(e.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
                 navigator.printMenu();
                 continue;
             }
