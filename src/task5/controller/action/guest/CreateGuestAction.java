@@ -46,6 +46,6 @@ public class CreateGuestAction extends AbstractAction implements IAction {
             return;
         }
 
-        guestService.createGuest(fullName, passport, checkInTime, checkOutTime, null);
+        guestService.createGuest(fullName, passport, checkInTime, checkOutTime, 0);
     }
 }

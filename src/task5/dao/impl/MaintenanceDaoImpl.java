@@ -6,8 +6,6 @@ import task5.dao.model.IdSupplier;
 import task5.dao.model.Maintenance;
 import task5.dao.model.MaintenanceCategory;
 
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -44,36 +42,28 @@ public class MaintenanceDaoImpl implements MaintenanceDao {
     @Override
     public String getAllAsString() {
         StringBuilder out = new StringBuilder();
-        repository.forEach(maintenance -> out.append(maintenance.toString()).append("\n"));
+        repository.forEach(maintenance -> out.append(maintenance.toString()));
         return out.toString();
     }
 
     @Override
-    public String getAllAsString(List<Maintenance> subList) {
+    public String getAsString(List<Maintenance> subList) {
         StringBuilder out = new StringBuilder();
-        subList.forEach(maintenance -> out.append(maintenance.toString()).append("\n"));
+        subList.forEach(maintenance -> out.append(maintenance.toString()));
         return out.toString();
     }
 
     @Override
-    public String getMaintenancesOfGuest(Guest guest) {
-        StringBuilder out = new StringBuilder("Гость: " + guest.getFullName() + "\nЗаказы:\n");
-        guest.getOrderedMaintenances().forEach((maintenance) -> out.append(maintenance.toString()).append("; Дата: ")
-                .append(maintenance.getOrderTime()
-                        .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME))
-                .append("\n"));
-        return out.toString();
+    public List<Maintenance> getMaintenancesOfGuest(Guest guest) {
+        return guest.getOrderedMaintenances();
     }
 
     @Override
-    public String getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator) {
-        StringBuilder out = new StringBuilder("Гость: " + guest.getFullName() + "\nЗаказы:\n");
-        guest.getOrderedMaintenances().stream().sorted(comparator).forEach((maintenance) -> out
-                .append(maintenance.toString()).append("; Дата: ")
-                .append(maintenance.getOrderTime()
-                        .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME))
-                .append("\n"));
-        return out.toString();
+    public List<Maintenance> getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator) {
+        List<Maintenance> sorted = new ArrayList<>();
+        guest.getOrderedMaintenances().stream().sorted(comparator)
+                .forEach(sorted::add);
+        return sorted;
     }
 
     @Override

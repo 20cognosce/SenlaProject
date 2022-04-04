@@ -18,11 +18,9 @@ public class DeleteGuestAction extends AbstractAction implements IAction {
 
         try {
             guestId = inputGuestId();
+            guestService.deleteGuest(guestId);
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
-
-        guestService.deleteGuest(guestId);
     }
 }

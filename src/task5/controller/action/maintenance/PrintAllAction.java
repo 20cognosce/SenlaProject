@@ -6,7 +6,6 @@ import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
 
-
 public class PrintAllAction extends AbstractAction implements IAction {
     public PrintAllAction(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         super(guestService, roomService, maintenanceService);

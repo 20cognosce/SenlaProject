@@ -24,7 +24,7 @@ public class PrintNLastGuestsAction extends AbstractAction implements IAction {
             System.out.println("Введите количество последних гостей номера для показа информации: ");
             number = scanner.nextInt();
             System.out.println(guestService.getAllAsString(
-                    roomService.getLastNGuests(roomService.getRoomById(roomId), number)));
+                    roomService.getLastNGuests(roomId, number)));
         } catch (Exception e) {
             e.printStackTrace();
         }

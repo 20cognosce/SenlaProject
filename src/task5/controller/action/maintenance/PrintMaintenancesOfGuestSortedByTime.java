@@ -20,7 +20,7 @@ public class PrintMaintenancesOfGuestSortedByTime extends AbstractAction impleme
         try {
             guestId = inputGuestId();
             System.out.println(maintenanceService.getMaintenancesOfGuest(
-                    guestService.getGuestById(guestId), Comparator.comparing(Maintenance::getOrderTime)));
+                    guestId, Comparator.comparing(Maintenance::getOrderTime)));
         } catch (Exception e) {
             e.printStackTrace();
         }

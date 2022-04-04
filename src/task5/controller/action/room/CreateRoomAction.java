@@ -20,15 +20,15 @@ public class CreateRoomAction extends AbstractAction implements IAction {
     public void execute() {
         Scanner scanner = new Scanner(System.in);
         int capacity;
-        int roomNumber = -1;
+        String roomName = "-1";
         int stars;
         int roomStatusIndex = -1;
         int price;
 
         try {
             System.out.println("Введите номер комнаты (больше 0): ");
-            while (roomNumber <= 0) {
-                roomNumber = scanner.nextInt();
+            while (Integer.parseInt(roomName) < 1) {
+                roomName = scanner.nextLine();
             }
             System.out.println("Введите вместимость номера: ");
             capacity = scanner.nextInt();
@@ -39,16 +39,18 @@ public class CreateRoomAction extends AbstractAction implements IAction {
 
             System.out.println("Выберите текущий статус номера (индекс): ");
             ArrayList<RoomStatus> roomStatuses = new ArrayList<>(Arrays.asList(RoomStatus.values()));
-            int i = 1;
+            int i = 0;
+
             while (i < roomStatuses.size()) {
-                System.out.println(i + ". " + roomStatuses.get(i - 1));
+                System.out.println(i + 1 + ". " + roomStatuses.get(i));
                 ++i;
             }
+
             while (roomStatusIndex < 1 || roomStatusIndex > roomStatuses.size()) {
                 roomStatusIndex = scanner.nextInt();
             }
 
-            roomService.createRoom(roomNumber, capacity, stars, roomStatuses.get(roomStatusIndex - 1), price);
+            roomService.createRoom(roomName, capacity, stars, roomStatuses.get(roomStatusIndex - 1), price);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,7 +1,6 @@
 package task5.service;
 
 import task5.dao.model.Guest;
-import task5.dao.model.Room;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -9,7 +8,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public interface GuestService {
-    void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, Room room);
+    void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, int roomId);
     void addGuestToRoom(int guestId, int roomId);
     List<Guest> getAll();
     Guest getGuestById(int id) throws NoSuchElementException;

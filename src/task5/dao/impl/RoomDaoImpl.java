@@ -16,12 +16,8 @@ public class RoomDaoImpl implements RoomDao {
     private final List<Room> repository = new ArrayList<>();
 
     @Override
-    public Room createRoom(int roomNumber, int guestsMaxNumber, int STARS_NUMBER, RoomStatus roomCurrentStatus, int price) {
-        return new Room(idSupplier.supplyId(), roomNumber, guestsMaxNumber, STARS_NUMBER, roomCurrentStatus, price);
-    }
-    @Override
-    public void addRoom(Room room) {
-        repository.add(room);
+    public void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price) {
+        repository.add(new Room(idSupplier.supplyId(), name, capacity, starsNumber, roomStatus, price));
     }
 
     @Override
@@ -32,12 +28,12 @@ public class RoomDaoImpl implements RoomDao {
     @Override
     public String getAllAsString() {
         StringBuilder out = new StringBuilder();
-        getAll().forEach(room -> out.append(room.toString()).append("\n"));
+        getAll().forEach(room -> out.append(room.toString()));
         return out.toString();
     }
 
     @Override
-    public String getAllAsString(List<Room> subList) {
+    public String getAsString(List<Room> subList) {
         StringBuilder out = new StringBuilder();
         subList.forEach(room -> out.append(room.toString()));
         return out.toString();
@@ -58,24 +54,37 @@ public class RoomDaoImpl implements RoomDao {
     }
 
     @Override
+    public String getGuestsListAsString(int roomId) throws NoSuchElementException {
+        Room temp = getRoomById(roomId);
+        return temp.getGuestsListAsString(temp.getGuestsCurrentList());
+    }
+
+    @Override
     public List<Room> getFree() {
         List<Room> freeRooms = new ArrayList<>();
         getAll().forEach((room) -> {
-            if (room.getRoomCurrentStatus() == FREE) freeRooms.add(room);
+            if (room.getRoomStatus() == FREE) freeRooms.add(room);
         });
         return freeRooms;
     }
 
     @Override
     public List<Room> getFree(LocalDate asAtSpecificDate) {
-        List<Room> freeRooms = new ArrayList<>();
-
         if (Objects.equals(asAtSpecificDate, LocalDate.now())) {
             return getFree();
         }
 
+        List<Room> freeRooms = new ArrayList<>();
         getAll().forEach(room -> {
             boolean isFree = true;
+
+            if (room.getGuestsCurrentList().isEmpty()) {
+                if (room.getRoomStatus() == FREE) {
+                    freeRooms.add(room);
+                }
+                return;
+            }
+
             for (Guest guest : room.getGuestsCurrentList()) {
                 if (!guest.getCheckInDate().isAfter(asAtSpecificDate) &&
                         guest.getCheckOutDate().isAfter(asAtSpecificDate)) isFree = false;

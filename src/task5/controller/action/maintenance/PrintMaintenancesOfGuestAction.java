@@ -16,7 +16,7 @@ public class PrintMaintenancesOfGuestAction extends AbstractAction implements IA
         int guestId;
         try {
             guestId = inputGuestId();
-            System.out.println(maintenanceService.getMaintenancesOfGuest(guestService.getGuestById(guestId)));
+            System.out.println(maintenanceService.getMaintenancesOfGuest(guestId));
         } catch (Exception e) {
             e.printStackTrace();
         }

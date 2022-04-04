@@ -17,8 +17,7 @@ public class PrintMaintenancesOfGuestSortedNot extends AbstractAction implements
         int guestId;
         try {
             guestId = inputGuestId();
-            System.out.println(maintenanceService.getMaintenancesOfGuest(
-                    guestService.getGuestById(guestId)));
+            System.out.println(maintenanceService.getMaintenancesOfGuest(guestId));
         } catch (Exception e) {
             e.printStackTrace();
         }

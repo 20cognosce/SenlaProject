@@ -16,7 +16,7 @@ public class PrintAllSortedByPrice extends AbstractAction implements IAction {
 
     @Override
     public void execute() {
-        System.out.println(maintenanceService.getAllAsString(maintenanceService.getSorted(
+        System.out.println(maintenanceService.getAsString(maintenanceService.getSorted(
                 maintenanceService.getAll(), Comparator.comparing(Maintenance::getPrice))));
 
     }

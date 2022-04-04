@@ -15,8 +15,8 @@ public interface MaintenanceDao {
     Maintenance getMaintenanceById(int id) throws NoSuchElementException;
     List<Maintenance> getAll();
     String getAllAsString();
-    String getAllAsString(List<Maintenance> subList);
-    String getMaintenancesOfGuest(Guest guest);
-    String getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator);
+    String getAsString(List<Maintenance> subList);
+    List<Maintenance> getMaintenancesOfGuest(Guest guest);
+    List<Maintenance> getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator);
     List<Maintenance> getSorted(List<Maintenance> listToSort, Comparator<Maintenance> comparator);
 }

@@ -38,7 +38,7 @@ public class ChangeRoomStatusAction extends AbstractAction implements IAction {
                 roomStatusIndex = scanner.nextInt();
             }
 
-            roomService.getRoomById(roomId).setRoomCurrentStatus(roomStatuses.get(roomStatusIndex - 1));
+            roomService.getRoomById(roomId).setRoomStatus(roomStatuses.get(roomStatusIndex - 1));
         } catch (Exception e) {
             e.printStackTrace();
         }

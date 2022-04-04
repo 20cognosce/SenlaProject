@@ -41,8 +41,9 @@ public class Navigator {
             try {
                 currentMenu.getMenuItems().get(index - 1).doAction();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
+
             System.out.println("Press Enter key to continue...");
             try {
                 var temp = System.in.read();

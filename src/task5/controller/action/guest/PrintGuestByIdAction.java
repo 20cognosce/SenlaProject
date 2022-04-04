@@ -17,7 +17,8 @@ public class PrintGuestByIdAction extends AbstractAction implements IAction {
 
         try {
             guestId = inputGuestId();
-            System.out.println(guestService.getGuestById(guestId).toString());
+            System.out.println(guestService.getGuestById(guestId).toString()
+                    + guestService.getGuestById(guestId).getOrderedMaintenancesAsString());
         } catch (Exception e) {
             e.printStackTrace();
         }

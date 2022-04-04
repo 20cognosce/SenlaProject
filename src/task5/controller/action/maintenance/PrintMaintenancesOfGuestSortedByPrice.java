@@ -21,7 +21,7 @@ public class PrintMaintenancesOfGuestSortedByPrice extends AbstractAction implem
         try {
             guestId = inputGuestId();
             System.out.println(maintenanceService.getMaintenancesOfGuest(
-                    guestService.getGuestById(guestId), Comparator.comparing(Maintenance::getPrice)));
+                    guestId, Comparator.comparing(Maintenance::getPrice)));
         } catch (Exception e) {
             e.printStackTrace();
         }

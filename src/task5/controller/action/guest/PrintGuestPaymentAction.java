@@ -17,9 +17,9 @@ public class PrintGuestPaymentAction extends AbstractAction implements IAction {
 
         try {
             guestId = inputGuestId();
-            System.out.println(guestService.getGuestById(guestId).getFullName()
+            System.out.println(guestService.getGuestById(guestId).getName()
                     + "; К оплате: "
-                    + guestService.getGuestById(guestId).getPayment());
+                    + guestService.getGuestById(guestId).getPrice());
         } catch (Exception e) {
             e.printStackTrace();
         }

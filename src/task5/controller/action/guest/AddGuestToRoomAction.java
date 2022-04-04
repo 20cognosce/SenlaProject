@@ -19,11 +19,9 @@ public class AddGuestToRoomAction extends AbstractAction implements IAction {
         try {
             guestId = inputGuestId();
             roomId = inputRoomId();
+            guestService.addGuestToRoom(guestId, roomId);
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
-
-        guestService.addGuestToRoom(guestId, roomId);
     }
 }

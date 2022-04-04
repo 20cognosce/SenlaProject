@@ -10,18 +10,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public interface RoomService {
-    Room createRoom(int roomNumber, int guestsMaxNumber, int STARS_NUMBER, RoomStatus roomCurrentStatus, int price);
-    void addRoom(Room room);
+    void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price);
 
     List<Room> getAll();
     String getAllAsString();
-    String getAllAsString(List<Room> subList);
+    String getAsString(List<Room> subList);
     Room getRoomById(int id) throws NoSuchElementException;
     List<Room> getFree();
     List<Room> getFree(LocalDate asAtSpecificDate);
 
     List<Room> getSorted(List<Room> roomsListToSort, Comparator<Room> comparator);
-    List<Guest> getLastNGuests(Room room, int N);
+    List<Guest> getLastNGuests(int roomId, int N);
+    String getGuestsListAsString(int roomId) throws NoSuchElementException;
 }
 
 

@@ -33,8 +33,17 @@ public class GuestServiceImpl extends AbstractServiceImpl implements GuestServic
     }
 
     @Override
-    public void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, Room room) {
-        guestDao.createGuest(fullName, passport, checkInTime, checkOutTime, room);
+    public void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, int roomId) {
+        if (roomId == 0) {
+            guestDao.createGuest(fullName, passport, checkInTime, checkOutTime, null);
+            return;
+        }
+
+        try {
+            guestDao.createGuest(fullName, passport, checkInTime, checkOutTime, roomDao.getRoomById(roomId));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -69,13 +78,12 @@ public class GuestServiceImpl extends AbstractServiceImpl implements GuestServic
 
     @Override
     public String getAllAsString(List<Guest> subList) {
-       return guestDao.getAllAsString(subList);
+       return guestDao.getAsString(subList);
     }
 
     @Override
     public void removeGuestFromRoom(int guestId) throws NoSuchElementException {
-        //TODO: убрать и из комнаты
-        guestDao.getGuestById(guestId).setRoom(null);
+        guestDao.removeGuestFromRoom(guestDao.getGuestById(guestId));
     }
 
     @Override

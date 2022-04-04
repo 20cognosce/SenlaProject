@@ -22,7 +22,6 @@ public class GuestDaoImpl implements GuestDao {
         repository.add(newGuest);
     }
 
-
     @Override
     public void addGuestToRoom(Guest guest, Room room) {
         if (!repository.contains(guest)) {
@@ -47,35 +46,29 @@ public class GuestDaoImpl implements GuestDao {
     @Override
     public Guest getGuestByName(String fullName) throws NoSuchElementException {
         return repository.stream()
-                .filter(guest -> (fullName.equals(guest.getFullName())))
+                .filter(guest -> (fullName.equals(guest.getName())))
                 .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
     @Override
-    public String getAllAsString(List<Guest> subList) {
+    public String getAsString(List<Guest> subList) {
         StringBuilder out = new StringBuilder();
-        subList.forEach((guest) -> {
-            out.append("Гость: ").append(guest.getFullName())
-                    .append("; Паспорт: ").append(guest.getPassport())
-                    .append("; Номер: ");
-            try {
-                out.append(guest.getRoom().getRoomNumber());
-            } catch (NullPointerException e) {
-                out.append("без номера");
-            }
-            out.append("; Дата заезда: ").append(guest.getCheckInDate())
-                    .append("; Дата выезда: ").append(guest.getCheckOutDate())
-                    .append("; К оплате: ")
-                    .append(guest.getPayment())
-                    .append("\n");
-        });
+        subList.forEach(guest -> out.append(guest.toString()));
         return out.toString();
     }
 
     @Override
-    public void deleteGuest(Guest guest) {
+    public void removeGuestFromRoom(Guest guest) throws NullPointerException, NoSuchElementException {
         guest.getRoom().removeGuest(guest);
-        repository.remove(guest);
+        guest.setRoom(null);
+    }
+
+    @Override
+    public void deleteGuest(Guest guest) throws NullPointerException, NoSuchElementException {
+        removeGuestFromRoom(guest);
+        if(!repository.remove(guest)) {
+            throw new NoSuchElementException();
+        };
     }
 
     @Override

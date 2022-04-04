@@ -10,15 +10,15 @@ import java.util.NoSuchElementException;
 
 
 public interface RoomDao {
-    Room createRoom(int roomNumber, int guestsMaxNumber, int STARS_NUMBER, RoomStatus roomCurrentStatus, int price);
-    void addRoom(Room room);
+    void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price);
 
     List<Room> getAll();
     String getAllAsString();
-    String getAllAsString(List<Room> subList);
+    String getAsString(List<Room> subList);
     Room getRoomById(int id) throws NoSuchElementException;
     List<Room> getFree();
     List<Room> getFree(LocalDate asAtSpecificDate);
 
     List<Room> getSorted(List<Room> roomsListToSort, Comparator<Room> comparator);
+    String getGuestsListAsString(int roomId);
 }

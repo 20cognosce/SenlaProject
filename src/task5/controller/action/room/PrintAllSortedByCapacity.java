@@ -17,7 +17,7 @@ public class PrintAllSortedByCapacity extends AbstractAction implements IAction 
 
     @Override
     public void execute() {
-        System.out.println(roomService.getAllAsString(roomService.getSorted(
+        System.out.println(roomService.getAsString(roomService.getSorted(
                 roomService.getAll(), Comparator.comparingInt(Room::getCapacity)
         )));
     }

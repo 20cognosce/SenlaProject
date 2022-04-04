@@ -17,11 +17,9 @@ public class RemoveGuestFromRoomAction extends PrintAllAction {
 
         try {
             guestId = inputGuestId();
+            guestService.removeGuestFromRoom(guestId);
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
-
-        guestService.removeGuestFromRoom(guestId);
     }
 }

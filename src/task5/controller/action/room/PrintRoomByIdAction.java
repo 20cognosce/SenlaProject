@@ -17,9 +17,9 @@ public class PrintRoomByIdAction extends AbstractAction implements IAction {
         int roomId;
         try {
             roomId = inputRoomId();
+
             Room temp = roomService.getRoomById(roomId);
-            System.out.println(temp.toString() + "Текущий список гостей:\n"
-                    + temp.getGuestsListAsString(temp.getGuestsCurrentList()));
+            System.out.println(roomService.getRoomById(roomId).toString() + roomService.getGuestsListAsString(roomId));
         } catch (Exception e) {
             e.printStackTrace();
         }

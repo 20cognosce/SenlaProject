@@ -67,7 +67,7 @@ public class Builder {
 
         roomMenuItemsList.add(new MenuItem("Добавить номер", new CreateRoomAction(guestService, roomService, maintenanceService), null, rootMenu));
         roomMenuItemsList.add(new MenuItem("Изменить цену", new ChangeRoomPriceAction(guestService, roomService, maintenanceService), null, rootMenu));
-        roomMenuItemsList.add(new MenuItem("Изменить статус", new ChangeRoomPriceAction(guestService, roomService, maintenanceService), null, rootMenu));
+        roomMenuItemsList.add(new MenuItem("Изменить статус", new ChangeRoomStatusAction(guestService, roomService, maintenanceService), null, rootMenu));
         roomMenuItemsList.add(new MenuItem("Посмотреть детали", new PrintRoomDetailsAction(guestService, roomService, maintenanceService), null, rootMenu));
         roomMenuItemsList.add(new MenuItem("Посмотреть N последних гостей", new PrintNLastGuestsAction(guestService, roomService, maintenanceService), null, rootMenu));
         roomMenuItemsList.add(new MenuItem("Общее число свободных номеров", new PrintFreeRoomsAmountAction(guestService, roomService, maintenanceService), null, rootMenu));
@@ -76,8 +76,8 @@ public class Builder {
         roomFreeSortingMenuItemList.add(new MenuItem("Сортировать по цене", new PrintFreeRoomsSortedByPrice(guestService, roomService, maintenanceService), null, roomMenu));
         roomFreeSortingMenuItemList.add(new MenuItem("Сортировать по вместимости", new PrintFreeRoomsSortedByCapacity(guestService, roomService, maintenanceService), null, roomMenu));
         roomFreeSortingMenuItemList.add(new MenuItem("Сортировать по количеству звёзд", new PrintFreeRoomsSortedByStars(guestService, roomService, maintenanceService), null, roomMenu));
-        roomMenuItemsList.add(new MenuItem("Список номеров", new PrintAllAction(guestService, roomService, maintenanceService), roomSortingMenu, rootMenu));
-        roomSortingMenuItemList.add(new MenuItem("Без сортировки", new task5.controller.action.maintenance.PrintAllSortedNot(guestService, roomService, maintenanceService), null, roomMenu));
+        roomMenuItemsList.add(new MenuItem("Список номеров", new task5.controller.action.room.PrintAllAction(guestService, roomService, maintenanceService), roomSortingMenu, rootMenu));
+        roomSortingMenuItemList.add(new MenuItem("Без сортировки", new task5.controller.action.room.PrintAllSortedNot(guestService, roomService, maintenanceService), null, roomMenu));
         roomSortingMenuItemList.add(new MenuItem("Сортировать по цене", new task5.controller.action.room.PrintAllSortedByPrice(guestService, roomService, maintenanceService), null, roomMenu));
         roomSortingMenuItemList.add(new MenuItem("Сортировать по вместимости", new PrintAllSortedByCapacity(guestService, roomService, maintenanceService), null, roomMenu));
         roomSortingMenuItemList.add(new MenuItem("Сортировать по количеству звёзд", new PrintAllSortedByStars(guestService, roomService, maintenanceService), null, roomMenu));
@@ -85,11 +85,11 @@ public class Builder {
 
         maintenanceMenuItemsList.add(new MenuItem("Добавить услугу", new CreateMaintenanceAction(guestService, roomService, maintenanceService), null, rootMenu));
         maintenanceMenuItemsList.add(new MenuItem("Изменить цену", new ChangeMaintenancePriceAction(guestService, roomService, maintenanceService), null, rootMenu));
-        maintenanceMenuItemsList.add(new MenuItem("Список услуг", new task5.controller.action.maintenance.PrintAllSortedNot(guestService, roomService, maintenanceService), maintenanceSortingMenu, rootMenu));
+        maintenanceMenuItemsList.add(new MenuItem("Список услуг", new task5.controller.action.maintenance.PrintAllAction(guestService, roomService, maintenanceService), maintenanceSortingMenu, rootMenu));
         maintenanceSortingMenuItemsList.add(new MenuItem("Без сортировки", new task5.controller.action.maintenance.PrintAllSortedNot(guestService, roomService, maintenanceService), null, maintenanceMenu));
         maintenanceSortingMenuItemsList.add(new MenuItem("Сортировать по цене", new PrintAllSortedByPrice(guestService, roomService, maintenanceService), null,maintenanceMenu));
         maintenanceSortingMenuItemsList.add(new MenuItem("Сортировать по категориям", new PrintAllSortedByCategory(guestService, roomService, maintenanceService), null, maintenanceMenu));
-        maintenanceMenuItemsList.add(new MenuItem("Заказать обслуживание", new OrderMaintenanceAction(guestService, roomService, maintenanceService), null, roomMenu));
+        maintenanceMenuItemsList.add(new MenuItem("Заказать обслуживание", new OrderMaintenanceAction(guestService, roomService, maintenanceService), null, maintenanceMenu));
         maintenanceMenuItemsList.add(new MenuItem("Услуги гостя", new PrintMaintenancesOfGuestAction(guestService, roomService, maintenanceService), maintenancesOfGuestSortingMenu, rootMenu));
         maintenanceOfGuestSortingMenuItemList.add(new MenuItem("Без сортировки", new PrintMaintenancesOfGuestSortedNot(guestService, roomService, maintenanceService), null, maintenanceMenu));
         maintenanceOfGuestSortingMenuItemList.add(new MenuItem("Сортировать по цене", new PrintMaintenancesOfGuestSortedByPrice(guestService, roomService, maintenanceService), null,maintenanceMenu));

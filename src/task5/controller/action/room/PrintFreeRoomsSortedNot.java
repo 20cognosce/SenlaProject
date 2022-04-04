@@ -25,7 +25,7 @@ public class PrintFreeRoomsSortedNot extends AbstractAction implements IAction {
             String str = scanner.nextLine();
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             specificDate = LocalDate.parse(str, dtf);
-            System.out.println(roomService.getAllAsString(roomService.getFree(specificDate)));
+            System.out.println(roomService.getAsString(roomService.getFree(specificDate)));
         } catch (Exception e) {
             e.printStackTrace();
         }

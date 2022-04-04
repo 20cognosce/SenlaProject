@@ -1,35 +1,25 @@
 package task5.dao.model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
-public class Maintenance {
-    private final int ID;
-    private final String name;
-    private int price;
-    private final MaintenanceCategory category;
+public class Maintenance extends AbstractEntity {
+    private MaintenanceCategory category;
     private LocalDateTime orderTime;
 
-    public Maintenance(int ID, String maintenanceName, int price, MaintenanceCategory category) {
-        this.ID = ID;
-        this.name = maintenanceName;
-        this.price = price;
+    public Maintenance(int id, String name, int price, MaintenanceCategory category) {
+        super(id, name,  price);
         this.category = category;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
     }
 
     public MaintenanceCategory getCategory() {
         return category;
+    }
+
+    public void setCategory(MaintenanceCategory category) {
+        this.category = category;
     }
 
     public LocalDateTime getOrderTime() throws NullPointerException {
@@ -42,14 +32,18 @@ public class Maintenance {
 
     @Override
     public String toString() {
+        String orderTime;
+        try {
+            orderTime = getOrderTime().truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME);
+        } catch (Exception e) {
+            orderTime = "Не заказывалось";
+        }
+
         return "id: " + getId() +
                 "; Услуга: " + getName() +
                 "; Цена: " + getPrice() +
                 "; Категория: " + getCategory() +
+                "; Время заказа: " + orderTime +
                 "\n";
-    }
-
-    public int getId() {
-        return ID;
     }
 }

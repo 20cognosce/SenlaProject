@@ -34,10 +34,10 @@ public class CreateMaintenanceAction extends AbstractAction implements IAction {
             System.out.println("Выберите текущий статус номера (индекс): ");
 
             maintenanceCategories = new ArrayList<>(Arrays.asList(MaintenanceCategory.values()));
-            int i = 1;
+            int i = 0;
 
             while (i < maintenanceCategories.size()) {
-                System.out.println(i + ". " + maintenanceCategories.get(i - 1));
+                System.out.println(i + 1 + ". " + maintenanceCategories.get(i));
                 ++i;
             }
 

@@ -14,10 +14,10 @@ public interface MaintenanceService {
     Maintenance getMaintenanceById(int id) throws NoSuchElementException;
     List<Maintenance> getAll();
     String getAllAsString();
-    String getAllAsString(List<Maintenance> subList);
+    String getAsString(List<Maintenance> subList);
     List<Maintenance> getSorted(List<Maintenance> subList, Comparator<Maintenance> comparator);
-    String getMaintenancesOfGuest(Guest guest);
-    String getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator);
+    List<Maintenance> getMaintenancesOfGuest(int guestId);
+    List<Maintenance> getMaintenancesOfGuest(int guestId, Comparator<Maintenance> comparator);
 
     void executeMaintenance( int guestId, int maintenanceId);
 }

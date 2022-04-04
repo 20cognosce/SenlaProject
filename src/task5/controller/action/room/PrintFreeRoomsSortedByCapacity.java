@@ -27,7 +27,7 @@ public class PrintFreeRoomsSortedByCapacity extends AbstractAction implements IA
             String str = scanner.nextLine();
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             specificDate = LocalDate.parse(str, dtf);
-            System.out.println(roomService.getAllAsString(roomService.getSorted(
+            System.out.println(roomService.getAsString(roomService.getSorted(
                     roomService.getFree(specificDate), Comparator.comparingInt(Room::getCapacity))));
         } catch (Exception e) {
             e.printStackTrace();

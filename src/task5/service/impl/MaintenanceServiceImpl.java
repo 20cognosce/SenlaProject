@@ -47,8 +47,8 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl implements Maint
     }
 
     @Override
-    public String getAllAsString(List<Maintenance> subList) {
-        return maintenanceDao.getAllAsString(subList);
+    public String getAsString(List<Maintenance> subList) {
+        return maintenanceDao.getAsString(subList);
     }
 
 
@@ -58,13 +58,13 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl implements Maint
     }
 
     @Override
-    public String getMaintenancesOfGuest(Guest guest) {
-        return maintenanceDao.getMaintenancesOfGuest(guest);
+    public List<Maintenance> getMaintenancesOfGuest(int guestId) throws NoSuchElementException {
+        return maintenanceDao.getMaintenancesOfGuest(guestDao.getGuestById(guestId));
     }
 
     @Override
-    public String getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator) {
-        return null;
+    public List<Maintenance> getMaintenancesOfGuest(int guestId, Comparator<Maintenance> comparator) throws NoSuchElementException {
+        return maintenanceDao.getMaintenancesOfGuest(guestDao.getGuestById(guestId), comparator);
     }
 
     @Override
@@ -72,6 +72,7 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl implements Maint
         Maintenance maintenance;
         Guest guest;
         try {
+            //TODO: must get a copy of the maintenance
             maintenance = maintenanceDao.getMaintenanceById(maintenanceId);
             guest = guestDao.getGuestById(guestId);
         } catch (Exception e) {
@@ -80,11 +81,11 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl implements Maint
         }
         LocalDateTime time = LocalDateTime.now();
         System.out.println("Услуга " + maintenance.getName()
-                + " для " + guest.getFullName()
+                + " для " + guest.getName()
                 + " исполнена. Цена услуги: " + maintenance.getPrice()
                 + "; Дата: " + time.truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME));
         maintenance.setOrderTime(time);
-        guest.getOrderedMaintenances().add(maintenance);
-        guest.setPayment(guest.getPayment() + maintenance.getPrice());
+        guest.addMaintenance(maintenance);
+        guest.setPrice(guest.getPrice() + maintenance.getPrice());
     }
 }

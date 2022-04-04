@@ -15,8 +15,9 @@ public interface GuestDao {
     List<Guest> getAll();
     Guest getGuestById(int id) throws NoSuchElementException;
     Guest getGuestByName(String fullName) throws NoSuchElementException;
-    String getAllAsString(List<Guest> subList);
+    String getAsString(List<Guest> subList);
 
+    void removeGuestFromRoom(Guest guest);
     void deleteGuest(Guest guest);
 
     List<Guest> getSorted(List<Guest> listToSort, Comparator<Guest> comparator);
