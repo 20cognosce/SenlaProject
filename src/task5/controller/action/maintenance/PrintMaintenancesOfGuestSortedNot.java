@@ -14,12 +14,7 @@ public class PrintMaintenancesOfGuestSortedNot extends AbstractAction implements
 
     @Override
     public void execute() {
-        int guestId;
-        try {
-            guestId = inputGuestId();
-            System.out.println(maintenanceService.getMaintenancesOfGuest(guestId));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        int guestId = inputGuestId();
+        System.out.println(maintenanceService.getMaintenancesOfGuest(guestId));
     }
 }

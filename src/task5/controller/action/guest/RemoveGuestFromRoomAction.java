@@ -4,8 +4,6 @@ import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
 
-
-
 public class RemoveGuestFromRoomAction extends PrintAllAction {
     public RemoveGuestFromRoomAction(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         super(guestService, roomService, maintenanceService);
@@ -13,13 +11,7 @@ public class RemoveGuestFromRoomAction extends PrintAllAction {
 
     @Override
     public void execute() {
-        int guestId;
-
-        try {
-            guestId = inputGuestId();
+        int guestId = inputGuestId();
             guestService.removeGuestFromRoom(guestId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

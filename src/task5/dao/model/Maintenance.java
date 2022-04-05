@@ -9,7 +9,7 @@ public class Maintenance extends AbstractEntity {
     private MaintenanceCategory category;
     private LocalDateTime orderTime;
 
-    public Maintenance(int id, String name, int price, MaintenanceCategory category) {
+    public Maintenance(long id, String name, int price, MaintenanceCategory category) {
         super(id, name,  price);
         this.category = category;
     }

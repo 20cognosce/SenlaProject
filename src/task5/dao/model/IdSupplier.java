@@ -1,13 +1,13 @@
 package task5.dao.model;
 
 public class IdSupplier {
-    private int id;
+    private long id;
 
     public IdSupplier() {
         this.id = -1;
     }
 
-    public int supplyId() {
+    public long supplyId() {
         return ++id;
     }
 }

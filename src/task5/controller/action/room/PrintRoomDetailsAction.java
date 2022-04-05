@@ -7,7 +7,6 @@ import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
 
-
 public class PrintRoomDetailsAction extends AbstractAction implements IAction {
     public PrintRoomDetailsAction(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         super(guestService, roomService, maintenanceService);
@@ -15,12 +14,7 @@ public class PrintRoomDetailsAction extends AbstractAction implements IAction {
 
     @Override
     public void execute() {
-        int roomId;
-        try {
-            roomId = inputRoomId();
-            System.out.println(roomService.getRoomById(roomId).getDetails());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        int roomId = inputRoomId();
+        System.out.println(roomService.getById(roomId).getDetails());
     }
 }

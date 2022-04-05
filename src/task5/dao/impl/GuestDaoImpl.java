@@ -4,57 +4,38 @@ import task5.dao.GuestDao;
 import task5.dao.model.Guest;
 import task5.dao.model.IdSupplier;
 import task5.dao.model.Room;
+import task5.dao.model.RoomStatus;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 import java.time.LocalDate;
 import java.util.*;
 
-public class GuestDaoImpl implements GuestDao {
+public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
     private final IdSupplier idSupplier = new IdSupplier();
-    private final List<Guest> repository = new ArrayList<>();
 
-    @Override
-    public void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, Room room) {
-        Guest newGuest = new Guest(idSupplier.supplyId(), fullName, passport, checkInTime, checkOutTime, room);
-        if (repository.contains(newGuest)) {
-            throw new KeyAlreadyExistsException("Guest already exists");
-        }
-        repository.add(newGuest);
+    public GuestDaoImpl() {
+        super();
     }
 
     @Override
-    public void addGuestToRoom(Guest guest, Room room) {
-        if (!repository.contains(guest)) {
-            repository.add(guest);
+    public void createGuest(String fullName, String passport,
+                            LocalDate checkInTime, LocalDate checkOutTime,
+                            Room room) throws KeyAlreadyExistsException {
+        Guest newGuest = new Guest(idSupplier.supplyId(), fullName, passport, checkInTime, checkOutTime, room);
+        addToRepo(newGuest);
+    }
+
+    @Override
+    public void addGuestToRoom(Guest guest, Room room) throws RuntimeException {
+        if (room.getRoomStatus() == RoomStatus.UNDER_REPAIR || room.getRoomStatus() == RoomStatus.CLEANING) {
+            throw new RuntimeException("Inappropriate room status");
+        }
+        if (room.getCapacity() <= room.getGuestsCurrentList().size()) {
+            throw new RuntimeException("Room's capacity limit is exceeded");
         }
         room.addGuest(guest);
         guest.setRoom(room);
-    }
-
-    @Override
-    public List<Guest> getAll() {
-        return new ArrayList<>(repository);
-    }
-
-    @Override
-    public Guest getGuestById(int id) throws NoSuchElementException {
-        return repository.stream()
-                .filter(guest -> (guest.getId() == id))
-                .findFirst().orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public Guest getGuestByName(String fullName) throws NoSuchElementException {
-        return repository.stream()
-                .filter(guest -> (fullName.equals(guest.getName())))
-                .findFirst().orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public String getAsString(List<Guest> subList) {
-        StringBuilder out = new StringBuilder();
-        subList.forEach(guest -> out.append(guest.toString()));
-        return out.toString();
+        updatePrice(guest);
     }
 
     @Override
@@ -64,18 +45,17 @@ public class GuestDaoImpl implements GuestDao {
     }
 
     @Override
-    public void deleteGuest(Guest guest) throws NullPointerException, NoSuchElementException {
-        removeGuestFromRoom(guest);
-        if(!repository.remove(guest)) {
-            throw new NoSuchElementException();
-        };
+    public void updatePrice(Guest guest) {
+        Room room = guest.getRoom();
+        //pay only the first settled after the room was empty
+        if (!Objects.isNull(room) && room.getGuestsCurrentList().size() == 1) {
+            guest.setPrice(guest.getPrice() + room.getPrice());
+        }
     }
 
     @Override
-    public List<Guest> getSorted(List<Guest> listToSort, Comparator<Guest> comparator) {
-        List<Guest> sorted = new ArrayList<>();
-        listToSort.stream().sorted(comparator)
-                .forEach(sorted::add);
-        return sorted;
+    public void deleteGuest(Guest guest) throws NullPointerException, NoSuchElementException {
+        removeGuestFromRoom(guest);
+        deleteFromRepo(guest);
     }
 }

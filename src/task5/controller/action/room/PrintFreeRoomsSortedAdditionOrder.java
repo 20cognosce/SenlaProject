@@ -10,9 +10,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
-
-public class PrintFreeRoomsAction extends AbstractAction implements IAction {
-    public PrintFreeRoomsAction(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
+public class PrintFreeRoomsSortedAdditionOrder extends AbstractAction implements IAction {
+    public PrintFreeRoomsSortedAdditionOrder(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         super(guestService, roomService, maintenanceService);
     }
 
@@ -24,5 +23,6 @@ public class PrintFreeRoomsAction extends AbstractAction implements IAction {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         LocalDate specificDate = LocalDate.parse(str, dtf);
         System.out.println(roomService.getFree(specificDate));
+
     }
 }

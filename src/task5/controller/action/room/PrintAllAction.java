@@ -13,6 +13,6 @@ public class PrintAllAction extends AbstractAction implements IAction {
 
     @Override
     public void execute() {
-        System.out.println(roomService.getAllAsString());
+        System.out.println(roomService.getAll());
     }
 }

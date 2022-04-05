@@ -2,7 +2,6 @@ package task5.controller.action.room;
 
 import task5.controller.IAction;
 import task5.controller.action.AbstractAction;
-import task5.dao.model.Room;
 import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
@@ -14,14 +13,7 @@ public class PrintRoomByIdAction extends AbstractAction implements IAction {
 
     @Override
     public void execute() {
-        int roomId;
-        try {
-            roomId = inputRoomId();
-
-            Room temp = roomService.getRoomById(roomId);
-            System.out.println(roomService.getRoomById(roomId).toString() + roomService.getGuestsListAsString(roomId));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        int roomId = inputRoomId();
+        System.out.println(roomService.getById(roomId).toString() + roomService.getGuestsList(roomId));
     }
 }

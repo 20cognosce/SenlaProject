@@ -1,22 +1,16 @@
 package task5.service;
 
+import task5.controller.action.SortEnum;
 import task5.dao.model.Guest;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
-public interface GuestService {
+public interface GuestService extends AbstractService<Guest> {
     void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, int roomId);
     void addGuestToRoom(int guestId, int roomId);
-    List<Guest> getAll();
-    Guest getGuestById(int id) throws NoSuchElementException;
-    Guest getGuestByName(String fullName) throws NoSuchElementException;
-    String getAllAsString(List<Guest> subList);
-    List<Guest> getSorted(List<Guest> listToSort, Comparator<Guest> comparator);
-
     int getAmount(List<Guest> subList);
     void deleteGuest(int guestId);
     void removeGuestFromRoom(int guestId);
+    List<Guest> getSorted(List<Guest> listToSort, SortEnum sortBy);
 }

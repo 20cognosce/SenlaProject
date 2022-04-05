@@ -1,5 +1,6 @@
 package task5.service.impl;
 
+import task5.controller.action.SortEnum;
 import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
@@ -16,9 +17,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 
-public class MaintenanceServiceImpl extends AbstractServiceImpl implements MaintenanceService {
+public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, MaintenanceDao> implements MaintenanceService {
     public MaintenanceServiceImpl (GuestDao guestDao, RoomDao roomDao, MaintenanceDao maintenanceDao) {
-        super(guestDao, roomDao, maintenanceDao);
+        super(maintenanceDao, guestDao, roomDao, maintenanceDao);
     }
 
     @Override
@@ -27,44 +28,13 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl implements Maint
     }
 
     @Override
-    public Maintenance getMaintenanceByName(String name) throws NoSuchElementException {
-        return null;
-    }
-
-    @Override
-    public Maintenance getMaintenanceById(int id) throws NoSuchElementException {
-        return maintenanceDao.getMaintenanceById(id);
-    }
-
-    @Override
-    public List<Maintenance> getAll() {
-        return maintenanceDao.getAll();
-    }
-
-    @Override
-    public String getAllAsString() {
-        return maintenanceDao.getAllAsString();
-    }
-
-    @Override
-    public String getAsString(List<Maintenance> subList) {
-        return maintenanceDao.getAsString(subList);
-    }
-
-
-    @Override
-    public List<Maintenance> getSorted(List<Maintenance> subList, Comparator<Maintenance> comparator) {
-        return maintenanceDao.getSorted(subList, comparator);
-    }
-
-    @Override
     public List<Maintenance> getMaintenancesOfGuest(int guestId) throws NoSuchElementException {
-        return maintenanceDao.getMaintenancesOfGuest(guestDao.getGuestById(guestId));
+        return maintenanceDao.getMaintenancesOfGuest(guestDao.getById(guestId));
     }
 
     @Override
     public List<Maintenance> getMaintenancesOfGuest(int guestId, Comparator<Maintenance> comparator) throws NoSuchElementException {
-        return maintenanceDao.getMaintenancesOfGuest(guestDao.getGuestById(guestId), comparator);
+        return maintenanceDao.getMaintenancesOfGuest(guestDao.getById(guestId), comparator);
     }
 
     @Override
@@ -73,8 +43,8 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl implements Maint
         Guest guest;
         try {
             //TODO: must get a copy of the maintenance
-            maintenance = maintenanceDao.getMaintenanceById(maintenanceId);
-            guest = guestDao.getGuestById(guestId);
+            maintenance = maintenanceDao.getById(maintenanceId);
+            guest = guestDao.getById(guestId);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -87,5 +57,21 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl implements Maint
         maintenance.setOrderTime(time);
         guest.addMaintenance(maintenance);
         guest.setPrice(guest.getPrice() + maintenance.getPrice());
+    }
+
+    @Override
+    public void setPrice(int maintenanceId, int price) {
+        maintenanceDao.getById(maintenanceId).setPrice(price);
+    }
+
+    @Override
+    public List<Maintenance> getSorted(List<Maintenance> listToSort, SortEnum sortBy) throws NoSuchElementException {
+        switch (sortBy) {
+            case BY_ADDITION: return currentDao.getSorted(listToSort, Comparator.comparingLong(Maintenance::getId));
+            case BY_PRICE: return currentDao.getSorted(listToSort, Comparator.comparingInt(Maintenance::getPrice));
+            case BY_CATEGORY: return currentDao.getSorted(listToSort, Comparator.comparing(Maintenance::getCategory));
+            case BY_TIME: return currentDao.getSorted(listToSort, Comparator.comparing(Maintenance::getOrderTime));
+        }
+        throw new NoSuchElementException();
     }
 }

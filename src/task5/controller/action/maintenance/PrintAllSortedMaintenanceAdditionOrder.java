@@ -6,13 +6,13 @@ import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
 
-public class PrintAllSortedNot extends AbstractAction implements IAction {
-    public PrintAllSortedNot(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
+public class PrintAllSortedMaintenanceAdditionOrder extends AbstractAction implements IAction {
+    public PrintAllSortedMaintenanceAdditionOrder(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         super(guestService, roomService, maintenanceService);
     }
 
     @Override
     public void execute() {
-        System.out.println(maintenanceService.getAllAsString());
+        System.out.println(maintenanceService.getAll());
     }
 }

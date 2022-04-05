@@ -6,7 +6,6 @@ import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
 
-import javax.security.sasl.SaslClient;
 import java.util.Scanner;
 
 
@@ -17,19 +16,10 @@ public class ChangeRoomPriceAction extends AbstractAction implements IAction {
 
     @Override
     public void execute() {
-        int roomId;
-        int price;
-        try {
-            roomId = inputRoomId();
-
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Введите новую стоимость номера: ");
-            price = scanner.nextInt();
-
-            roomService.getRoomById(roomId).setPrice(price);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        Scanner scanner = new Scanner(System.in);
+        int roomId = inputRoomId();
+        System.out.println("Введите новую стоимость номера: ");
+        int price = scanner.nextInt();
+        roomService.getById(roomId).setPrice(price);
     }
 }

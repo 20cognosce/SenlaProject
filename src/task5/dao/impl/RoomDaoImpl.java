@@ -11,52 +11,16 @@ import java.util.*;
 
 import static task5.dao.model.RoomStatus.FREE;
 
-public class RoomDaoImpl implements RoomDao {
+public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     private final IdSupplier idSupplier = new IdSupplier();
-    private final List<Room> repository = new ArrayList<>();
+
+    public RoomDaoImpl() {
+        super();
+    }
 
     @Override
     public void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price) {
-        repository.add(new Room(idSupplier.supplyId(), name, capacity, starsNumber, roomStatus, price));
-    }
-
-    @Override
-    public List<Room> getAll() {
-        return new ArrayList<>(repository);
-    }
-
-    @Override
-    public String getAllAsString() {
-        StringBuilder out = new StringBuilder();
-        getAll().forEach(room -> out.append(room.toString()));
-        return out.toString();
-    }
-
-    @Override
-    public String getAsString(List<Room> subList) {
-        StringBuilder out = new StringBuilder();
-        subList.forEach(room -> out.append(room.toString()));
-        return out.toString();
-    }
-    @Override
-    public Room getRoomById(int id) throws NoSuchElementException {
-        return getAll().stream()
-                .filter(room -> (room.getId() == id))
-                .findFirst().orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public List<Room> getSorted(List<Room> roomsListToSort, Comparator<Room> comparator) {
-        List<Room> sorted = new ArrayList<>();
-        roomsListToSort.stream().sorted(comparator)
-                .forEach(sorted::add);
-        return sorted;
-    }
-
-    @Override
-    public String getGuestsListAsString(int roomId) throws NoSuchElementException {
-        Room temp = getRoomById(roomId);
-        return temp.getGuestsListAsString(temp.getGuestsCurrentList());
+        addToRepo(new Room(idSupplier.supplyId(), name, capacity, starsNumber, roomStatus, price));
     }
 
     @Override

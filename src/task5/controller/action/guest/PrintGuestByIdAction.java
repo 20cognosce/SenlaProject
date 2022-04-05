@@ -13,15 +13,8 @@ public class PrintGuestByIdAction extends AbstractAction implements IAction {
 
     @Override
     public void execute() {
-        int guestId;
-
-        try {
-            guestId = inputGuestId();
-            System.out.println(guestService.getGuestById(guestId).toString()
-                    + guestService.getGuestById(guestId).getOrderedMaintenancesAsString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        int guestId = inputGuestId();
+        System.out.println(guestService.getById(guestId).toString()
+                + guestService.getById(guestId).getOrderedMaintenances());
     }
-
 }

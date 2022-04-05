@@ -15,8 +15,8 @@ public class Room extends AbstractEntity {
     private RoomStatus roomStatus;
     private String details;
 
-    public Room(int ID, String name, int guestsMaxNumber, int starsNumber, RoomStatus roomStatus, int price) {
-        super(ID, name, price);
+    public Room(long id, String name, int guestsMaxNumber, int starsNumber, RoomStatus roomStatus, int price) {
+        super(id, name, price);
         this.capacity = guestsMaxNumber;
         this.starsNumber = starsNumber;
         this.roomStatus = roomStatus;
@@ -26,12 +26,6 @@ public class Room extends AbstractEntity {
     }
 
     public void addGuest(Guest guest) throws RuntimeException {
-        if (getRoomStatus() == RoomStatus.UNDER_REPAIR || getRoomStatus() == RoomStatus.CLEANING) {
-            throw new RuntimeException("Inappropriate room status");
-        }
-        if (getCapacity() <= getGuestsCurrentList().size()) {
-            throw new RuntimeException("Room's capacity limit is exceeded");
-        }
         guestsCurrentList.add(guest);
         guestsAllTimeList.add(guest);
         setRoomStatus(BUSY);
@@ -85,12 +79,6 @@ public class Room extends AbstractEntity {
 
     public void setRoomStatus(RoomStatus roomStatus) {
         this.roomStatus = roomStatus;
-    }
-
-    public String getGuestsListAsString(List<Guest> guestList) {
-        StringBuilder out = new StringBuilder("Текущий список гостей в номере " + this.getName() + ":\n");
-        guestList.forEach(guest -> out.append(guest.toString()).append("\n"));
-        return out.toString();
     }
 
     @Override

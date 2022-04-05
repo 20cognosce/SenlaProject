@@ -14,13 +14,7 @@ public class DeleteGuestAction extends AbstractAction implements IAction {
 
     @Override
     public void execute() {
-        int guestId;
-
-        try {
-            guestId = inputGuestId();
+        int guestId = inputGuestId();
             guestService.deleteGuest(guestId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

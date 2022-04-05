@@ -13,15 +13,8 @@ public class AddGuestToRoomAction extends AbstractAction implements IAction {
 
     @Override
     public void execute() {
-        int guestId;
-        int roomId;
-
-        try {
-            guestId = inputGuestId();
-            roomId = inputRoomId();
-            guestService.addGuestToRoom(guestId, roomId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        int guestId = inputGuestId();
+        int roomId = inputRoomId();
+        guestService.addGuestToRoom(guestId, roomId);
     }
 }

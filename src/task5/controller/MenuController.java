@@ -12,27 +12,36 @@ public class MenuController {
 
     public MenuController (GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         builder = new Builder(guestService, roomService, maintenanceService);
+        builder.buildMenu();
+        navigator = new Navigator(builder.getRootMenu());
     }
 
     public void run() {
-        builder.buildMenu();
-        navigator = new Navigator(builder.getRootMenu());
-
         Scanner scanner = new Scanner(System.in);
-        navigator.printMenu();
-        int index;
-        while (true) {
-            index = scanner.nextInt();
-            if (index == 0) return;
+        int index = -1;
 
+        while (index != 0) {
+            navigator.printMenu();
+            /*because nextInt() doesn't read newline provided by hitting enter
+            and nextLine() read it, so I would have to use two nextLine() after*/
             try {
+                index = Integer.parseInt(scanner.nextLine());
                 navigator.navigate(index);
+                continue;
+            } catch (CantNavigateFurtherException e) {
+                try {
+                    navigator.doAction();
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            } catch (IndexOutOfBoundsException e) {
+                continue;
             } catch (Exception e) {
                 e.printStackTrace();
-                navigator.printMenu();
-                continue;
             }
-            navigator.printMenu();
+
+            System.out.println("Press Enter key to continue...");
+            scanner.nextLine();
         }
     }
 }

@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
-
 public class PrintFreeRoomsAmountAction extends AbstractAction implements IAction {
     public PrintFreeRoomsAmountAction(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         super(guestService, roomService, maintenanceService);
@@ -19,15 +18,10 @@ public class PrintFreeRoomsAmountAction extends AbstractAction implements IActio
     @Override
     public void execute() {
         Scanner scanner = new Scanner(System.in);
-        LocalDate specificDate;
-        try {
-            System.out.println("Введите на какую дату свободные номера вас интересуют [dd.MM.yyyy]: ");
-            String str = scanner.nextLine();
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-            specificDate = LocalDate.parse(str, dtf);
-            System.out.println("Количество свободных комнат на данный момент: " + roomService.getFree(specificDate).size());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.out.println("Введите на какую дату свободные номера вас интересуют [dd.MM.yyyy]: ");
+        String str = scanner.nextLine();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate specificDate = LocalDate.parse(str, dtf);
+        System.out.println("Количество свободных комнат на данный момент: " + roomService.getFree(specificDate).size());
     }
 }

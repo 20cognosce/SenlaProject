@@ -13,7 +13,7 @@ public class Guest extends AbstractEntity {
     private final List<Maintenance> orderedMaintenances = new ArrayList<>();
 
 
-    public Guest(int id, String name, String passport, LocalDate checkInTime, LocalDate checkOutTime, Room room) {
+    public Guest(long id, String name, String passport, LocalDate checkInTime, LocalDate checkOutTime, Room room) {
         super(id, name,  0);
         if (!Objects.isNull(room)) {
             setPrice(room.getPrice());
@@ -22,14 +22,6 @@ public class Guest extends AbstractEntity {
         this.checkInDate = checkInTime;
         this.checkOutDate = checkOutTime;
         this.room = room;
-    }
-
-    public void updatePrice() {
-        Room room = getRoom();
-        //pay only the first settled after the room was empty
-        if (!Objects.isNull(room) && room.getGuestsCurrentList().size() == 1) {
-            setPrice(getPrice() + room.getPrice());
-        }
     }
 
     public String getPassport() {
@@ -66,11 +58,6 @@ public class Guest extends AbstractEntity {
 
     public void setRoom(Room room) {
         this.room = room;
-        updatePrice();
-    }
-
-    public String getOrderedMaintenancesAsString() {
-        return "Заказанные услуги: " + getOrderedMaintenances();
     }
 
     @Override

@@ -13,17 +13,8 @@ public class OrderMaintenanceAction extends AbstractAction implements IAction {
 
     @Override
     public void execute() {
-        int guestId;
-        int maintenanceId;
-
-        try {
-            guestId = inputGuestId();
-            maintenanceId = inputMaintenanceId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-
+        int guestId = inputGuestId();
+        int maintenanceId = inputMaintenanceId();
         maintenanceService.executeMaintenance(guestId, maintenanceId);
     }
 }

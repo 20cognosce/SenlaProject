@@ -1,13 +1,19 @@
 package task5.controller;
 
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class Navigator {
     Menu currentMenu;
+    int indexOfAction = -1;
 
     Navigator(Menu currentMenu) {
         this.currentMenu = currentMenu;
+    }
+
+    void doAction() {
+        currentMenu.getMenuItems().get(indexOfAction).doAction();
     }
 
     void printMenu(){
@@ -33,24 +39,9 @@ public class Navigator {
             return;
         }
 
-        if (Objects.isNull(currentMenu.getMenuItems().get(index - 1))) {
-            throw new IndexOutOfBoundsException("Incorrect menu item's index");
-        }
-
         if (Objects.isNull(currentMenu.getMenuItems().get(index - 1).getNextMenu())) {
-            try {
-                currentMenu.getMenuItems().get(index - 1).doAction();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            System.out.println("Press Enter key to continue...");
-            try {
-                var temp = System.in.read();
-            }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
+            this.indexOfAction = index - 1;
+            throw new CantNavigateFurtherException();
         } else {
             currentMenu = currentMenu.getMenuItems().get(index - 1).getNextMenu();
         }

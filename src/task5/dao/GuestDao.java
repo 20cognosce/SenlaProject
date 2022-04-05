@@ -4,21 +4,11 @@ import task5.dao.model.Guest;
 import task5.dao.model.Room;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
 
-public interface GuestDao {
+public interface GuestDao extends AbstractDao<Guest> {
     void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, Room room);
-    void addGuestToRoom(Guest guest, Room room);
-
-    List<Guest> getAll();
-    Guest getGuestById(int id) throws NoSuchElementException;
-    Guest getGuestByName(String fullName) throws NoSuchElementException;
-    String getAsString(List<Guest> subList);
-
-    void removeGuestFromRoom(Guest guest);
     void deleteGuest(Guest guest);
-
-    List<Guest> getSorted(List<Guest> listToSort, Comparator<Guest> comparator);
+    void addGuestToRoom(Guest guest, Room room);
+    void removeGuestFromRoom(Guest guest);
+    void updatePrice(Guest guest);
 }

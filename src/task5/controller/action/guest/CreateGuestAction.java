@@ -18,33 +18,22 @@ public class CreateGuestAction extends AbstractAction implements IAction {
     @Override
     public void execute() {
         Scanner scanner = new Scanner(System.in);
-        String str;
-        DateTimeFormatter dtf;
-        String fullName;
-        String passport;
-        LocalDate checkInTime;
-        LocalDate checkOutTime;
 
-        try {
-            System.out.println("Введите полное имя гостя: ");
-            fullName = scanner.nextLine();
+        System.out.println("Введите полное имя гостя: ");
+        String fullName = scanner.nextLine();
 
-            System.out.println("Введите паспорт гостя: ");
-            passport = scanner.nextLine();
+        System.out.println("Введите паспорт гостя: ");
+        String passport = scanner.nextLine();
 
-            System.out.println("Введите дату заезда гостя [dd.MM.yyyy]: ");
-            str = scanner.nextLine();
-            dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-            checkInTime = LocalDate.parse(str, dtf);
+        System.out.println("Введите дату заезда гостя [dd.MM.yyyy]: ");
+        String str = scanner.nextLine();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate checkInTime = LocalDate.parse(str, dtf);
 
-            System.out.println("Введите дату выезда гостя [dd.MM.yyyy]: ");
-            str = scanner.nextLine();
-            dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-            checkOutTime = LocalDate.parse(str, dtf);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
+        System.out.println("Введите дату выезда гостя [dd.MM.yyyy]: ");
+        str = scanner.nextLine();
+        dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate checkOutTime = LocalDate.parse(str, dtf);
 
         guestService.createGuest(fullName, passport, checkInTime, checkOutTime, 0);
     }

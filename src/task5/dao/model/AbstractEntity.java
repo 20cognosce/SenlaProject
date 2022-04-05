@@ -1,11 +1,11 @@
 package task5.dao.model;
 
 public class AbstractEntity {
-    private final int ID;
+    private final long ID;
     private String name; //Room number may include letters, so I called it name to inherit it
-    private int price = 0; //Guest's payment now is price for the same reason
+    private int price; //Guest's payment now is price for the same reason
 
-    public AbstractEntity(int id, String name, int price) {
+    public AbstractEntity(long id, String name, int price) {
         this.ID = id;
         this.name = name;
         this.price = price;
@@ -27,7 +27,7 @@ public class AbstractEntity {
         this.price = price;
     }
 
-    public int getId() {
+    public long getId() {
         return ID;
     }
 }

@@ -1,5 +1,6 @@
 package task5.service.impl;
 
+import task5.controller.action.SortEnum;
 import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
@@ -13,23 +14,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 
-public class GuestServiceImpl extends AbstractServiceImpl implements GuestService {
+public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> implements GuestService {
     public GuestServiceImpl (GuestDao guestDao, RoomDao roomDao, MaintenanceDao maintenanceDao) {
-        super(guestDao, roomDao, maintenanceDao);
-    }
-
-    @Override
-    public int getAmount(List<Guest> subList) {
-        return subList.size();
-    }
-
-    @Override
-    public void deleteGuest(int guestId) {
-        try {
-            guestDao.deleteGuest(guestDao.getGuestById(guestId));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        super(guestDao, guestDao, roomDao, maintenanceDao);
     }
 
     @Override
@@ -40,20 +27,19 @@ public class GuestServiceImpl extends AbstractServiceImpl implements GuestServic
         }
 
         try {
-            guestDao.createGuest(fullName, passport, checkInTime, checkOutTime, roomDao.getRoomById(roomId));
+            guestDao.createGuest(fullName, passport, checkInTime, checkOutTime, roomDao.getById(roomId));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public void addGuestToRoom(int guestId, int roomId) {
         Guest guest;
         Room room;
         try {
-            guest = guestDao.getGuestById(guestId);
-            room = roomDao.getRoomById(roomId);
+            guest = guestDao.getById(guestId);
+            room = roomDao.getById(roomId);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -62,32 +48,32 @@ public class GuestServiceImpl extends AbstractServiceImpl implements GuestServic
     }
 
     @Override
-    public List<Guest> getAll() {
-        return guestDao.getAll();
-    }
-
-    @Override
-    public Guest getGuestById(int id) throws NoSuchElementException {
-        return guestDao.getGuestById(id);
-    }
-
-    @Override
-    public Guest getGuestByName(String fullName) throws NoSuchElementException {
-        return guestDao.getGuestByName(fullName);
-    }
-
-    @Override
-    public String getAllAsString(List<Guest> subList) {
-       return guestDao.getAsString(subList);
+    public void deleteGuest(int guestId) {
+        try {
+            guestDao.deleteGuest(guestDao.getById(guestId));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void removeGuestFromRoom(int guestId) throws NoSuchElementException {
-        guestDao.removeGuestFromRoom(guestDao.getGuestById(guestId));
+        guestDao.removeGuestFromRoom(guestDao.getById(guestId));
     }
 
     @Override
-    public List<Guest> getSorted(List<Guest> listToSort, Comparator<Guest> comparator) {
-        return guestDao.getSorted(listToSort, comparator);
+    public int getAmount(List<Guest> subList) {
+        return subList.size();
+    }
+
+    @Override
+    public List<Guest> getSorted(List<Guest> listToSort, SortEnum sortBy) throws NoSuchElementException {
+        switch (sortBy) {
+            case BY_ADDITION: return currentDao.getSorted(listToSort, Comparator.comparingLong(Guest::getId));
+            case BY_PRICE: return currentDao.getSorted(listToSort, Comparator.comparingInt(Guest::getPrice));
+            case BY_ALPHABET: return currentDao.getSorted(listToSort, Comparator.comparing(Guest::getName));
+            case BY_CHECKOUT_DATE: return currentDao.getSorted(listToSort, Comparator.comparing(Guest::getCheckOutDate));
+        }
+        throw new NoSuchElementException();
     }
 }

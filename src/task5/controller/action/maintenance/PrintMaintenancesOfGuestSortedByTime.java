@@ -16,13 +16,9 @@ public class PrintMaintenancesOfGuestSortedByTime extends AbstractAction impleme
 
     @Override
     public void execute() {
-        int guestId;
-        try {
-            guestId = inputGuestId();
-            System.out.println(maintenanceService.getMaintenancesOfGuest(
-                    guestId, Comparator.comparing(Maintenance::getOrderTime)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        int guestId = inputGuestId();
+        System.out.println(maintenanceService.getMaintenancesOfGuest(
+                guestId, Comparator.comparing(Maintenance::getOrderTime)));
+
     }
 }

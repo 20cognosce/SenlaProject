@@ -19,37 +19,26 @@ public class CreateMaintenanceAction extends AbstractAction implements IAction {
 
     @Override
     public void execute() {
-        String name;
         int maintenanceCategoryIndex = -1;
-        int price;
         Scanner scanner = new Scanner(System.in);
-        ArrayList<MaintenanceCategory> maintenanceCategories;
+        MaintenanceCategory[] maintenanceCategories = MaintenanceCategory.values();
 
         //Я догадываюсь, что это очень плохо что я обращаюсь к уровню модел из UI, но стоило пилить сервис для енама?
-        try {
-            System.out.println("Введите наименование услуги: ");
-            name = scanner.nextLine();
-            System.out.println("Введите цену: ");
-            price = scanner.nextInt();
-            System.out.println("Выберите текущий статус номера (индекс): ");
+        System.out.println("Введите наименование услуги: ");
+        String name = scanner.nextLine();
+        System.out.println("Введите цену: ");
+        int price = scanner.nextInt();
 
-            maintenanceCategories = new ArrayList<>(Arrays.asList(MaintenanceCategory.values()));
-            int i = 0;
-
-            while (i < maintenanceCategories.size()) {
-                System.out.println(i + 1 + ". " + maintenanceCategories.get(i));
-                ++i;
-            }
-
-            while (maintenanceCategoryIndex < 1 || maintenanceCategoryIndex > maintenanceCategories.size()) {
-                maintenanceCategoryIndex = scanner.nextInt();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
+        System.out.println("Выберите текущий статус номера (индекс): ");
+        int i = 0;
+        while (i < maintenanceCategories.length) {
+            System.out.println(i + 1 + ". " + maintenanceCategories[i]);
+            ++i;
+        }
+        while (maintenanceCategoryIndex < 1 || maintenanceCategoryIndex > maintenanceCategories.length) {
+            maintenanceCategoryIndex = scanner.nextInt();
         }
 
-        maintenanceService.createMaintenance(name, price, maintenanceCategories.get(maintenanceCategoryIndex - 1));
+        maintenanceService.createMaintenance(name, price, maintenanceCategories[maintenanceCategoryIndex - 1]);
     }
 }

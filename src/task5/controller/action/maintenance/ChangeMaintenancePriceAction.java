@@ -15,16 +15,10 @@ public class ChangeMaintenancePriceAction extends AbstractAction implements IAct
 
     @Override
     public void execute() {
-        int maintenancePrice;
-        int maintenanceId;
         Scanner scanner = new Scanner(System.in);
-        try {
-            maintenanceId = inputMaintenanceId();
-            System.out.println("Введите новую стоимость услуги: ");
-            maintenancePrice = scanner.nextInt();
-            maintenanceService.getMaintenanceById(maintenanceId).setPrice(maintenancePrice);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        int maintenanceId = inputMaintenanceId();
+        System.out.println("Введите новую стоимость услуги: ");
+        int maintenancePrice = scanner.nextInt();
+        maintenanceService.setPrice(maintenanceId, maintenancePrice);
     }
 }

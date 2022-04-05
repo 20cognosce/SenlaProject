@@ -14,12 +14,7 @@ public class PrintMaintenanceByIdAction extends AbstractAction implements IActio
 
     @Override
     public void execute() {
-        int maintenanceId;
-        try {
-            maintenanceId = inputMaintenanceId();
-            System.out.println(maintenanceService.getMaintenanceById(maintenanceId).toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        int maintenanceId = inputMaintenanceId();
+        System.out.println(maintenanceService.getById(maintenanceId).toString());
     }
 }
