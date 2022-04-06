@@ -13,13 +13,22 @@ public interface RoomService extends AbstractService<Room> {
     void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price);
     List<Room> getFree();
     List<Room> getFree(LocalDate asAtSpecificDate);
-    List<Guest> getLastNGuests(int roomId, int N);
-    List<Guest> getGuestsList(int roomId) throws NoSuchElementException;
+    List<Guest> getLastNGuests(long roomId, int N);
+    List<Guest> getGuestsList(long roomId) throws NoSuchElementException;
     List<Room> getSorted(List<Room> listToSort, SortEnum sortBy);
 
-    void setPrice(int roomId, int price);
-    void setStatus(int roomId, RoomStatus roomStatus);
+    void setPrice(long roomId, int price);
+    void setStatus(long roomId, RoomStatus roomStatus);
 
+    List<Room> sortByAddition();
+    List<Room> sortByCapacity();
+    List<Room> sortByPrice();
+    List<Room> sortByStars();
+
+    List<Room> sortFreeRoomsByAddition(LocalDate specificDate);
+    List<Room> sortFreeRoomsByCapacity(LocalDate specificDate);
+    List<Room> sortFreeRoomsByPrice(LocalDate specificDate);
+    List<Room> sortFreeRoomsByStars(LocalDate specificDate);
 }
 
 

@@ -24,21 +24,21 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
 
     @Override
     public void createMaintenance(String maintenanceName, int price, MaintenanceCategory category) {
-        maintenanceDao.createMaintenance(maintenanceName, price, category);
+        maintenanceDao.addToRepo(new Maintenance(maintenanceDao.supplyId(), maintenanceName, price, category));
     }
 
     @Override
-    public List<Maintenance> getMaintenancesOfGuest(int guestId) throws NoSuchElementException {
+    public List<Maintenance> getMaintenancesOfGuest(long guestId) throws NoSuchElementException {
         return maintenanceDao.getMaintenancesOfGuest(guestDao.getById(guestId));
     }
 
     @Override
-    public List<Maintenance> getMaintenancesOfGuest(int guestId, Comparator<Maintenance> comparator) throws NoSuchElementException {
+    public List<Maintenance> getMaintenancesOfGuest(long guestId, Comparator<Maintenance> comparator) throws NoSuchElementException {
         return maintenanceDao.getMaintenancesOfGuest(guestDao.getById(guestId), comparator);
     }
 
     @Override
-    public void executeMaintenance(int guestId, int maintenanceId) {
+    public void executeMaintenance(long guestId, long maintenanceId) {
         Maintenance maintenance;
         Guest guest;
         try {
@@ -58,7 +58,7 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     }
 
     @Override
-    public void setPrice(int maintenanceId, int price) {
+    public void setPrice(long maintenanceId, int price) {
         maintenanceDao.getById(maintenanceId).setPrice(price);
     }
 
@@ -71,5 +71,35 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
             case BY_TIME: return currentDao.getSorted(listToSort, Comparator.comparing(Maintenance::getOrderTime));
         }
         throw new NoSuchElementException();
+    }
+
+    @Override
+    public List<Maintenance> sortByAddition() {
+        return getSorted(getAll(), SortEnum.BY_ADDITION);
+    }
+
+    @Override
+    public List<Maintenance> sortByPrice() {
+        return getSorted(getAll(), SortEnum.BY_PRICE);
+    }
+
+    @Override
+    public List<Maintenance> sortByCategory() {
+        return getSorted(getAll(), SortEnum.BY_CATEGORY);
+    }
+
+    @Override
+    public List<Maintenance> sortMaintenancesOfGuestByAddition(long guestId) {
+        return getSorted(getMaintenancesOfGuest(guestId), SortEnum.BY_ADDITION);
+    }
+
+    @Override
+    public List<Maintenance> sortMaintenancesOfGuestByPrice(long guestId) {
+        return getSorted(getMaintenancesOfGuest(guestId), SortEnum.BY_PRICE);
+    }
+
+    @Override
+    public List<Maintenance> sortMaintenancesOfGuestByTime(long guestId) {
+        return getSorted(getMaintenancesOfGuest(guestId), SortEnum.BY_TIME);
     }
 }

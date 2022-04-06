@@ -1,5 +1,8 @@
 package task5.controller.action;
 
+import task5.dao.model.MaintenanceCategory;
+import task5.dao.model.RoomStatus;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -22,27 +25,60 @@ public class ConsoleReaderUtil {
         return LocalDate.parse(readLine(), dtf);
     }
 
-    public static int inputGuestId() throws InputMismatchException {
+    public static long inputGuestId() throws InputMismatchException {
         Scanner scanner = new Scanner(System.in);
-        int id;
+        long id;
         System.out.println("Введите идентификатор гостя: ");
-        id = scanner.nextInt();
+        id = scanner.nextLong();
         return id;
     }
 
-    public static int inputRoomId() throws InputMismatchException {
+    public static long inputRoomId() throws InputMismatchException {
         Scanner scanner = new Scanner(System.in);
-        int id;
+        long id;
         System.out.println("Введите идентификатор комнаты: ");
-        id = scanner.nextInt();
+        id = scanner.nextLong();
         return id;
     }
 
-    public static int inputMaintenanceId() throws InputMismatchException {
+    public static long inputMaintenanceId() throws InputMismatchException {
         Scanner scanner = new Scanner(System.in);
-        int id;
+        long id;
         System.out.println("Введите идентификатор услуги: ");
-        id = scanner.nextInt();
+        id = scanner.nextLong();
         return id;
+    }
+
+    public static RoomStatus inputRoomStatus() {
+        int roomStatusIndex = -1;
+        RoomStatus[] roomStatuses = RoomStatus.values();
+
+        System.out.println("Выберите текущий статус номера (индекс): ");
+        int i = 0;
+        while (i < roomStatuses.length) {
+            System.out.println(i + 1 + ". " + roomStatuses[i]);
+            ++i;
+        }
+        while (roomStatusIndex < 1 || roomStatusIndex > roomStatuses.length) {
+            roomStatusIndex = ConsoleReaderUtil.readInteger();
+        }
+        return  roomStatuses[roomStatusIndex - 1];
+    }
+
+    public static MaintenanceCategory inputMaintenanceCategory() {
+        Integer maintenanceCategoryIndex = null;
+        MaintenanceCategory[] maintenanceCategories = MaintenanceCategory.values();
+
+        System.out.println("Выберите категорию услуги: ");
+        int i = 0;
+        while (i < maintenanceCategories.length) {
+            System.out.println(i + 1 + ". " + maintenanceCategories[i]);
+            ++i;
+        }
+        do {
+            maintenanceCategoryIndex = ConsoleReaderUtil.readInteger();
+        } while (maintenanceCategoryIndex < 1 || maintenanceCategoryIndex > maintenanceCategories.length);
+
+        return maintenanceCategories[maintenanceCategoryIndex - 1];
     }
 }

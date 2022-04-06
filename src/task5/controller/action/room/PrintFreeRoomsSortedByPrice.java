@@ -1,8 +1,6 @@
 package task5.controller.action.room;
 
-import task5.controller.IAction;
 import task5.controller.action.AbstractAction;
-import task5.controller.action.SortEnum;
 import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
@@ -11,7 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
-public class PrintFreeRoomsSortedByPrice extends AbstractAction implements IAction {
+public class PrintFreeRoomsSortedByPrice extends AbstractAction  {
     public PrintFreeRoomsSortedByPrice(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         super(guestService, roomService, maintenanceService);
     }
@@ -23,6 +21,6 @@ public class PrintFreeRoomsSortedByPrice extends AbstractAction implements IActi
         String str = scanner.nextLine();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         LocalDate specificDate = LocalDate.parse(str, dtf);
-        System.out.println(roomService.getSorted(roomService.getFree(specificDate), SortEnum.BY_PRICE));
+        System.out.println(getRoomService().sortFreeRoomsByPrice(specificDate));
     }
 }

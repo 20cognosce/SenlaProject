@@ -1,6 +1,5 @@
 package task5.controller.action.room;
 
-import task5.controller.IAction;
 import task5.controller.action.AbstractAction;
 import task5.controller.action.ConsoleReaderUtil;
 import task5.dao.model.RoomStatus;
@@ -13,7 +12,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 
-public class ChangeRoomStatusAction extends AbstractAction implements IAction {
+public class ChangeRoomStatusAction extends AbstractAction  {
     public ChangeRoomStatusAction(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         super(guestService, roomService, maintenanceService);
     }
@@ -21,7 +20,7 @@ public class ChangeRoomStatusAction extends AbstractAction implements IAction {
     @Override
     public void execute() {
         int roomStatusIndex = -1;
-        int roomId;
+        long roomId;
         ArrayList<RoomStatus> roomStatuses;
 
         try {
@@ -39,7 +38,7 @@ public class ChangeRoomStatusAction extends AbstractAction implements IAction {
                 roomStatusIndex = scanner.nextInt();
             }
 
-            roomService.setStatus(roomId, roomStatuses.get(roomStatusIndex - 1));
+            getRoomService().setStatus(roomId, roomStatuses.get(roomStatusIndex - 1));
         } catch (Exception e) {
             e.printStackTrace();
         }

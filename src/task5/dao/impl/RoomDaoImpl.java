@@ -4,10 +4,11 @@ import task5.dao.RoomDao;
 import task5.dao.model.Guest;
 import task5.dao.model.IdSupplier;
 import task5.dao.model.Room;
-import task5.dao.model.RoomStatus;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static task5.dao.model.RoomStatus.FREE;
 
@@ -16,11 +17,6 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
 
     public RoomDaoImpl() {
         super();
-    }
-
-    @Override
-    public void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price) {
-        addToRepo(new Room(idSupplier.supplyId(), name, capacity, starsNumber, roomStatus, price));
     }
 
     @Override

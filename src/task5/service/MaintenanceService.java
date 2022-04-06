@@ -9,10 +9,18 @@ import java.util.List;
 
 public interface MaintenanceService extends AbstractService<Maintenance>{
     void createMaintenance(String maintenanceName, int price, MaintenanceCategory category);
-    List<Maintenance> getMaintenancesOfGuest(int guestId);
-    List<Maintenance> getMaintenancesOfGuest(int guestId, Comparator<Maintenance> comparator);
+    List<Maintenance> getMaintenancesOfGuest(long guestId);
+    List<Maintenance> getMaintenancesOfGuest(long guestId, Comparator<Maintenance> comparator);
 
-    void executeMaintenance( int guestId, int maintenanceId);
-    void setPrice(int maintenanceId, int price);
+    void executeMaintenance( long guestId, long maintenanceId);
+    void setPrice(long maintenanceId, int price);
     List<Maintenance> getSorted(List<Maintenance> listToSort, SortEnum sortBy);
+
+    List<Maintenance> sortByAddition();
+    List<Maintenance> sortByPrice();
+    List<Maintenance> sortByCategory();
+
+    List<Maintenance> sortMaintenancesOfGuestByAddition(long guestId);
+    List<Maintenance> sortMaintenancesOfGuestByPrice(long guestId);
+    List<Maintenance> sortMaintenancesOfGuestByTime(long guestId);
 }

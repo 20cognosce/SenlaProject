@@ -25,7 +25,7 @@ public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends Ab
     }
 
     @Override
-    public T getById(int id) throws NoSuchElementException {
+    public T getById(long id) throws NoSuchElementException {
         return currentDao.getById(id);
     }
 

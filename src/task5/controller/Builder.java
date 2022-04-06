@@ -1,10 +1,9 @@
 package task5.controller;
 
-import task5.controller.action.guest.*;
 import task5.controller.action.guest.PrintAllAction;
-import task5.controller.action.guest.PrintAllSortedGuestAdditionOrder;
-import task5.controller.action.maintenance.*;
+import task5.controller.action.guest.*;
 import task5.controller.action.maintenance.PrintAllSortedByPrice;
+import task5.controller.action.maintenance.*;
 import task5.controller.action.room.*;
 import task5.service.GuestService;
 import task5.service.MaintenanceService;
@@ -25,7 +24,11 @@ public class Builder {
         this.maintenanceService = maintenanceService;
     }
 
-    void buildMenu() {
+    public Menu getRootMenu() {
+        return rootMenu;
+    }
+
+    public void buildMenu() {
         List<MenuItem> rootMenuList = new ArrayList<>();
         rootMenu = new Menu ("Главное меню управления отелем", rootMenuList);
 
@@ -91,13 +94,9 @@ public class Builder {
         maintenanceSortingMenuItemsList.add(new MenuItem("Сортировать по категориям", new PrintAllSortedByCategory(guestService, roomService, maintenanceService), null, maintenanceMenu));
         maintenanceMenuItemsList.add(new MenuItem("Заказать обслуживание", new OrderMaintenanceAction(guestService, roomService, maintenanceService), null, maintenanceMenu));
         maintenanceMenuItemsList.add(new MenuItem("Услуги гостя", new PrintMaintenancesOfGuestAction(guestService, roomService, maintenanceService), maintenancesOfGuestSortingMenu, rootMenu));
-        maintenanceOfGuestSortingMenuItemList.add(new MenuItem("Без сортировки", new PrintMaintenancesOfGuestSortedNot(guestService, roomService, maintenanceService), null, maintenanceMenu));
+        maintenanceOfGuestSortingMenuItemList.add(new MenuItem("Без сортировки", new PrintMaintenancesOfGuestSortedAdditionOrder(guestService, roomService, maintenanceService), null, maintenanceMenu));
         maintenanceOfGuestSortingMenuItemList.add(new MenuItem("Сортировать по цене", new PrintMaintenancesOfGuestSortedByPrice(guestService, roomService, maintenanceService), null,maintenanceMenu));
         maintenanceOfGuestSortingMenuItemList.add(new MenuItem("Сортировать по времени", new PrintMaintenancesOfGuestSortedByTime(guestService, roomService, maintenanceService), null, maintenanceMenu));
         maintenanceMenuItemsList.add(new MenuItem("Полная информация об услуге", new PrintMaintenanceByIdAction(guestService, roomService, maintenanceService),null, rootMenu));
-    }
-
-    Menu getRootMenu() {
-        return rootMenu;
     }
 }

@@ -6,15 +6,14 @@ import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
 
-public class OrderMaintenanceAction extends AbstractAction  {
-    public OrderMaintenanceAction (GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
+public class PrintMaintenancesOfGuestSortedAdditionOrder extends AbstractAction  {
+    public PrintMaintenancesOfGuestSortedAdditionOrder(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         super(guestService, roomService, maintenanceService);
     }
 
     @Override
     public void execute() {
         long guestId = ConsoleReaderUtil.inputGuestId();
-        long maintenanceId = ConsoleReaderUtil.inputMaintenanceId();
-        getMaintenanceService().executeMaintenance(guestId, maintenanceId);
+        System.out.println(getMaintenanceService().sortMaintenancesOfGuestByAddition(guestId));
     }
 }

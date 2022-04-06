@@ -6,8 +6,10 @@ import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
 import task5.dao.model.Guest;
 import task5.dao.model.Room;
+import task5.dao.model.RoomStatus;
 import task5.service.GuestService;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -20,21 +22,20 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     }
 
     @Override
-    public void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, int roomId) {
+    public void createGuest(String fullName, String passport,
+                            LocalDate checkInTime, LocalDate checkOutTime,
+                            long roomId) throws KeyAlreadyExistsException, NoSuchElementException {
         if (roomId == 0) {
-            guestDao.createGuest(fullName, passport, checkInTime, checkOutTime, null);
-            return;
-        }
-
-        try {
-            guestDao.createGuest(fullName, passport, checkInTime, checkOutTime, roomDao.getById(roomId));
-        } catch (Exception e) {
-            e.printStackTrace();
+            guestDao.addToRepo(
+                    new Guest(guestDao.supplyId(), fullName, passport, checkInTime, checkOutTime, null));
+        } else {
+            guestDao.addToRepo(
+                    new Guest(guestDao.supplyId(), fullName, passport, checkInTime, checkOutTime, roomDao.getById(roomId)));
         }
     }
 
     @Override
-    public void addGuestToRoom(int guestId, int roomId) {
+    public void addGuestToRoom(long guestId, long roomId) {
         Guest guest;
         Room room;
         try {
@@ -44,26 +45,41 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
             e.printStackTrace();
             return;
         }
-        guestDao.addGuestToRoom(guest, room);
+        if (room.getRoomStatus() == RoomStatus.UNDER_REPAIR || room.getRoomStatus() == RoomStatus.CLEANING) {
+            throw new RuntimeException("Inappropriate room status");
+        }
+        if (room.getCapacity() <= room.getGuestsCurrentList().size()) {
+            throw new RuntimeException("Room's capacity limit is exceeded");
+        }
+        room.addGuest(guest);
+        guest.setRoom(room);
+        guestDao.updatePrice(guest);
     }
 
     @Override
-    public void deleteGuest(int guestId) {
+    public void removeGuestFromRoom(long guestId) {
+        Guest guest;
         try {
-            guestDao.deleteGuest(guestDao.getById(guestId));
+            guest = guestDao.getById(guestId);
+            try {
+                guest.getRoom().removeGuest(guest);
+                guest.setRoom(null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void removeGuestFromRoom(int guestId) throws NoSuchElementException {
-        guestDao.removeGuestFromRoom(guestDao.getById(guestId));
-    }
-
-    @Override
-    public int getAmount(List<Guest> subList) {
-        return subList.size();
+    public void deleteGuest(long guestId) {
+        try {
+            removeGuestFromRoom(guestId);
+            guestDao.deleteFromRepo(guestDao.getById(guestId));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -75,5 +91,30 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
             case BY_CHECKOUT_DATE: return currentDao.getSorted(listToSort, Comparator.comparing(Guest::getCheckOutDate));
         }
         throw new NoSuchElementException();
+    }
+
+    @Override
+    public Integer getAllAmount() {
+        return guestDao.getAll().size();
+    }
+
+    @Override
+    public Integer getPriceByGuest(long guestId) {
+        return getById(guestId).getPrice();
+    }
+
+    @Override
+    public List<Guest> sortByAddition() {
+        return getSorted(getAll(), SortEnum.BY_ADDITION);
+    }
+
+    @Override
+    public List<Guest> sortByAlphabet() {
+        return getSorted(getAll(), SortEnum.BY_ALPHABET);
+    }
+
+    @Override
+    public List<Guest> sortByCheckOutDate() {
+        return getSorted(getAll(), SortEnum.BY_CHECKOUT_DATE);
     }
 }

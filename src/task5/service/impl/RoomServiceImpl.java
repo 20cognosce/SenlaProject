@@ -1,7 +1,6 @@
 package task5.service.impl;
 
 import task5.controller.action.SortEnum;
-import task5.dao.AbstractDao;
 import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
@@ -11,7 +10,9 @@ import task5.dao.model.RoomStatus;
 import task5.service.RoomService;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 
@@ -21,19 +22,19 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     }
 
     @Override
-    public List<Guest> getLastNGuests(int roomId, int N) throws NoSuchElementException {
+    public List<Guest> getLastNGuests(long roomId, int N) throws NoSuchElementException {
         List<Guest> allTimeList = roomDao.getById(roomId).getGuestsAllTimeList();
         return allTimeList.stream().sorted(Comparator.comparing(Guest::getCheckInDate).reversed()).limit(N).collect(Collectors.toList());
     }
 
     @Override
-    public List<Guest> getGuestsList(int roomId) throws NoSuchElementException {
+    public List<Guest> getGuestsList(long roomId) throws NoSuchElementException {
         return getById(roomId).getGuestsCurrentList();
     }
 
     @Override
     public void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price) {
-        roomDao.createRoom(name, capacity, starsNumber, roomStatus, price);
+        roomDao.addToRepo(new Room(roomDao.supplyId(), name, capacity, starsNumber, roomStatus, price));
     }
 
     @Override
@@ -48,13 +49,53 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
 
     @Override
-    public void setPrice(int roomId, int price) throws NoSuchElementException {
+    public void setPrice(long roomId, int price) throws NoSuchElementException {
         roomDao.getById(roomId).setPrice(price);
     }
 
     @Override
-    public void setStatus(int roomId, RoomStatus roomStatus) {
+    public void setStatus(long roomId, RoomStatus roomStatus) {
         roomDao.getById(roomId).setRoomStatus(roomStatus);
+    }
+
+    @Override
+    public List<Room> sortByAddition() {
+        return getSorted(getAll(), SortEnum.BY_ADDITION);
+    }
+
+    @Override
+    public List<Room> sortByCapacity() {
+        return getSorted(getAll(), SortEnum.BY_CAPACITY);
+    }
+
+    @Override
+    public List<Room> sortByPrice() {
+        return getSorted(getAll(), SortEnum.BY_PRICE);
+    }
+
+    @Override
+    public List<Room> sortByStars() {
+        return getSorted(getAll(), SortEnum.BY_STARS);
+    }
+
+    @Override
+    public List<Room> sortFreeRoomsByAddition(LocalDate specificDate) {
+        return getSorted(getFree(specificDate), SortEnum.BY_CAPACITY);
+    }
+
+    @Override
+    public List<Room> sortFreeRoomsByCapacity(LocalDate specificDate) {
+        return getSorted(getFree(specificDate), SortEnum.BY_CAPACITY);
+    }
+
+    @Override
+    public List<Room> sortFreeRoomsByPrice(LocalDate specificDate) {
+        return getSorted(getFree(specificDate), SortEnum.BY_PRICE);
+    }
+
+    @Override
+    public List<Room> sortFreeRoomsByStars(LocalDate specificDate) {
+        return getSorted(getFree(specificDate), SortEnum.BY_STARS);
     }
 
     @Override

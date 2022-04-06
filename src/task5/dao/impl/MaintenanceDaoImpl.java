@@ -4,7 +4,6 @@ import task5.dao.MaintenanceDao;
 import task5.dao.model.Guest;
 import task5.dao.model.IdSupplier;
 import task5.dao.model.Maintenance;
-import task5.dao.model.MaintenanceCategory;
 
 import java.util.Comparator;
 import java.util.List;
@@ -15,11 +14,6 @@ public class MaintenanceDaoImpl extends AbstractDaoImpl<Maintenance> implements 
 
     public MaintenanceDaoImpl() {
         super();
-    }
-
-    @Override
-    public void createMaintenance(String maintenanceName, int price, MaintenanceCategory category) {
-        addToRepo(new Maintenance(idSupplier.supplyId(), maintenanceName, price, category));
     }
 
     @Override

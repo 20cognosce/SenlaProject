@@ -12,6 +12,6 @@ public class PrintAllAmountAction extends PrintAllAction {
 
     @Override
     public void execute() {
-        System.out.println("Общее число гостей: " + guestService.getAmount(guestService.getAll()));
+        System.out.println("Общее число гостей: " + getGuestService().getAllAmount());
     }
 }

@@ -1,14 +1,13 @@
 package task5.controller;
 
 import java.util.Locale;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class Navigator {
     Menu currentMenu;
     int indexOfAction = -1;
 
-    Navigator(Menu currentMenu) {
+    public Navigator(Menu currentMenu) {
         this.currentMenu = currentMenu;
     }
 

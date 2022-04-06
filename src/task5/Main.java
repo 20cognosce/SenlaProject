@@ -1,6 +1,8 @@
 package task5;
 
+import task5.controller.Builder;
 import task5.controller.MenuController;
+import task5.controller.Navigator;
 import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
@@ -24,7 +26,11 @@ public class Main {
         GuestService guestService = new GuestServiceImpl(guestDao, roomDao, maintenanceDao);
         MaintenanceService maintenanceService = new MaintenanceServiceImpl(guestDao, roomDao, maintenanceDao);
 
-        MenuController menuController = new MenuController(guestService, roomService, maintenanceService);
+        Builder builder = new Builder(guestService, roomService, maintenanceService);
+        builder.buildMenu();
+        Navigator navigator = new Navigator(builder.getRootMenu());
+
+        MenuController menuController = new MenuController(builder, navigator);
         menuController.run();
 
         /*

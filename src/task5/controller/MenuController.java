@@ -1,18 +1,14 @@
 package task5.controller;
 
 import task5.controller.action.ConsoleReaderUtil;
-import task5.service.GuestService;
-import task5.service.MaintenanceService;
-import task5.service.RoomService;
 
 public class MenuController {
     Builder builder;
     Navigator navigator;
 
-    public MenuController (GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
-        builder = new Builder(guestService, roomService, maintenanceService);
-        builder.buildMenu();
-        navigator = new Navigator(builder.getRootMenu());
+    public MenuController (Builder builder, Navigator navigator) {
+        this.navigator = navigator;
+        this.builder = builder;
     }
 
     public void run() {
