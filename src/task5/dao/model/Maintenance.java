@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
-public class Maintenance extends AbstractEntity {
+public class Maintenance extends AbstractEntity implements Cloneable {
     private MaintenanceCategory category;
     private LocalDateTime orderTime;
 
@@ -33,11 +33,9 @@ public class Maintenance extends AbstractEntity {
     @Override
     public String toString() {
         String orderTime;
-        try {
-            orderTime = getOrderTime().truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME);
-        } catch (Exception e) {
-            orderTime = "Не заказывалось";
-        }
+
+        if (Objects.isNull(getOrderTime())) orderTime = "Не заказывалось";
+        else orderTime = getOrderTime().truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME);
 
         return "id: " + getId() +
                 "; Услуга: " + getName() +
@@ -45,5 +43,12 @@ public class Maintenance extends AbstractEntity {
                 "; Категория: " + getCategory() +
                 "; Время заказа: " + orderTime +
                 "\n";
+    }
+
+    @Override
+    public Maintenance clone() throws CloneNotSupportedException {
+        Maintenance clone = (Maintenance) super.clone();
+        clone.setOrderTime(LocalDateTime.now());
+        return clone;
     }
 }

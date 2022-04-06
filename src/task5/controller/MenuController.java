@@ -1,10 +1,9 @@
 package task5.controller;
 
+import task5.controller.action.ConsoleReaderUtil;
 import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
-
-import java.util.Scanner;
 
 public class MenuController {
     Builder builder;
@@ -17,15 +16,13 @@ public class MenuController {
     }
 
     public void run() {
-        Scanner scanner = new Scanner(System.in);
         int index = -1;
-
         while (index != 0) {
             navigator.printMenu();
             /*because nextInt() doesn't read newline provided by hitting enter
             and nextLine() read it, so I would have to use two nextLine() after*/
             try {
-                index = Integer.parseInt(scanner.nextLine());
+                index = ConsoleReaderUtil.readInteger();
                 navigator.navigate(index);
                 continue;
             } catch (CantNavigateFurtherException e) {
@@ -41,7 +38,7 @@ public class MenuController {
             }
 
             System.out.println("Press Enter key to continue...");
-            scanner.nextLine();
+            ConsoleReaderUtil.readLine();
         }
     }
 }

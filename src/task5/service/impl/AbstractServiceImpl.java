@@ -24,18 +24,6 @@ public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends Ab
         this.currentDao = currentDao;
     }
 
-    static public class GenericClass<D> {
-        private final Class<D> type;
-
-        public GenericClass(Class<D> type) {
-            this.type = type;
-        }
-
-        public Class<D> getMyType() {
-            return this.type;
-        }
-    }
-
     @Override
     public T getById(int id) throws NoSuchElementException {
         return currentDao.getById(id);

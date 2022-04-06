@@ -26,5 +26,9 @@ public class Main {
 
         MenuController menuController = new MenuController(guestService, roomService, maintenanceService);
         menuController.run();
+
+        /*
+        room5.setDetails("Огромное джакузи с видом на Москва Сити");
+        */
     }
 }

@@ -42,8 +42,7 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
         Maintenance maintenance;
         Guest guest;
         try {
-            //TODO: must get a copy of the maintenance
-            maintenance = maintenanceDao.getById(maintenanceId);
+            maintenance = maintenanceDao.getById(maintenanceId).clone();
             guest = guestDao.getById(guestId);
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,7 +53,6 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
                 + " для " + guest.getName()
                 + " исполнена. Цена услуги: " + maintenance.getPrice()
                 + "; Дата: " + time.truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME));
-        maintenance.setOrderTime(time);
         guest.addMaintenance(maintenance);
         guest.setPrice(guest.getPrice() + maintenance.getPrice());
     }

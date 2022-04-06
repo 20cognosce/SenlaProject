@@ -2,6 +2,7 @@ package task5.controller.action.maintenance;
 
 import task5.controller.IAction;
 import task5.controller.action.AbstractAction;
+import task5.controller.action.ConsoleReaderUtil;
 import task5.dao.model.Maintenance;
 import task5.service.GuestService;
 import task5.service.MaintenanceService;
@@ -16,7 +17,7 @@ public class PrintMaintenancesOfGuestSortedByTime extends AbstractAction impleme
 
     @Override
     public void execute() {
-        int guestId = inputGuestId();
+        int guestId = ConsoleReaderUtil.inputGuestId();
         System.out.println(maintenanceService.getMaintenancesOfGuest(
                 guestId, Comparator.comparing(Maintenance::getOrderTime)));
 

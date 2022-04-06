@@ -2,6 +2,7 @@ package task5.controller.action.guest;
 
 import task5.controller.IAction;
 import task5.controller.action.AbstractAction;
+import task5.controller.action.ConsoleReaderUtil;
 import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
@@ -13,8 +14,8 @@ public class AddGuestToRoomAction extends AbstractAction implements IAction {
 
     @Override
     public void execute() {
-        int guestId = inputGuestId();
-        int roomId = inputRoomId();
+        int guestId = ConsoleReaderUtil.inputGuestId();
+        int roomId = ConsoleReaderUtil.inputRoomId();
         guestService.addGuestToRoom(guestId, roomId);
     }
 }
