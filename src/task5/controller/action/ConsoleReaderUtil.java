@@ -50,7 +50,7 @@ public class ConsoleReaderUtil {
     }
 
     public static RoomStatus inputRoomStatus() {
-        int roomStatusIndex = -1;
+        int roomStatusIndex;
         RoomStatus[] roomStatuses = RoomStatus.values();
 
         System.out.println("Выберите текущий статус номера (индекс): ");
@@ -59,14 +59,15 @@ public class ConsoleReaderUtil {
             System.out.println(i + 1 + ". " + roomStatuses[i]);
             ++i;
         }
-        while (roomStatusIndex < 1 || roomStatusIndex > roomStatuses.length) {
+        do {
             roomStatusIndex = ConsoleReaderUtil.readInteger();
-        }
+        } while (roomStatusIndex < 1 || roomStatusIndex > roomStatuses.length);
+
         return  roomStatuses[roomStatusIndex - 1];
     }
 
     public static MaintenanceCategory inputMaintenanceCategory() {
-        Integer maintenanceCategoryIndex = null;
+        int maintenanceCategoryIndex;
         MaintenanceCategory[] maintenanceCategories = MaintenanceCategory.values();
 
         System.out.println("Выберите категорию услуги: ");
