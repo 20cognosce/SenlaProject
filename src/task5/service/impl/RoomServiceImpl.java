@@ -38,6 +38,24 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     }
 
     @Override
+    public void createRoom(long id,
+                           String name,
+                           int capacity, int starsNumber,
+                           RoomStatus roomStatus,
+                           int price) {
+        try {
+            Room room = getById(id);
+            room.setName(name);
+            room.setCapacity(capacity);
+            room.setStarsNumber(starsNumber);
+            room.setRoomStatus(roomStatus);
+            room.setPrice(price);
+        } catch (NoSuchElementException e) {
+            roomDao.addToRepo(new Room(id, name, capacity, starsNumber, roomStatus, price));
+        }
+    }
+
+    @Override
     public List<Room> getFree() {
         return roomDao.getFree();
     }

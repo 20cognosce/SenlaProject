@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface GuestService extends AbstractService<Guest> {
     void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, long roomId);
+    void createGuest(long guestId, String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, long roomId);
     void addGuestToRoom(long guestId, long roomId);
     void deleteGuest(long guestId);
     void removeGuestFromRoom(long guestId);

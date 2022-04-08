@@ -28,6 +28,22 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     }
 
     @Override
+    public void createMaintenance(long id,
+                                  String maintenanceName,
+                                  int price,
+                                  MaintenanceCategory category) {
+        try {
+            Maintenance maintenance = getById(id);
+            maintenance.setName(maintenanceName);
+            maintenance.setPrice(price);
+            maintenance.setCategory(category);
+        } catch (NoSuchElementException e) {
+            maintenanceDao.addToRepo(new Maintenance(id, maintenanceName, price, category));
+        }
+
+    }
+
+    @Override
     public List<Maintenance> getMaintenancesOfGuest(long guestId) throws NoSuchElementException {
         return maintenanceDao.getMaintenancesOfGuest(guestDao.getById(guestId));
     }

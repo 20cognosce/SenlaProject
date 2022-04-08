@@ -35,6 +35,28 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     }
 
     @Override
+    public void createGuest(long guestId, String fullName, String passport,
+                            LocalDate checkInTime, LocalDate checkOutTime,
+                            long roomId) throws NoSuchElementException {
+        try {
+            Guest guest = getById(guestId);
+            guest.setName(fullName);
+            guest.setPassport(passport);
+            guest.setCheckInDate(checkInTime);
+            guest.setCheckOutDate(checkOutTime);
+        } catch (NoSuchElementException e) {
+            //TODO: looks like anti-pattern...
+            if (roomId == 0) {
+                guestDao.addToRepo(
+                        new Guest(guestId, fullName, passport, checkInTime, checkOutTime, null));
+            } else {
+                guestDao.addToRepo(
+                        new Guest(guestId, fullName, passport, checkInTime, checkOutTime, roomDao.getById(roomId)));
+            }
+        }
+    }
+
+    @Override
     public void addGuestToRoom(long guestId, long roomId) {
         Guest guest;
         Room room;

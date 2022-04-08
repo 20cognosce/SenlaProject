@@ -1,8 +1,7 @@
 package task5.dao.impl;
 
 import task5.dao.AbstractDao;
-import task5.dao.model.AbstractEntity;
-import task5.dao.model.IdSupplier;
+import task5.dao.model.*;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 import java.util.ArrayList;
@@ -57,5 +56,46 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity> implements Abstr
     @Override
     public long supplyId() {
         return idSupplier.supplyId();
+    }
+
+    @Override
+    public String convertDataToExportFormat(T element) throws ClassNotFoundException {
+        if (element instanceof Guest) {
+            Guest guest = (Guest) element;
+            StringBuilder line = new StringBuilder();
+            long roomId;
+            try {
+                roomId = guest.getRoom().getId();
+            } catch (NullPointerException e) {
+                roomId = 0L;
+            }
+            line.append(guest.getId()).append(",")
+                    .append(guest.getName()).append(",")
+                    .append(guest.getPassport()).append(",")
+                    .append(guest.getCheckInDate()).append(",")
+                    .append(guest.getCheckOutDate()).append(",")
+                    .append(roomId);
+            return line.toString();
+        }
+
+        if (element instanceof Room) {
+            Room room = (Room) element;
+            return room.getId() + "," +
+                    room.getName() + "," +
+                    room.getCapacity() + "," +
+                    room.getStarsNumber() + "," +
+                    room.getRoomStatus() + "," +
+                    room.getPrice();
+        }
+
+        if (element instanceof Maintenance) {
+            Maintenance maintenance = (Maintenance) element;
+            return maintenance.getId() + "," +
+                    maintenance.getName() + "," +
+                    maintenance.getPrice() + "," +
+                    maintenance.getCategory();
+        }
+
+        throw new ClassNotFoundException();
     }
 }

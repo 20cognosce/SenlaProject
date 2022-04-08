@@ -11,6 +11,7 @@ import java.util.NoSuchElementException;
 
 public interface RoomService extends AbstractService<Room> {
     void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price);
+    void createRoom(long id, String name, int capacity, int starsNumber, RoomStatus roomStatus, int price);
     List<Room> getFree();
     List<Room> getFree(LocalDate asAtSpecificDate);
     List<Guest> getLastNGuests(long roomId, int N);

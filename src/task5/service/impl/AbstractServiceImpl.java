@@ -38,4 +38,8 @@ public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends Ab
     public List<T> getAll() {
         return currentDao.getAll();
     }
+    @Override
+    public String convertDataToExportFormat(long id) throws NoSuchElementException, ClassNotFoundException {
+        return currentDao.convertDataToExportFormat(getById(id));
+    }
 }

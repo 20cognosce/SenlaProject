@@ -7,4 +7,6 @@ public interface AbstractService<T> {
     List<T> getAll();
     T getByName(String name) throws NoSuchElementException;
     T getById(long id) throws NoSuchElementException;
+
+    String convertDataToExportFormat(long id) throws NoSuchElementException, ClassNotFoundException;
 }

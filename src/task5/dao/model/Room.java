@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import static task5.dao.model.RoomStatus.*;
+import static task5.dao.model.RoomStatus.BUSY;
+import static task5.dao.model.RoomStatus.FREE;
 
 public class Room extends AbstractEntity {
     private int capacity;
