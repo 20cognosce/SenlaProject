@@ -17,7 +17,7 @@ public class ExportRoomDataAction extends AbstractAction {
 
     @Override
     public void execute() {
-        File csvFile = new File("src/task5/export_files/maintenance.csv");
+        File csvFile = new File("src/task5/export_files/room.csv");
         PrintWriter printWriter;
 
         try {

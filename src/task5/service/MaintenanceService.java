@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface MaintenanceService extends AbstractService<Maintenance>{
     void createMaintenance(String maintenanceName, int price, MaintenanceCategory category);
-    void createMaintenance(long id, String maintenanceName, int price, MaintenanceCategory category);
     List<Maintenance> getMaintenancesOfGuest(long guestId);
     List<Maintenance> getMaintenancesOfGuest(long guestId, Comparator<Maintenance> comparator);
 
@@ -24,4 +23,6 @@ public interface MaintenanceService extends AbstractService<Maintenance>{
     List<Maintenance> sortMaintenancesOfGuestByAddition(long guestId);
     List<Maintenance> sortMaintenancesOfGuestByPrice(long guestId);
     List<Maintenance> sortMaintenancesOfGuestByTime(long guestId);
+
+    void importMaintenanceRecords(List<List <String>> records);
 }

@@ -8,4 +8,5 @@ import java.util.List;
 public interface RoomDao extends AbstractDao<Room> {
     List<Room> getFree();
     List<Room> getFree(LocalDate asAtSpecificDate);
+    String convertDataToExportFormat(Room room);
 }

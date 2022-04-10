@@ -11,6 +11,7 @@ import task5.service.GuestService;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,28 +32,6 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         } else {
             guestDao.addToRepo(
                     new Guest(guestDao.supplyId(), fullName, passport, checkInTime, checkOutTime, roomDao.getById(roomId)));
-        }
-    }
-
-    @Override
-    public void createGuest(long guestId, String fullName, String passport,
-                            LocalDate checkInTime, LocalDate checkOutTime,
-                            long roomId) throws NoSuchElementException {
-        try {
-            Guest guest = getById(guestId);
-            guest.setName(fullName);
-            guest.setPassport(passport);
-            guest.setCheckInDate(checkInTime);
-            guest.setCheckOutDate(checkOutTime);
-        } catch (NoSuchElementException e) {
-            //TODO: looks like anti-pattern...
-            if (roomId == 0) {
-                guestDao.addToRepo(
-                        new Guest(guestId, fullName, passport, checkInTime, checkOutTime, null));
-            } else {
-                guestDao.addToRepo(
-                        new Guest(guestId, fullName, passport, checkInTime, checkOutTime, roomDao.getById(roomId)));
-            }
         }
     }
 
@@ -138,5 +117,52 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     @Override
     public List<Guest> sortByCheckOutDate() {
         return getSorted(getAll(), SortEnum.BY_CHECKOUT_DATE);
+    }
+
+    @Override
+    public void importGuestRecords(List<List<String>> records) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+        records.forEach(entry -> {
+            try {
+                long guestId = Long.parseLong(entry.get(0));
+                String name = entry.get(1);
+                String passport = entry.get(2);
+                LocalDate checkInDate = LocalDate.parse(entry.get(3), dtf);
+                LocalDate checkOutDate = LocalDate.parse(entry.get(4), dtf);
+                long roomId = Long.parseLong(entry.get(5));
+
+                try {
+                    Guest guest = getById(guestId);
+                    guest.setName(name);
+                    guest.setPassport(passport);
+                    guest.setCheckInDate(checkInDate);
+                    guest.setCheckOutDate(checkOutDate);
+                    if (roomId == 0) {
+                        removeGuestFromRoom(guestId);
+                    } else {
+                        if (roomId != guest.getRoom().getId()) {
+                            removeGuestFromRoom(guestId);
+                            addGuestToRoom(guestId, roomId);
+                        }
+                    }
+                } catch (NoSuchElementException e) {
+                    //для корректной работы необходимо чтобы в файле строки были отсортированы по id
+                    //если в id есть пробелы: 1-2-4-5, то программы бы ломалась без этой строчки
+                    //чтобы выдаваемый при createEntity id совпадал с тем, что в файле
+                    guestDao.synchronizeNextSuppliedId(guestId);
+                    createGuest(name, passport, checkInDate, checkOutDate, 0);
+                    if (roomId != 0) addGuestToRoom(guestId, roomId);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public String convertDataToExportFormat(long id) throws NoSuchElementException {
+        return currentDao.convertDataToExportFormat(getById(id));
     }
 }

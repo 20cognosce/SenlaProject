@@ -10,4 +10,10 @@ public class IdSupplier {
     public long supplyId() {
         return ++id;
     }
+
+    public void synchronizeNextSuppliedId(long id) {
+        while (this.id + 1 != id) {
+            supplyId();
+        }
+    }
 }

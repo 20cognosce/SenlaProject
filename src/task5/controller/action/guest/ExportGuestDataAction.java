@@ -27,7 +27,9 @@ public class ExportGuestDataAction extends AbstractAction {
             return;
         }
 
-        ExportImportUtil.readGuestData(getGuestService()).forEach(printWriter::println);
+        ExportImportUtil.readGuestData(getGuestService())
+                .forEach(printWriter::println);
+
         printWriter.close();
     }
 }

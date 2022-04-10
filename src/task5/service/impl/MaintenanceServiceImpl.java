@@ -28,22 +28,6 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     }
 
     @Override
-    public void createMaintenance(long id,
-                                  String maintenanceName,
-                                  int price,
-                                  MaintenanceCategory category) {
-        try {
-            Maintenance maintenance = getById(id);
-            maintenance.setName(maintenanceName);
-            maintenance.setPrice(price);
-            maintenance.setCategory(category);
-        } catch (NoSuchElementException e) {
-            maintenanceDao.addToRepo(new Maintenance(id, maintenanceName, price, category));
-        }
-
-    }
-
-    @Override
     public List<Maintenance> getMaintenancesOfGuest(long guestId) throws NoSuchElementException {
         return maintenanceDao.getMaintenancesOfGuest(guestDao.getById(guestId));
     }
@@ -117,5 +101,35 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     @Override
     public List<Maintenance> sortMaintenancesOfGuestByTime(long guestId) {
         return getSorted(getMaintenancesOfGuest(guestId), SortEnum.BY_TIME);
+    }
+
+    @Override
+    public void importMaintenanceRecords(List<List<String>> records) {
+        records.forEach(entry -> {
+            try {
+                long maintenanceId = Long.parseLong(entry.get(0));
+                String name = entry.get(1);
+                int price = Integer.parseInt(entry.get(2));
+                MaintenanceCategory maintenanceCategory = MaintenanceCategory.valueOf(entry.get(3));
+
+                try {
+                    Maintenance maintenance = getById(maintenanceId);
+                    maintenance.setName(name);
+                    maintenance.setPrice(price);
+                    maintenance.setCategory(maintenanceCategory);
+                } catch (NoSuchElementException e) {
+                    maintenanceDao.synchronizeNextSuppliedId(maintenanceId);
+                    createMaintenance(name, price, maintenanceCategory);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public String convertDataToExportFormat(long id) throws NoSuchElementException {
+        return currentDao.convertDataToExportFormat(getById(id));
     }
 }

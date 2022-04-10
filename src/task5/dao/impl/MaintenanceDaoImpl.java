@@ -25,4 +25,12 @@ public class MaintenanceDaoImpl extends AbstractDaoImpl<Maintenance> implements 
     public List<Maintenance> getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator) {
         return guest.getOrderedMaintenances().stream().sorted(comparator).collect(Collectors.toList());
     }
+
+    @Override
+    public String convertDataToExportFormat(Maintenance maintenance) {
+        return maintenance.getId() + "," +
+                maintenance.getName() + "," +
+                maintenance.getPrice() + "," +
+                maintenance.getCategory();
+    }
 }

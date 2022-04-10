@@ -56,4 +56,14 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
 
         return freeRooms;
     }
+
+    @Override
+    public String convertDataToExportFormat(Room room) {
+        return room.getId() + "," +
+                room.getName() + "," +
+                room.getCapacity() + "," +
+                room.getStarsNumber() + "," +
+                room.getRoomStatus() + "," +
+                room.getPrice();
+    }
 }
