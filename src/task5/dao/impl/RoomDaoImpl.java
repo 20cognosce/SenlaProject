@@ -2,7 +2,6 @@ package task5.dao.impl;
 
 import task5.dao.RoomDao;
 import task5.dao.model.Guest;
-import task5.dao.model.IdSupplier;
 import task5.dao.model.Room;
 
 import java.time.LocalDate;
@@ -13,8 +12,6 @@ import java.util.Objects;
 import static task5.dao.model.RoomStatus.FREE;
 
 public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
-    private final IdSupplier idSupplier = new IdSupplier();
-
     public RoomDaoImpl() {
         super();
     }
@@ -58,7 +55,7 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     }
 
     @Override
-    public String convertDataToExportFormat(Room room) {
+    public String exportData(Room room) {
         return room.getId() + "," +
                 room.getName() + "," +
                 room.getCapacity() + "," +

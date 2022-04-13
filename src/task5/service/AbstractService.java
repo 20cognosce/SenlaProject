@@ -8,5 +8,6 @@ public interface AbstractService<T> {
     T getByName(String name) throws NoSuchElementException;
     T getById(long id) throws NoSuchElementException;
 
-    String convertDataToExportFormat(long id) throws NoSuchElementException, ClassNotFoundException;
+    String exportData(long id) throws NoSuchElementException, ClassNotFoundException;
+    void importData(List<List <String>> records);
 }

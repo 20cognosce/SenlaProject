@@ -13,23 +13,15 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ExportImportUtil {
+public class ImportExportUtil {
 
     public static List<List<String>> readDataFile(File csvFile) {
         List<List<String>> records = new ArrayList<>();
         String line;
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-            int i = 0;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
                 records.add(new LinkedList<>(Arrays.asList(values)));
-                try {
-                    long test = Long.parseLong(records.get(i).get(0)); //Если первый столбец не начинается с id
-                } catch (NumberFormatException e) {
-                    records.remove(i);
-                    --i; //not to iterate further cause we've just removed an item
-                }
-                ++i;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -51,7 +43,7 @@ public class ExportImportUtil {
         export.add("id,Name,Passport,CheckInDate [dd.MM.yyyy],CheckOutDate [dd.MM.yyyy],roomId");
         guestIdList.forEach(id -> {
             try {
-                export.add(guestService.convertDataToExportFormat(id));
+                export.add(guestService.exportData(id));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -73,7 +65,7 @@ public class ExportImportUtil {
         export.add("id,Name,Capacity,Stars,Status,Price");
         roomIdList.forEach(id -> {
             try {
-                export.add(roomService.convertDataToExportFormat(id));
+                export.add(roomService.exportData(id));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -95,7 +87,7 @@ public class ExportImportUtil {
         export.add("id,Name,Price,Category");
         maintenanceIdList.forEach(id -> {
             try {
-                export.add(maintenanceService.convertDataToExportFormat(id));
+                export.add(maintenanceService.exportData(id));
             } catch (Exception e) {
                 e.printStackTrace();
             }

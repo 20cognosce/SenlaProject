@@ -21,7 +21,7 @@ public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
     }
 
     @Override
-    public String convertDataToExportFormat(Guest guest) {
+    public String exportData(Guest guest) {
         StringBuilder line = new StringBuilder();
         long roomId;
         try {

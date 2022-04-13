@@ -104,7 +104,7 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     }
 
     @Override
-    public void importMaintenanceRecords(List<List<String>> records) {
+    public void importData(List<List<String>> records) {
         records.forEach(entry -> {
             try {
                 long maintenanceId = Long.parseLong(entry.get(0));
@@ -123,13 +123,13 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getClass().getCanonicalName() + ": "  + e.getMessage());
             }
         });
     }
 
     @Override
-    public String convertDataToExportFormat(long id) throws NoSuchElementException {
-        return currentDao.convertDataToExportFormat(getById(id));
+    public String exportData(long id) throws NoSuchElementException {
+        return currentDao.exportData(getById(id));
     }
 }

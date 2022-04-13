@@ -120,7 +120,7 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     }
 
     @Override
-    public void importGuestRecords(List<List<String>> records) {
+    public void importData(List<List<String>> records) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
         records.forEach(entry -> {
@@ -147,22 +147,19 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
                         }
                     }
                 } catch (NoSuchElementException e) {
-                    //для корректной работы необходимо чтобы в файле строки были отсортированы по id
-                    //если в id есть пробелы: 1-2-4-5, то программы бы ломалась без этой строчки
-                    //чтобы выдаваемый при createEntity id совпадал с тем, что в файле
                     guestDao.synchronizeNextSuppliedId(guestId);
                     createGuest(name, passport, checkInDate, checkOutDate, 0);
                     if (roomId != 0) addGuestToRoom(guestId, roomId);
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getClass().getCanonicalName() + ": "  + e.getMessage());
             }
         });
     }
 
     @Override
-    public String convertDataToExportFormat(long id) throws NoSuchElementException {
-        return currentDao.convertDataToExportFormat(getById(id));
+    public String exportData(long id) throws NoSuchElementException {
+        return currentDao.exportData(getById(id));
     }
 }

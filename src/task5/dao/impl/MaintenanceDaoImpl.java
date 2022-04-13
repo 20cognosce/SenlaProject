@@ -27,7 +27,7 @@ public class MaintenanceDaoImpl extends AbstractDaoImpl<Maintenance> implements 
     }
 
     @Override
-    public String convertDataToExportFormat(Maintenance maintenance) {
+    public String exportData(Maintenance maintenance) {
         return maintenance.getId() + "," +
                 maintenance.getName() + "," +
                 maintenance.getPrice() + "," +

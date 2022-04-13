@@ -99,7 +99,7 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     }
 
     @Override
-    public void importRoomRecords(List<List<String>> records) {
+    public void importData(List<List<String>> records) {
         records.forEach(entry -> {
             try {
                 long roomId = Long.parseLong(entry.get(0));
@@ -122,7 +122,7 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getClass().getCanonicalName() + ": "  + e.getMessage());
             }
         });
     }
@@ -139,7 +139,7 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     }
 
     @Override
-    public String convertDataToExportFormat(long id) throws NoSuchElementException {
-        return currentDao.convertDataToExportFormat(getById(id));
+    public String exportData(long id) throws NoSuchElementException {
+        return currentDao.exportData(getById(id));
     }
 }

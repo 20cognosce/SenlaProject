@@ -1,7 +1,7 @@
 package task5.controller.action.guest;
 
 import task5.controller.action.AbstractAction;
-import task5.controller.action.ExportImportUtil;
+import task5.controller.action.ImportExportUtil;
 import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
@@ -27,7 +27,7 @@ public class ExportGuestDataAction extends AbstractAction {
             return;
         }
 
-        ExportImportUtil.readGuestData(getGuestService())
+        ImportExportUtil.readGuestData(getGuestService())
                 .forEach(printWriter::println);
 
         printWriter.close();

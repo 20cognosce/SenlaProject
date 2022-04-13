@@ -10,7 +10,6 @@ import task5.service.AbstractService;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-//Stack overflow helped so much to deal with generics
 public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends AbstractDao<T>> implements AbstractService<T> {
     protected D currentDao;
     protected GuestDao guestDao;

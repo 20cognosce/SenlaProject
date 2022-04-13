@@ -29,8 +29,6 @@ public interface RoomService extends AbstractService<Room> {
     List<Room> sortFreeRoomsByCapacity(LocalDate specificDate);
     List<Room> sortFreeRoomsByPrice(LocalDate specificDate);
     List<Room> sortFreeRoomsByStars(LocalDate specificDate);
-
-    void importRoomRecords(List<List <String>> records);
 }
 
 

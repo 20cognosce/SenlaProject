@@ -1,7 +1,7 @@
 package task5.controller.action.maintenance;
 
 import task5.controller.action.AbstractAction;
-import task5.controller.action.ExportImportUtil;
+import task5.controller.action.ImportExportUtil;
 import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
@@ -17,7 +17,7 @@ public class ImportMaintenanceDataAction extends AbstractAction {
     @Override
     public void execute() {
         File csvFile = new File("src/task5/import_files/maintenance.csv");
-        List<List<String>> records = ExportImportUtil.readDataFile(csvFile);
-        getMaintenanceService().importMaintenanceRecords(records);
+        List<List<String>> records = ImportExportUtil.readDataFile(csvFile);
+        getMaintenanceService().importData(records);
     }
 }

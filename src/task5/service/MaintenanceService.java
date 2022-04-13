@@ -23,6 +23,4 @@ public interface MaintenanceService extends AbstractService<Maintenance>{
     List<Maintenance> sortMaintenancesOfGuestByAddition(long guestId);
     List<Maintenance> sortMaintenancesOfGuestByPrice(long guestId);
     List<Maintenance> sortMaintenancesOfGuestByTime(long guestId);
-
-    void importMaintenanceRecords(List<List <String>> records);
 }

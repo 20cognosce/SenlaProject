@@ -9,5 +9,4 @@ import java.util.List;
 public interface MaintenanceDao extends AbstractDao<Maintenance> {
     List<Maintenance> getMaintenancesOfGuest(Guest guest);
     List<Maintenance> getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator);
-    String convertDataToExportFormat(Maintenance maintenance);
 }
