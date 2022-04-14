@@ -13,7 +13,7 @@ public class PrintMaintenancesOfGuestSortedByTime extends AbstractAction  {
 
     @Override
     public void execute() {
-        long guestId = ConsoleReaderUtil.inputGuestId();
+        long guestId = ConsoleReaderUtil.inputId();
         System.out.println(getMaintenanceService().sortMaintenancesOfGuestByTime(guestId));
 
     }

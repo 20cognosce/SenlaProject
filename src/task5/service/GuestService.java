@@ -1,7 +1,7 @@
 package task5.service;
 
 import task5.controller.action.SortEnum;
-import task5.dao.model.Guest;
+import task5.dao.entity.Guest;
 
 import java.time.LocalDate;
 import java.util.List;

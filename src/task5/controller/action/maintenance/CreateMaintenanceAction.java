@@ -2,7 +2,7 @@ package task5.controller.action.maintenance;
 
 import task5.controller.action.AbstractAction;
 import task5.controller.action.ConsoleReaderUtil;
-import task5.dao.model.MaintenanceCategory;
+import task5.dao.entity.MaintenanceCategory;
 import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;

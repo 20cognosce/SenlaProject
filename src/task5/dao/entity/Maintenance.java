@@ -1,4 +1,4 @@
-package task5.dao.model;
+package task5.dao.entity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

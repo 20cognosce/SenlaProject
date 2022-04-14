@@ -13,7 +13,7 @@ public class PrintGuestByIdAction extends AbstractAction  {
 
     @Override
     public void execute() {
-        long guestId = ConsoleReaderUtil.inputGuestId();
+        long guestId = ConsoleReaderUtil.inputId();
         System.out.println(getGuestService().getById(guestId).toString()
                 + getGuestService().getById(guestId).getOrderedMaintenances());
     }

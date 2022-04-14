@@ -1,8 +1,8 @@
 package task5.service;
 
 import task5.controller.action.SortEnum;
-import task5.dao.model.Maintenance;
-import task5.dao.model.MaintenanceCategory;
+import task5.dao.entity.Maintenance;
+import task5.dao.entity.MaintenanceCategory;
 
 import java.util.Comparator;
 import java.util.List;

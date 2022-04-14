@@ -13,7 +13,7 @@ public class PrintNLastGuestsAction extends AbstractAction  {
 
     @Override
     public void execute() {
-        long roomId = ConsoleReaderUtil.inputRoomId();
+        long roomId = ConsoleReaderUtil.inputId();
         System.out.println("Введите количество последних гостей номера для показа информации: ");
         int number = ConsoleReaderUtil.readInteger();
         System.out.println(getRoomService().getLastNGuests(roomId, number));

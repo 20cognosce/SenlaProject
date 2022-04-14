@@ -1,15 +1,15 @@
 package task5.dao.impl;
 
 import task5.dao.RoomDao;
-import task5.dao.model.Guest;
-import task5.dao.model.Room;
+import task5.dao.entity.Guest;
+import task5.dao.entity.Room;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static task5.dao.model.RoomStatus.FREE;
+import static task5.dao.entity.RoomStatus.FREE;
 
 public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     public RoomDaoImpl() {

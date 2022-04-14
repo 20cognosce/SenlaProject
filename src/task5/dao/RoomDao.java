@@ -1,6 +1,6 @@
 package task5.dao;
 
-import task5.dao.model.Room;
+import task5.dao.entity.Room;
 
 import java.time.LocalDate;
 import java.util.List;

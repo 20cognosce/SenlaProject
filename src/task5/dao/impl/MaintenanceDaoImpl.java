@@ -1,9 +1,9 @@
 package task5.dao.impl;
 
 import task5.dao.MaintenanceDao;
-import task5.dao.model.Guest;
-import task5.dao.model.IdSupplier;
-import task5.dao.model.Maintenance;
+import task5.dao.entity.Guest;
+import task5.dao.entity.IdSupplier;
+import task5.dao.entity.Maintenance;
 
 import java.util.Comparator;
 import java.util.List;

@@ -4,7 +4,7 @@ import task5.dao.AbstractDao;
 import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
-import task5.dao.model.AbstractEntity;
+import task5.dao.entity.AbstractEntity;
 import task5.service.AbstractService;
 
 import java.util.List;

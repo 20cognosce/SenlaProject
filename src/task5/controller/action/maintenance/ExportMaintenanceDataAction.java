@@ -7,8 +7,6 @@ import task5.service.MaintenanceService;
 import task5.service.RoomService;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 
 public class ExportMaintenanceDataAction extends AbstractAction {
     public ExportMaintenanceDataAction(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
@@ -18,16 +16,6 @@ public class ExportMaintenanceDataAction extends AbstractAction {
     @Override
     public void execute() {
         File csvFile = new File("src/task5/export_files/maintenance.csv");
-        PrintWriter printWriter;
-
-        try {
-            printWriter = new PrintWriter(csvFile);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        ImportExportUtil.readMaintenanceData(getMaintenanceService()).forEach(printWriter::println);
-        printWriter.close();
+        getMaintenanceService().exportRecordsToFile(ImportExportUtil.getExportedData(getMaintenanceService()), csvFile);
     }
 }

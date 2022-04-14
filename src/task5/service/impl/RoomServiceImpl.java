@@ -4,9 +4,9 @@ import task5.controller.action.SortEnum;
 import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
-import task5.dao.model.Guest;
-import task5.dao.model.Room;
-import task5.dao.model.RoomStatus;
+import task5.dao.entity.Guest;
+import task5.dao.entity.Room;
+import task5.dao.entity.RoomStatus;
 import task5.service.RoomService;
 
 import java.time.LocalDate;
@@ -136,6 +136,11 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
             case BY_STARS: return currentDao.getSorted(listToSort, Comparator.comparingInt(Room::getStarsNumber));
         }
         throw new NoSuchElementException();
+    }
+
+    @Override
+    public String getExportTitleLine() {
+        return "id,Name,Capacity,Stars,Status,Price";
     }
 
     @Override
