@@ -1,8 +1,8 @@
 package task5.dao.impl;
 
 import task5.dao.AbstractDao;
-import task5.dao.model.AbstractEntity;
-import task5.dao.model.IdSupplier;
+import task5.dao.entity.AbstractEntity;
+import task5.dao.entity.IdSupplier;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 import java.util.ArrayList;
@@ -57,5 +57,10 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity> implements Abstr
     @Override
     public long supplyId() {
         return idSupplier.supplyId();
+    }
+
+    @Override
+    public void synchronizeNextSuppliedId(long id) {
+        idSupplier.synchronizeNextSuppliedId(id);
     }
 }

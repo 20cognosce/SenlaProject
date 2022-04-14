@@ -1,0 +1,6 @@
+id,Name,Capacity,Stars,Status,Price
+1,1,2,3,FREE,2000
+2,2,5,4,FREE,5000
+3,3,3,3,UNDER_REPAIR,3500
+4,4,6,4,CLEANING,7500
+5,5,4,5,FREE,9000

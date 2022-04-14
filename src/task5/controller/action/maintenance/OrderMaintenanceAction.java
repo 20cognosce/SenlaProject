@@ -13,8 +13,8 @@ public class OrderMaintenanceAction extends AbstractAction  {
 
     @Override
     public void execute() {
-        long guestId = ConsoleReaderUtil.inputGuestId();
-        long maintenanceId = ConsoleReaderUtil.inputMaintenanceId();
+        long guestId = ConsoleReaderUtil.inputId();
+        long maintenanceId = ConsoleReaderUtil.inputId();
         getMaintenanceService().executeMaintenance(guestId, maintenanceId);
     }
 }

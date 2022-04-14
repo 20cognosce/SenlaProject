@@ -1,7 +1,7 @@
 package task5.controller.action;
 
-import task5.dao.model.MaintenanceCategory;
-import task5.dao.model.RoomStatus;
+import task5.dao.entity.MaintenanceCategory;
+import task5.dao.entity.RoomStatus;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -25,26 +25,10 @@ public class ConsoleReaderUtil {
         return LocalDate.parse(readLine(), dtf);
     }
 
-    public static long inputGuestId() throws InputMismatchException {
+    public static long inputId() throws InputMismatchException {
         Scanner scanner = new Scanner(System.in);
         long id;
-        System.out.println("Введите идентификатор гостя: ");
-        id = scanner.nextLong();
-        return id;
-    }
-
-    public static long inputRoomId() throws InputMismatchException {
-        Scanner scanner = new Scanner(System.in);
-        long id;
-        System.out.println("Введите идентификатор комнаты: ");
-        id = scanner.nextLong();
-        return id;
-    }
-
-    public static long inputMaintenanceId() throws InputMismatchException {
-        Scanner scanner = new Scanner(System.in);
-        long id;
-        System.out.println("Введите идентификатор услуги: ");
+        System.out.println("Введите идентификатор: ");
         id = scanner.nextLong();
         return id;
     }

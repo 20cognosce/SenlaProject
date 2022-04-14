@@ -1,4 +1,4 @@
-package task5.dao.model;
+package task5.dao.entity;
 
 public class IdSupplier {
     private long id;
@@ -9,5 +9,11 @@ public class IdSupplier {
 
     public long supplyId() {
         return ++id;
+    }
+
+    public void synchronizeNextSuppliedId(long id) {
+        while (this.id + 1 != id) {
+            supplyId();
+        }
     }
 }

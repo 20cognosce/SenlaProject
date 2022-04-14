@@ -2,7 +2,7 @@ package task5.controller.action.room;
 
 import task5.controller.action.AbstractAction;
 import task5.controller.action.ConsoleReaderUtil;
-import task5.dao.model.RoomStatus;
+import task5.dao.entity.RoomStatus;
 import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
@@ -24,7 +24,7 @@ public class ChangeRoomStatusAction extends AbstractAction  {
         ArrayList<RoomStatus> roomStatuses;
 
         try {
-            roomId = ConsoleReaderUtil.inputRoomId();
+            roomId = ConsoleReaderUtil.inputId();
             Scanner scanner = new Scanner(System.in);
 
             System.out.println("Выберите текущий статус номера (индекс): ");

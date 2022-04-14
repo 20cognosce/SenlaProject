@@ -4,12 +4,11 @@ import task5.controller.action.SortEnum;
 import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
-import task5.dao.model.Guest;
-import task5.dao.model.Maintenance;
-import task5.dao.model.MaintenanceCategory;
+import task5.dao.entity.Guest;
+import task5.dao.entity.Maintenance;
+import task5.dao.entity.MaintenanceCategory;
 import task5.service.MaintenanceService;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -39,22 +38,24 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
 
     @Override
     public void executeMaintenance(long guestId, long maintenanceId) {
-        Maintenance maintenance;
+        Maintenance maintenanceInstance;
         Guest guest;
         try {
-            maintenance = maintenanceDao.getById(maintenanceId).clone();
+            maintenanceInstance = maintenanceDao.getById(maintenanceId).clone();
             guest = guestDao.getById(guestId);
+            //В оригинале будет храниться время последнего заказа
+            maintenanceDao.getById(maintenanceId).setOrderTime(maintenanceInstance.getOrderTime());
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
-        LocalDateTime time = LocalDateTime.now();
-        System.out.println("Услуга " + maintenance.getName()
+
+        System.out.println("Услуга " + maintenanceInstance.getName()
                 + " для " + guest.getName()
-                + " исполнена. Цена услуги: " + maintenance.getPrice()
-                + "; Дата: " + time.truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME));
-        guest.addMaintenance(maintenance);
-        guest.setPrice(guest.getPrice() + maintenance.getPrice());
+                + " исполнена. Цена услуги: " + maintenanceInstance.getPrice()
+                + "; Дата: " + maintenanceInstance.getOrderTime().truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME));
+        guest.addMaintenance(maintenanceInstance);
+        guest.setPrice(guest.getPrice() + maintenanceInstance.getPrice());
     }
 
     @Override
@@ -101,5 +102,40 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     @Override
     public List<Maintenance> sortMaintenancesOfGuestByTime(long guestId) {
         return getSorted(getMaintenancesOfGuest(guestId), SortEnum.BY_TIME);
+    }
+
+    @Override
+    public void importData(List<List<String>> records) {
+        records.forEach(entry -> {
+            try {
+                long maintenanceId = Long.parseLong(entry.get(0));
+                String name = entry.get(1);
+                int price = Integer.parseInt(entry.get(2));
+                MaintenanceCategory maintenanceCategory = MaintenanceCategory.valueOf(entry.get(3));
+
+                try {
+                    Maintenance maintenance = getById(maintenanceId);
+                    maintenance.setName(name);
+                    maintenance.setPrice(price);
+                    maintenance.setCategory(maintenanceCategory);
+                } catch (NoSuchElementException e) {
+                    maintenanceDao.synchronizeNextSuppliedId(maintenanceId);
+                    createMaintenance(name, price, maintenanceCategory);
+                }
+
+            } catch (Exception e) {
+                System.out.println(e.getClass().getCanonicalName() + ": "  + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public String getExportTitleLine() {
+        return "id,Name,Price,Category";
+    }
+
+    @Override
+    public String exportData(long id) throws NoSuchElementException {
+        return currentDao.exportData(getById(id));
     }
 }

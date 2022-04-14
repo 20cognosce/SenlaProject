@@ -1,4 +1,4 @@
-package task5.dao.model;
+package task5.dao.entity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Guest extends AbstractEntity {
-    private final String passport;
+    private String passport;
     private Room room;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
@@ -26,6 +26,10 @@ public class Guest extends AbstractEntity {
 
     public String getPassport() {
         return passport;
+    }
+
+    public void setPassport(String passport) {
+        this.passport = passport;
     }
 
     public LocalDate getCheckInDate() {

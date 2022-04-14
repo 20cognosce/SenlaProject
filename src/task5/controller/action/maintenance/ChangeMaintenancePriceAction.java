@@ -13,7 +13,7 @@ public class ChangeMaintenancePriceAction extends AbstractAction  {
 
     @Override
     public void execute() {
-        long maintenanceId = ConsoleReaderUtil.inputMaintenanceId();
+        long maintenanceId = ConsoleReaderUtil.inputId();
         System.out.println("Введите новую стоимость услуги: ");
         int maintenancePrice = ConsoleReaderUtil.readInteger();
         getMaintenanceService().setPrice(maintenanceId, maintenancePrice);

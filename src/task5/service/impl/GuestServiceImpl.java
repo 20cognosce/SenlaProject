@@ -4,13 +4,14 @@ import task5.controller.action.SortEnum;
 import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
-import task5.dao.model.Guest;
-import task5.dao.model.Room;
-import task5.dao.model.RoomStatus;
+import task5.dao.entity.Guest;
+import task5.dao.entity.Room;
+import task5.dao.entity.RoomStatus;
 import task5.service.GuestService;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -116,5 +117,54 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     @Override
     public List<Guest> sortByCheckOutDate() {
         return getSorted(getAll(), SortEnum.BY_CHECKOUT_DATE);
+    }
+
+    @Override
+    public void importData(List<List<String>> records) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+        records.forEach(entry -> {
+            try {
+                long guestId = Long.parseLong(entry.get(0));
+                String name = entry.get(1);
+                String passport = entry.get(2);
+                LocalDate checkInDate = LocalDate.parse(entry.get(3), dtf);
+                LocalDate checkOutDate = LocalDate.parse(entry.get(4), dtf);
+                long roomId = Long.parseLong(entry.get(5));
+
+                try {
+                    Guest guest = getById(guestId);
+                    guest.setName(name);
+                    guest.setPassport(passport);
+                    guest.setCheckInDate(checkInDate);
+                    guest.setCheckOutDate(checkOutDate);
+                    if (roomId == 0) {
+                        removeGuestFromRoom(guestId);
+                    } else {
+                        if (roomId != guest.getRoom().getId()) {
+                            removeGuestFromRoom(guestId);
+                            addGuestToRoom(guestId, roomId);
+                        }
+                    }
+                } catch (NoSuchElementException e) {
+                    guestDao.synchronizeNextSuppliedId(guestId);
+                    createGuest(name, passport, checkInDate, checkOutDate, 0);
+                    if (roomId != 0) addGuestToRoom(guestId, roomId);
+                }
+
+            } catch (Exception e) {
+                System.out.println(e.getClass().getCanonicalName() + ": "  + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public String getExportTitleLine() {
+        return "id,Name,Passport,CheckInDate [dd.MM.yyyy],CheckOutDate [dd.MM.yyyy],roomId";
+    }
+
+    @Override
+    public String exportData(long id) throws NoSuchElementException {
+        return currentDao.exportData(getById(id));
     }
 }

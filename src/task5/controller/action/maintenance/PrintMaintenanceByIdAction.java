@@ -14,7 +14,7 @@ public class PrintMaintenanceByIdAction extends AbstractAction  {
 
     @Override
     public void execute() {
-        long maintenanceId = ConsoleReaderUtil.inputMaintenanceId();
+        long maintenanceId = ConsoleReaderUtil.inputId();
         System.out.println(getMaintenanceService().getById(maintenanceId).toString());
     }
 }

@@ -1,9 +1,9 @@
 package task5.dao.impl;
 
 import task5.dao.MaintenanceDao;
-import task5.dao.model.Guest;
-import task5.dao.model.IdSupplier;
-import task5.dao.model.Maintenance;
+import task5.dao.entity.Guest;
+import task5.dao.entity.IdSupplier;
+import task5.dao.entity.Maintenance;
 
 import java.util.Comparator;
 import java.util.List;
@@ -24,5 +24,13 @@ public class MaintenanceDaoImpl extends AbstractDaoImpl<Maintenance> implements 
     @Override
     public List<Maintenance> getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator) {
         return guest.getOrderedMaintenances().stream().sorted(comparator).collect(Collectors.toList());
+    }
+
+    @Override
+    public String exportData(Maintenance maintenance) {
+        return maintenance.getId() + "," +
+                maintenance.getName() + "," +
+                maintenance.getPrice() + "," +
+                maintenance.getCategory();
     }
 }

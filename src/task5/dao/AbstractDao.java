@@ -14,4 +14,7 @@ public interface AbstractDao<T> {
     void addToRepo(T element) throws KeyAlreadyExistsException;
     void deleteFromRepo(T element) throws NoSuchElementException;
     long supplyId();
+    void synchronizeNextSuppliedId(long id);
+
+    String exportData(T element);
 }

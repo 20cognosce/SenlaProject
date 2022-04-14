@@ -1,4 +1,4 @@
-package task5.dao.model;
+package task5.dao.entity;
 
 public enum MaintenanceCategory {
     LOCAL_FOOD,
