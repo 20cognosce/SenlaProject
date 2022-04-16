@@ -16,6 +16,6 @@ public class ExportRoomDataAction extends AbstractAction {
     @Override
     public void execute() {
         File csvFile = new File("src/task5/export_files/room.csv");
-        getRoomService().exportRecordsToFile(ImportExportUtil.getExportedData(getRoomService()), csvFile);
+        getRoomService().exportRecordsToFile(ImportExportUtil.getDataForExport(getRoomService()), csvFile);
     }
 }

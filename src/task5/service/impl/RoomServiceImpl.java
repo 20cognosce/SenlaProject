@@ -120,7 +120,6 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
                     roomDao.synchronizeNextSuppliedId(roomId);
                     createRoom(name, capacity, stars, roomStatus, price);
                 }
-
             } catch (Exception e) {
                 System.out.println(e.getClass().getCanonicalName() + ": "  + e.getMessage());
             }

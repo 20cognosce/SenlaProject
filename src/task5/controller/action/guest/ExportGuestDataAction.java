@@ -16,6 +16,6 @@ public class ExportGuestDataAction extends AbstractAction {
     @Override
     public void execute() {
         File csvFile = new File("src/task5/export_files/guest.csv");
-        getGuestService().exportRecordsToFile(ImportExportUtil.getExportedData(getGuestService()), csvFile);
+        getGuestService().exportRecordsToFile(ImportExportUtil.getDataForExport(getGuestService()), csvFile);
     }
 }
