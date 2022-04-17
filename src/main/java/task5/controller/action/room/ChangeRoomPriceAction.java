@@ -14,7 +14,7 @@ public class ChangeRoomPriceAction extends AbstractAction  {
 
     @Override
     public void execute() {
-        long roomId = ConsoleReaderUtil.inputId();
+        long roomId = ConsoleReaderUtil.inputId("Введите идентификатор комнаты: ");
         System.out.println("Введите новую стоимость номера: ");
         int price = ConsoleReaderUtil.readInteger();
         getRoomService().getById(roomId).setPrice(price);

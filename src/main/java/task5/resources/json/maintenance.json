@@ -15,11 +15,11 @@
   "name" : "Ужин в номер",
   "price" : 800,
   "category" : "LOCAL_FOOD",
-  "orderTime" : null
+  "orderTime" : [ 2022, 4, 18, 0, 14, 12, 252103100 ]
 }, {
   "id" : 4,
   "name" : "Принести доставку в номер",
-  "price" : 100,
+  "price" : 200,
   "category" : "DELIVERY_FOOD",
   "orderTime" : null
 }, {

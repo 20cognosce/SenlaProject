@@ -12,7 +12,7 @@ public class RemoveGuestFromRoomAction extends PrintAllAction {
 
     @Override
     public void execute() {
-        long guestId = ConsoleReaderUtil.inputId();
+        long guestId = ConsoleReaderUtil.inputId("Введите идентификатор гостя: ");
         getGuestService().removeGuestFromRoom(guestId);
     }
 }

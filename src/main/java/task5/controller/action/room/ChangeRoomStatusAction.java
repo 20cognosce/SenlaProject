@@ -33,7 +33,7 @@ public class ChangeRoomStatusAction extends AbstractAction  {
         }
 
         try {
-            roomId = ConsoleReaderUtil.inputId();
+            roomId = ConsoleReaderUtil.inputId("Введите идентификатор комнаты: ");
             Scanner scanner = new Scanner(System.in);
 
             System.out.println("Выберите статус номера (индекс): ");

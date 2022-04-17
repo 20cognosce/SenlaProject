@@ -13,7 +13,7 @@ public class PrintMaintenancesOfGuestSortedAdditionOrder extends AbstractAction 
 
     @Override
     public void execute() {
-        long guestId = ConsoleReaderUtil.inputId();
+        long guestId = ConsoleReaderUtil.inputId("Введите идентификатор гостя: ");
         System.out.println(getMaintenanceService().sortMaintenancesOfGuestByAddition(guestId));
     }
 }

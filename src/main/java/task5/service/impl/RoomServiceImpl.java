@@ -10,6 +10,7 @@ import task5.dao.entity.RoomStatus;
 import task5.service.RoomService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -29,7 +30,9 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
     @Override
     public List<Guest> getGuestsList(long roomId) throws NoSuchElementException {
-        return getById(roomId).getCurrentList();
+        List<Guest> guestList = new ArrayList<>();
+        getById(roomId).getCurrentGuestIdList().forEach(guestId -> guestList.add(guestDao.getById(guestId)));
+        return guestList;
     }
 
     @Override
@@ -44,7 +47,7 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
     @Override
     public List<Room> getFree(LocalDate asAtSpecificDate) {
-        return roomDao.getFree(asAtSpecificDate);
+        return roomDao.getFree(asAtSpecificDate, guestDao);
     }
 
 

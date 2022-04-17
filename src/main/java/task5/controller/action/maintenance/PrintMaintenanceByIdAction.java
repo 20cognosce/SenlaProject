@@ -14,7 +14,7 @@ public class PrintMaintenanceByIdAction extends AbstractAction  {
 
     @Override
     public void execute() {
-        long maintenanceId = ConsoleReaderUtil.inputId();
+        long maintenanceId = ConsoleReaderUtil.inputId("Введите идентификатор услуги: ");
         System.out.println(getMaintenanceService().getById(maintenanceId).toString());
     }
 }

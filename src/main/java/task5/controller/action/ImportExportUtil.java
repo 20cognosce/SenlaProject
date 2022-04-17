@@ -33,7 +33,7 @@ public class ImportExportUtil {
 
         System.out.println("Введите id объектов, чьи данные вы хотите экспортировать (1 Enter = 1 id, 0 - конец ввода): ");
         do {
-            entityId = ConsoleReaderUtil.inputId();
+            entityId = ConsoleReaderUtil.inputId("Введите идентификатор объекта: ");
             if (entityId != 0) idList.add(entityId);
         } while (entityId != 0);
 

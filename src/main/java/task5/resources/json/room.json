@@ -4,26 +4,8 @@
   "price" : 2000,
   "capacity" : 2,
   "starsNumber" : 3,
-  "currentList" : [ {
-    "id" : 4,
-    "name" : "Petrov Petr Petrovich",
-    "price" : 2000,
-    "passport" : "5555666666",
-    "roomId" : 1,
-    "checkInDate" : [ 2022, 3, 1 ],
-    "checkOutDate" : [ 2022, 3, 14 ],
-    "orderedMaintenances" : [ ]
-  } ],
-  "allTimeList" : [ {
-    "id" : 4,
-    "name" : "Petrov Petr Petrovich",
-    "price" : 0,
-    "passport" : "5555666666",
-    "roomId" : 0,
-    "checkInDate" : [ 2022, 3, 1 ],
-    "checkOutDate" : [ 2022, 3, 14 ],
-    "orderedMaintenances" : [ ]
-  } ],
+  "currentGuestIdList" : [ 4 ],
+  "allTimeList" : [ ],
   "roomStatus" : "BUSY",
   "details" : ""
 }, {
@@ -32,7 +14,23 @@
   "price" : 5000,
   "capacity" : 5,
   "starsNumber" : 4,
-  "currentList" : [ {
+  "currentGuestIdList" : [ ],
+  "allTimeList" : [ {
+    "id" : 2,
+    "name" : "Ivanova Maria Ivanovna",
+    "price" : 800,
+    "passport" : "3333444444",
+    "roomId" : 2,
+    "checkInDate" : [ 2022, 3, 2 ],
+    "checkOutDate" : [ 2022, 3, 5 ],
+    "orderedMaintenances" : [ {
+      "id" : 3,
+      "name" : "Ужин в номер",
+      "price" : 800,
+      "category" : "LOCAL_FOOD",
+      "orderTime" : [ 2022, 4, 18, 0, 14, 12, 252103100 ]
+    } ]
+  }, {
     "id" : 1,
     "name" : "Ivanov Ivan Ivanovich",
     "price" : 5000,
@@ -41,36 +39,8 @@
     "checkInDate" : [ 2022, 3, 2 ],
     "checkOutDate" : [ 2022, 3, 5 ],
     "orderedMaintenances" : [ ]
-  }, {
-    "id" : 2,
-    "name" : "Ivanova Maria Ivanovna",
-    "price" : 0,
-    "passport" : "3333444444",
-    "roomId" : 2,
-    "checkInDate" : [ 2022, 3, 2 ],
-    "checkOutDate" : [ 2022, 3, 5 ],
-    "orderedMaintenances" : [ ]
   } ],
-  "allTimeList" : [ {
-    "id" : 1,
-    "name" : "Ivanov Ivan Ivanovich",
-    "price" : 0,
-    "passport" : "1111222222",
-    "roomId" : 0,
-    "checkInDate" : [ 2022, 3, 2 ],
-    "checkOutDate" : [ 2022, 3, 5 ],
-    "orderedMaintenances" : [ ]
-  }, {
-    "id" : 2,
-    "name" : "Ivanova Maria Ivanovna",
-    "price" : 0,
-    "passport" : "3333444444",
-    "roomId" : 0,
-    "checkInDate" : [ 2022, 3, 2 ],
-    "checkOutDate" : [ 2022, 3, 5 ],
-    "orderedMaintenances" : [ ]
-  } ],
-  "roomStatus" : "BUSY",
+  "roomStatus" : "FREE",
   "details" : ""
 }, {
   "id" : 3,
@@ -78,7 +48,7 @@
   "price" : 3500,
   "capacity" : 3,
   "starsNumber" : 3,
-  "currentList" : [ ],
+  "currentGuestIdList" : [ ],
   "allTimeList" : [ ],
   "roomStatus" : "UNDER_REPAIR",
   "details" : ""
@@ -88,7 +58,7 @@
   "price" : 7500,
   "capacity" : 6,
   "starsNumber" : 4,
-  "currentList" : [ ],
+  "currentGuestIdList" : [ ],
   "allTimeList" : [ ],
   "roomStatus" : "CLEANING",
   "details" : ""
@@ -98,7 +68,7 @@
   "price" : 9000,
   "capacity" : 4,
   "starsNumber" : 5,
-  "currentList" : [ ],
+  "currentGuestIdList" : [ ],
   "allTimeList" : [ ],
   "roomStatus" : "FREE",
   "details" : ""

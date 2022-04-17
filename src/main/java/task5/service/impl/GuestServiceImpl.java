@@ -6,7 +6,6 @@ import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;
-import task5.dao.entity.RoomStatus;
 import task5.service.GuestService;
 
 import javax.management.InvalidAttributeValueException;
@@ -16,7 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 
 public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> implements GuestService {
@@ -27,14 +25,16 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     @Override
     public void createGuest(String fullName, String passport,
                             LocalDate checkInTime, LocalDate checkOutTime,
-                            long roomId) throws KeyAlreadyExistsException, NoSuchElementException {
-        if (roomId == 0) {
-            guestDao.addToRepo(
-                    new Guest(guestDao.supplyId(), fullName, passport, checkInTime, checkOutTime, null));
-        } else {
-            guestDao.addToRepo(
-                    new Guest(guestDao.supplyId(), fullName, passport, checkInTime, checkOutTime, roomDao.getById(roomId)));
+                            long roomId) throws KeyAlreadyExistsException {
+        try {
+            if (roomId != 0) roomDao.getById(roomId);
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            return;
         }
+        long suppliedId = guestDao.supplyId();
+        guestDao.addToRepo(new Guest(suppliedId, fullName, passport, checkInTime, checkOutTime, roomId));
+        if (roomId != 0) guestDao.updatePrice(guestDao.getById(suppliedId), roomDao.getById(roomId));
     }
 
     @Override
@@ -44,26 +44,16 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         try {
             guest = guestDao.getById(guestId);
             room = roomDao.getById(roomId);
+            if (room.isUnavailableToSettle()) throw new RuntimeException("Room is unavailable");
+            if (guest.getRoomId() != 0) removeGuestFromRoom(guestId);
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
-        if (room.getRoomStatus() == RoomStatus.UNDER_REPAIR || room.getRoomStatus() == RoomStatus.CLEANING) {
-            throw new RuntimeException("Inappropriate room status");
-        }
-        if (room.getCapacity() <= room.getCurrentList().size()) {
-            throw new RuntimeException("Room's capacity limit is exceeded");
-        }
-        if (!Objects.isNull(guest.getRoom())) {
-            removeGuestFromRoom(guestId);
-        }
-        try {
-            room.addGuest(guest);
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        guest.setRoom(room);
-        guestDao.updatePrice(guest);
+
+        room.addGuest(guest);
+        guest.setRoomId(room.getId());
+        guestDao.updatePrice(guest, room);
     }
 
     @Override
@@ -71,12 +61,8 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         Guest guest;
         try {
             guest = guestDao.getById(guestId);
-            try {
-                guest.getRoom().removeGuest(guest);
-                guest.setRoom(null);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            roomDao.getById(guest.getRoomId()).removeGuest(guest);
+            guest.setRoomId(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -155,7 +141,7 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
             //If room's check fails the entire item fails
             if (roomId != 0) {
                 try {
-                    if (!roomDao.getById(roomId).isAvailableToSettle())
+                    if (roomDao.getById(roomId).isUnavailableToSettle())
                         throw new InvalidAttributeValueException("Room is unavailable");
                 } catch (Exception e) {
                     e.printStackTrace();

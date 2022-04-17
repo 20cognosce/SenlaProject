@@ -14,7 +14,7 @@ public class PrintRoomDetailsAction extends AbstractAction  {
 
     @Override
     public void execute() {
-        long roomId = ConsoleReaderUtil.inputId();
+        long roomId = ConsoleReaderUtil.inputId("Введите идентификатор комнаты: ");
         System.out.println(getRoomService().getById(roomId).getDetails());
     }
 }

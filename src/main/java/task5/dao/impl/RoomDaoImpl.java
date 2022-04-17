@@ -1,5 +1,6 @@
 package task5.dao.impl;
 
+import task5.dao.GuestDao;
 import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;
@@ -26,27 +27,29 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     }
 
     @Override
-    public List<Room> getFree(LocalDate asAtSpecificDate) {
+    public List<Room> getFree(LocalDate asAtSpecificDate, GuestDao guestDao) {
         if (Objects.equals(asAtSpecificDate, LocalDate.now())) {
             return getFree();
         }
 
         List<Room> freeRooms = new ArrayList<>();
         getAll().forEach(room -> {
-            boolean isFree = true;
+            //TODO test lambda false setting
+            final boolean[] isFree = {true};
 
-            if (room.getCurrentList().isEmpty()) {
+            if (room.getCurrentGuestIdList().isEmpty()) {
                 if (room.getRoomStatus() == FREE) {
                     freeRooms.add(room);
                 }
                 return;
             }
 
-            for (Guest guest : room.getCurrentList()) {
+            room.getCurrentGuestIdList().forEach(guestId -> {
+                Guest guest = guestDao.getById(guestId);
                 if (!guest.getCheckInDate().isAfter(asAtSpecificDate) &&
-                        guest.getCheckOutDate().isAfter(asAtSpecificDate)) isFree = false;
-            }
-            if (isFree) {
+                        guest.getCheckOutDate().isAfter(asAtSpecificDate)) isFree[0] = false;
+            });
+            if (isFree[0]) {
                 freeRooms.add(room);
             }
         });

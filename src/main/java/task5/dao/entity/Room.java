@@ -1,7 +1,6 @@
 package task5.dao.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +13,7 @@ import static task5.dao.entity.RoomStatus.FREE;
 public class Room extends AbstractEntity {
     private int capacity;
     private int starsNumber;
-    @JsonManagedReference
-    private final List<Guest> currentList = new ArrayList<>();
-    @JsonManagedReference
+    private final List<Long> currentGuestIdList = new ArrayList<>();
     private final List<Guest> allTimeList = new ArrayList<>();
     private RoomStatus roomStatus;
     private String details;
@@ -32,13 +29,13 @@ public class Room extends AbstractEntity {
 
     //total constructor
     public Room(long id, String name, int price, int capacity, int starsNumber, RoomStatus roomStatus, String details,
-                List<Guest> currentList, List<Guest> allTimeList) {
+                List<Long> currentGuestIdList, List<Guest> allTimeList) {
         super(id, name, price);
         this.capacity = capacity;
         this.starsNumber = starsNumber;
         this.roomStatus = roomStatus;
         this.details = details;
-        this.currentList.addAll(currentList);
+        this.currentGuestIdList.addAll(currentGuestIdList);
         this.allTimeList.addAll(allTimeList);
     }
 
@@ -46,21 +43,21 @@ public class Room extends AbstractEntity {
         super(0, "", 0);
     }
 
-    public void addGuest(Guest guest) throws RuntimeException, CloneNotSupportedException {
-        currentList.add(guest);
-        allTimeList.add(guest.clone());
+    public void addGuest(Guest guest) throws RuntimeException {
+        currentGuestIdList.add(guest.getId());
         setRoomStatus(BUSY);
     }
 
-    public void removeGuest(Guest guest) throws NoSuchElementException {
-        if(!currentList.remove(guest)) {
+    public void removeGuest(Guest guest) throws NoSuchElementException, CloneNotSupportedException {
+        if(!currentGuestIdList.remove(guest.getId())) {
             throw new NoSuchElementException("Such guest does not exist in that room");
         }
-        if (getCurrentList().isEmpty()) setRoomStatus(FREE);
+        allTimeList.add(guest.clone());
+        if (getCurrentGuestIdList().isEmpty()) setRoomStatus(FREE);
     }
 
-    public List<Guest> getCurrentList() {
-        return new ArrayList<>(currentList);
+    public List<Long> getCurrentGuestIdList() {
+        return new ArrayList<>(currentGuestIdList);
     }
 
     public List<Guest> getAllTimeList() {
@@ -103,9 +100,9 @@ public class Room extends AbstractEntity {
     }
 
     @JsonIgnore
-    public boolean isAvailableToSettle() {
-        return (this.getRoomStatus() == FREE || this.getRoomStatus() == BUSY)
-                && (getCurrentList().size() < getCapacity());
+    public boolean isUnavailableToSettle() {
+        return (this.getRoomStatus() != FREE && this.getRoomStatus() != BUSY)
+                || (getCurrentGuestIdList().size() >= getCapacity());
     }
 
     @Override

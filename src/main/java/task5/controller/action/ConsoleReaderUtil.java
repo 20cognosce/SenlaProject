@@ -25,10 +25,10 @@ public class ConsoleReaderUtil {
         return LocalDate.parse(readLine(), dtf);
     }
 
-    public static long inputId() throws InputMismatchException {
+    public static long inputId(String message) throws InputMismatchException {
         Scanner scanner = new Scanner(System.in);
         long id;
-        System.out.println("Введите идентификатор: ");
+        System.out.println(message);
         id = scanner.nextLong();
         return id;
     }

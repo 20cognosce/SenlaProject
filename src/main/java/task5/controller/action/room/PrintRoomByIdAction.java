@@ -13,7 +13,7 @@ public class PrintRoomByIdAction extends AbstractAction  {
 
     @Override
     public void execute() {
-        long roomId = ConsoleReaderUtil.inputId();
+        long roomId = ConsoleReaderUtil.inputId("Введите идентификатор комнаты: ");
         System.out.println(getRoomService().getById(roomId).toString() + getRoomService().getGuestsList(roomId));
     }
 }

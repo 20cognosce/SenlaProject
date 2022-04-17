@@ -1,44 +1,31 @@
 package task5.dao.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Guest extends AbstractEntity implements Cloneable {
     private String passport;
-    @JsonBackReference
-    private Room room;
     private long roomId;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private final List<Maintenance> orderedMaintenances = new ArrayList<>();
 
-
     //new guest constructor
-    public Guest(long id, String name, String passport, LocalDate checkInTime, LocalDate checkOutTime, Room room) {
+    public Guest(long id, String name, String passport, LocalDate checkInTime, LocalDate checkOutTime, long roomId) {
         super(id, name,  0);
         this.passport = passport;
-        this.room = room;
-        if (!Objects.isNull(room)) {
-            setPrice(room.getPrice());
-            roomId = room.getId();
-        } else {
-            roomId = 0;
-        }
         this.checkInDate = checkInTime;
         this.checkOutDate = checkOutTime;
+        this.roomId = roomId;
     }
 
     //total constructor
     public Guest(long id, String name, int price,
-                 String passport, Room room, long roomId,
+                 String passport, long roomId,
                  LocalDate checkInDate, LocalDate checkOutDate, List<Maintenance> orderedMaintenances) {
         super(id, name, price);
         this.passport = passport;
-        this.room = room;
         this.roomId = roomId;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
@@ -81,25 +68,12 @@ public class Guest extends AbstractEntity implements Cloneable {
         orderedMaintenances.add(maintenance);
     }
 
-    public Room getRoom() throws NullPointerException {
-        return room;
-    }
-
     public long getRoomId() {
         return roomId;
     }
 
     public void setRoomId(long roomId) {
         this.roomId = roomId;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-        if (Objects.isNull(room)) {
-            roomId = 0;
-        } else {
-            roomId = room.getId();
-        }
     }
 
     @Override
@@ -109,10 +83,10 @@ public class Guest extends AbstractEntity implements Cloneable {
                     .append("; Гость: ").append(getName())
                     .append("; Паспорт: ").append(getPassport())
                     .append("; Комната: ");
-            try {
-                out.append(getRoom().getName());
-            } catch (NullPointerException e) {
+            if (getRoomId() == 0) {
                 out.append("без комнаты");
+            } else {
+                out.append(getRoomId());
             }
             out.append("; Дата заезда: ").append(getCheckInDate())
                     .append("; Дата выезда: ").append(getCheckOutDate())
@@ -123,19 +97,15 @@ public class Guest extends AbstractEntity implements Cloneable {
 
     @Override
     public Guest clone() throws CloneNotSupportedException {
-        //TODO room is not cloned here
-        Guest clone = (Guest) super.clone();
+        /*
         clone.setPassport(this.getPassport());
         clone.setRoomId(this.getRoomId());
         clone.setCheckInDate(this.getCheckInDate());
         clone.setCheckOutDate(this.getCheckOutDate());
-        this.orderedMaintenances.forEach(maintenance -> {
-            try {
-                clone.orderedMaintenances.add(maintenance.clone());
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-        });
-        return clone;
+        clone.orderedMaintenances.clear();
+        for (Maintenance maintenance : this.getOrderedMaintenances()) {
+            clone.orderedMaintenances.add(maintenance.clone());
+        }*/
+        return (Guest) super.clone();
     }
 }

@@ -13,8 +13,8 @@ public class AddGuestToRoomAction extends AbstractAction {
 
     @Override
     public void execute() {
-        long guestId = ConsoleReaderUtil.inputId();
-        long roomId = ConsoleReaderUtil.inputId();
+        long guestId = ConsoleReaderUtil.inputId("Введите идентификатор гостя: ");
+        long roomId = ConsoleReaderUtil.inputId("Введите идентификатор комнаты: ");
         getGuestService().addGuestToRoom(guestId, roomId);
     }
 }

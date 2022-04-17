@@ -16,19 +16,19 @@ public class JsonReaderUtil {
 
     public static List<Room> loadRooms(File roomFile) throws IOException {
         Room[] rooms = objectMapper.readValue(roomFile, Room[].class);
-        System.out.println(Arrays.toString(rooms));
+        System.out.println("Rooms have been loaded successfully: "+ rooms.length);
         return Arrays.asList(rooms);
     }
 
     public static List<Guest> loadGuests(File guestFile) throws IOException {
         Guest[] guests = objectMapper.readValue(guestFile, Guest[].class);
-        System.out.println(Arrays.toString(guests));
+        System.out.println("Guests have been loaded successfully: "+ guests.length);
         return Arrays.asList(guests);
     }
 
     public static List<Maintenance> loadMaintenances(File maintenanceFile) throws IOException {
         Maintenance[] maintenances = objectMapper.readValue(maintenanceFile, Maintenance[].class);
-        System.out.println(Arrays.toString(maintenances));
+        System.out.println("Maintenances have been loaded successfully: " + maintenances.length);
         return Arrays.asList(maintenances);
     }
 }

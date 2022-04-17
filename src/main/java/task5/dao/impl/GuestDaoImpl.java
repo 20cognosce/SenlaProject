@@ -12,29 +12,20 @@ public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
     }
 
     @Override
-    public void updatePrice(Guest guest) {
-        Room room = guest.getRoom();
+    public void updatePrice(Guest guest, Room room) {
         //pay only the first settled after the room was empty
-        if (!Objects.isNull(room) && room.getCurrentList().size() == 1) {
+        if (!Objects.isNull(room) && room.getCurrentGuestIdList().size() == 1) {
             guest.setPrice(room.getPrice());
         }
     }
 
     @Override
     public String exportData(Guest guest) {
-        StringBuilder line = new StringBuilder();
-        long roomId;
-        try {
-            roomId = guest.getRoom().getId();
-        } catch (NullPointerException e) {
-            roomId = 0L;
-        }
-        line.append(guest.getId()).append(",")
-                .append(guest.getName()).append(",")
-                .append(guest.getPassport()).append(",")
-                .append(guest.getCheckInDate()).append(",")
-                .append(guest.getCheckOutDate()).append(",")
-                .append(roomId);
-        return line.toString();
+        return guest.getId() + "," +
+                guest.getName() + "," +
+                guest.getPassport() + "," +
+                guest.getCheckInDate() + "," +
+                guest.getCheckOutDate() + "," +
+                guest.getRoomId();
     }
 }

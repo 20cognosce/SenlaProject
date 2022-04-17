@@ -14,7 +14,7 @@ public class DeleteGuestAction extends AbstractAction  {
 
     @Override
     public void execute() {
-        long guestId = ConsoleReaderUtil.inputId();
+        long guestId = ConsoleReaderUtil.inputId("Введите идентификатор гостя: ");
         getGuestService().deleteGuest(guestId);
     }
 }

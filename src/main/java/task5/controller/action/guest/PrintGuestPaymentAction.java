@@ -13,7 +13,7 @@ public class PrintGuestPaymentAction extends AbstractAction  {
 
     @Override
     public void execute() {
-        long guestId = ConsoleReaderUtil.inputId();
+        long guestId = ConsoleReaderUtil.inputId("Введите идентификатор гостя: ");
         System.out.println("id: " + guestId + "; К оплате: " + getGuestService().getPriceByGuest(guestId));
     }
 }
