@@ -1,6 +1,0 @@
-id,Name,Passport,CheckInDate[dd.MM.yyyy],CheckOutDate[dd.MM.yyyy],roomId
-1,Ivanov Ivan Ivanovich,1111222222,02.03.2022,05.03.2022,2
-2,Ivanova Maria Ivanovna,3333444444,02.03.2022,05.03.2022,2
-4,Petrov Petr Petrovich,5555666666,01.03.2022,14.03.2022,3
-5,Abramov Nikita Alexandrovich,7777888888,01.03.2022,14.03.2022,0
-6,Yakovleva Margarita Vladimirovna,9999000000,01.03.2022,14.03.2022,0

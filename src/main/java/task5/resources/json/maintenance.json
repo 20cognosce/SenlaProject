@@ -1,0 +1,31 @@
+[ {
+  "id" : 1,
+  "name" : "Завтрак в номер",
+  "price" : 500,
+  "category" : "LOCAL_FOOD",
+  "orderTime" : null
+}, {
+  "id" : 2,
+  "name" : "Обед в номер",
+  "price" : 600,
+  "category" : "LOCAL_FOOD",
+  "orderTime" : null
+}, {
+  "id" : 3,
+  "name" : "Ужин в номер",
+  "price" : 800,
+  "category" : "LOCAL_FOOD",
+  "orderTime" : null
+}, {
+  "id" : 4,
+  "name" : "Принести доставку в номер",
+  "price" : 100,
+  "category" : "DELIVERY_FOOD",
+  "orderTime" : null
+}, {
+  "id" : 5,
+  "name" : "Дополнительный набор для душа",
+  "price" : 200,
+  "category" : "ACCESSORIES",
+  "orderTime" : null
+} ]

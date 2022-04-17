@@ -1,0 +1,46 @@
+[ {
+  "id" : 1,
+  "name" : "Ivanov Ivan Ivanovich",
+  "price" : 5000,
+  "passport" : "1111222222",
+  "roomId" : 2,
+  "checkInDate" : [ 2022, 3, 2 ],
+  "checkOutDate" : [ 2022, 3, 5 ],
+  "orderedMaintenances" : [ ]
+}, {
+  "id" : 2,
+  "name" : "Ivanova Maria Ivanovna",
+  "price" : 0,
+  "passport" : "3333444444",
+  "roomId" : 2,
+  "checkInDate" : [ 2022, 3, 2 ],
+  "checkOutDate" : [ 2022, 3, 5 ],
+  "orderedMaintenances" : [ ]
+}, {
+  "id" : 4,
+  "name" : "Petrov Petr Petrovich",
+  "price" : 2000,
+  "passport" : "5555666666",
+  "roomId" : 1,
+  "checkInDate" : [ 2022, 3, 1 ],
+  "checkOutDate" : [ 2022, 3, 14 ],
+  "orderedMaintenances" : [ ]
+}, {
+  "id" : 5,
+  "name" : "Abramov Nikita Alexandrovich",
+  "price" : 0,
+  "passport" : "7777888888",
+  "roomId" : 0,
+  "checkInDate" : [ 2022, 3, 1 ],
+  "checkOutDate" : [ 2022, 3, 14 ],
+  "orderedMaintenances" : [ ]
+}, {
+  "id" : 6,
+  "name" : "Yakovleva Margarita Vladimirovna",
+  "price" : 0,
+  "passport" : "9999000000",
+  "roomId" : 0,
+  "checkInDate" : [ 2022, 3, 1 ],
+  "checkOutDate" : [ 2022, 3, 14 ],
+  "orderedMaintenances" : [ ]
+} ]
