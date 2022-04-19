@@ -4,6 +4,7 @@ import task5.dao.GuestDao;
 import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;
+import task5.dao.entity.RoomStatus;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -55,6 +56,11 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
         });
 
         return freeRooms;
+    }
+
+    @Override
+    public void setStatus(long roomId, RoomStatus roomStatus) {
+        getById(roomId).setRoomStatus(roomStatus);
     }
 
     @Override
