@@ -1,5 +1,6 @@
 package task5.service.impl;
 
+import task5.controller.PropertiesUtil;
 import task5.controller.action.SortEnum;
 import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
@@ -9,6 +10,7 @@ import task5.dao.entity.Room;
 import task5.dao.entity.RoomStatus;
 import task5.service.RoomService;
 
+import javax.naming.ServiceUnavailableException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,7 +25,8 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     }
 
     @Override
-    public List<Guest> getLastNGuests(long roomId, int N) throws NoSuchElementException {
+    public List<Guest> getLastNGuests(long roomId) throws NoSuchElementException {
+        int N = Integer.parseInt(PropertiesUtil.property.getProperty("GuestsNumberInRoomHistory"));
         List<Guest> allTimeList = roomDao.getById(roomId).getAllTimeList();
         return allTimeList.stream().sorted(Comparator.comparing(Guest::getCheckInDate).reversed()).limit(N).collect(Collectors.toList());
     }
@@ -57,8 +60,10 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     }
 
     @Override
-    public void setStatus(long roomId, RoomStatus roomStatus) {
-        roomDao.getById(roomId).setRoomStatus(roomStatus);
+    public void setStatus(long roomId, RoomStatus roomStatus) throws ServiceUnavailableException {
+        if ("no".equals(PropertiesUtil.property.getProperty("ChangeRoomStatusPossibility")))
+            throw new ServiceUnavailableException("Опция недоступна");
+        roomDao.setStatus(roomId, roomStatus);
     }
 
     @Override
