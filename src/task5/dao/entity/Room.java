@@ -82,6 +82,11 @@ public class Room extends AbstractEntity {
         this.roomStatus = roomStatus;
     }
 
+    public boolean isAvailableToSettle() {
+        return (this.getRoomStatus() == FREE || this.getRoomStatus() == BUSY)
+                && (getGuestsCurrentList().size() < getCapacity());
+    }
+
     @Override
     public String toString() {
         return "id: " + getId() +

@@ -9,12 +9,14 @@ import task5.dao.entity.Room;
 import task5.dao.entity.RoomStatus;
 import task5.service.GuestService;
 
+import javax.management.InvalidAttributeValueException;
 import javax.management.openmbean.KeyAlreadyExistsException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 
 public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> implements GuestService {
@@ -51,6 +53,9 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         }
         if (room.getCapacity() <= room.getGuestsCurrentList().size()) {
             throw new RuntimeException("Room's capacity limit is exceeded");
+        }
+        if (!Objects.isNull(guest.getRoom())) {
+            removeGuestFromRoom(guestId);
         }
         room.addGuest(guest);
         guest.setRoom(room);
@@ -124,36 +129,51 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
         records.forEach(entry -> {
+            long guestId;
+            String name;
+            String passport;
+            LocalDate checkInDate;
+            LocalDate checkOutDate;
+            long roomId;
+
             try {
-                long guestId = Long.parseLong(entry.get(0));
-                String name = entry.get(1);
-                String passport = entry.get(2);
-                LocalDate checkInDate = LocalDate.parse(entry.get(3), dtf);
-                LocalDate checkOutDate = LocalDate.parse(entry.get(4), dtf);
-                long roomId = Long.parseLong(entry.get(5));
-
-                try {
-                    Guest guest = getById(guestId);
-                    guest.setName(name);
-                    guest.setPassport(passport);
-                    guest.setCheckInDate(checkInDate);
-                    guest.setCheckOutDate(checkOutDate);
-                    if (roomId == 0) {
-                        removeGuestFromRoom(guestId);
-                    } else {
-                        if (roomId != guest.getRoom().getId()) {
-                            removeGuestFromRoom(guestId);
-                            addGuestToRoom(guestId, roomId);
-                        }
-                    }
-                } catch (NoSuchElementException e) {
-                    guestDao.synchronizeNextSuppliedId(guestId);
-                    createGuest(name, passport, checkInDate, checkOutDate, 0);
-                    if (roomId != 0) addGuestToRoom(guestId, roomId);
-                }
-
+                guestId = Long.parseLong(entry.get(0));
+                name = entry.get(1);
+                passport = entry.get(2);
+                checkInDate = LocalDate.parse(entry.get(3), dtf);
+                checkOutDate = LocalDate.parse(entry.get(4), dtf);
+                roomId = Long.parseLong(entry.get(5));
             } catch (Exception e) {
                 System.out.println(e.getClass().getCanonicalName() + ": "  + e.getMessage());
+                return;
+            }
+
+            //If room's check fails the entire item fails
+            if (roomId != 0) {
+                try {
+                    if (!roomDao.getById(roomId).isAvailableToSettle())
+                        throw new InvalidAttributeValueException("Room is unavailable");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+
+            try {
+                Guest guest = getById(guestId);
+                guest.setName(name);
+                guest.setPassport(passport);
+                guest.setCheckInDate(checkInDate);
+                guest.setCheckOutDate(checkOutDate);
+                if (roomId == 0) {
+                    removeGuestFromRoom(guestId);
+                } else {
+                    addGuestToRoom(guestId, roomId);
+                }
+            } catch (NoSuchElementException e) {
+                guestDao.synchronizeNextSuppliedId(guestId);
+                createGuest(name, passport, checkInDate, checkOutDate, 0);
+                if (roomId != 0) addGuestToRoom(guestId, roomId);
             }
         });
     }

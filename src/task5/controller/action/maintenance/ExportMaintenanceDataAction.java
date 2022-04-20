@@ -16,6 +16,6 @@ public class ExportMaintenanceDataAction extends AbstractAction {
     @Override
     public void execute() {
         File csvFile = new File("src/task5/export_files/maintenance.csv");
-        getMaintenanceService().exportRecordsToFile(ImportExportUtil.getExportedData(getMaintenanceService()), csvFile);
+        getMaintenanceService().exportRecordsToFile(ImportExportUtil.getDataForExport(getMaintenanceService()), csvFile);
     }
 }

@@ -122,7 +122,6 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
                     maintenanceDao.synchronizeNextSuppliedId(maintenanceId);
                     createMaintenance(name, price, maintenanceCategory);
                 }
-
             } catch (Exception e) {
                 System.out.println(e.getClass().getCanonicalName() + ": "  + e.getMessage());
             }
