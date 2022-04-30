@@ -15,7 +15,7 @@ import static task5.dao.entity.RoomStatus.FREE;
 
 public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     public RoomDaoImpl() {
-        super();
+        super(Room[].class);
     }
 
     @Override

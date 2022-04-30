@@ -23,6 +23,7 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
 
     @Override
     public void createMaintenance(String maintenanceName, int price, MaintenanceCategory category) {
+        maintenanceDao.synchronizeNextSuppliedId(getAll().get(getAll().size() - 1).getId());
         maintenanceDao.addToRepo(new Maintenance(maintenanceDao.supplyId(), maintenanceName, price, category, null));
     }
 

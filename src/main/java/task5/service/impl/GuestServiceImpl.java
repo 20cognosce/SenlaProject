@@ -32,6 +32,7 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
             e.printStackTrace();
             return;
         }
+        guestDao.synchronizeNextSuppliedId(getAll().get(getAll().size() - 1).getId());
         long suppliedId = guestDao.supplyId();
         guestDao.addToRepo(new Guest(suppliedId, fullName, passport, checkInTime, checkOutTime, roomId));
         if (roomId != 0) guestDao.updatePrice(guestDao.getById(suppliedId), roomDao.getById(roomId));
@@ -61,7 +62,9 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         Guest guest;
         try {
             guest = guestDao.getById(guestId);
-            roomDao.getById(guest.getRoomId()).removeGuest(guest);
+
+            guestDao.addToArchivedRepository(guestDao.getById(guestId));
+            roomDao.getById(guest.getRoomId()).removeGuest(guestId);
             guest.setRoomId(0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,6 +75,7 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     public void deleteGuest(long guestId) {
         try {
             removeGuestFromRoom(guestId);
+            guestDao.addToArchivedRepository(guestDao.getById(guestId));
             guestDao.deleteFromRepo(guestDao.getById(guestId));
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,6 +116,22 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     @Override
     public List<Guest> sortByCheckOutDate() {
         return getSorted(getAll(), SortEnum.BY_CHECKOUT_DATE);
+    }
+
+    @Override
+    public void addAllArchived(List<Guest> list) {
+        list.forEach(guest -> {
+            try {
+                guestDao.addToArchivedRepository(guest);
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public List<Guest> getArchivedAll() {
+        return guestDao.getArchivedAll();
     }
 
     @Override

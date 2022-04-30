@@ -1,5 +1,6 @@
 package task5;
 
+import task5.config.ConfigInstaller;
 import task5.controller.Builder;
 import task5.controller.MenuController;
 import task5.controller.Navigator;
@@ -22,17 +23,20 @@ public class Main {
         GuestDao guestDao = new GuestDaoImpl();
         MaintenanceDao maintenanceDao = new MaintenanceDaoImpl();
 
+        ConfigInstaller configInstaller = new ConfigInstaller();
+        configInstaller.installConfiguration(roomDao);
+        configInstaller.installConfiguration(guestDao);
+        configInstaller.installConfiguration(maintenanceDao);
+
         RoomService roomService = new RoomServiceImpl(guestDao, roomDao, maintenanceDao);
         GuestService guestService = new GuestServiceImpl(guestDao, roomDao, maintenanceDao);
         MaintenanceService maintenanceService = new MaintenanceServiceImpl(guestDao, roomDao, maintenanceDao);
 
         Builder builder = new Builder(guestService, roomService, maintenanceService);
         builder.buildMenu();
-        builder.loadSystemState();
         Navigator navigator = new Navigator(builder.getRootMenu());
-
         MenuController menuController = new MenuController(builder, navigator);
+
         menuController.run();
-        builder.saveSystemState();
     }
 }

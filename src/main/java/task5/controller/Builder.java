@@ -1,17 +1,20 @@
 package task5.controller;
 
+import task5.config.Constants;
+import task5.config.json_util.reader.JsonReaderUtil;
+import task5.config.json_util.writer.JsonWriterUtil;
 import task5.controller.action.guest.PrintAllAction;
 import task5.controller.action.guest.*;
 import task5.controller.action.maintenance.PrintAllSortedByPrice;
 import task5.controller.action.maintenance.*;
 import task5.controller.action.room.*;
-import task5.json_util.reader.JsonReaderUtil;
-import task5.json_util.writer.JsonWriterUtil;
+import task5.dao.entity.Guest;
+import task5.dao.entity.Maintenance;
+import task5.dao.entity.Room;
 import task5.service.GuestService;
 import task5.service.MaintenanceService;
 import task5.service.RoomService;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +23,6 @@ public class Builder {
     private final RoomService roomService;
     private final MaintenanceService maintenanceService;
     private Menu rootMenu;
-    private static final File roomJson = new File("src/main/java/task5/resources/json/room.json");
-    private static final File guestJson = new File("src/main/java/task5/resources/json/guest.json");
-    private static final File maintenanceJson = new File("src/main/java/task5/resources/json/maintenance.json");
 
     public Builder (GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         this.guestService = guestService;
@@ -115,9 +115,10 @@ public class Builder {
 
     public void saveSystemState() {
         try {
-            JsonWriterUtil.saveRooms(roomService.getAll(), roomJson);
-            JsonWriterUtil.saveGuests(guestService.getAll(), guestJson);
-            JsonWriterUtil.saveMaintenances(maintenanceService.getAll(), maintenanceJson);
+            JsonWriterUtil.writeConfig(roomService.getAll(), Constants.roomJson);
+            JsonWriterUtil.writeConfig(guestService.getAll(), Constants.guestJson);
+            JsonWriterUtil.writeConfig(maintenanceService.getAll(), Constants.maintenanceJson);
+            JsonWriterUtil.writeConfig(guestService.getArchivedAll(), Constants.archivedGuestJson);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -126,9 +127,10 @@ public class Builder {
 
     public void loadSystemState() {
         try {
-            guestService.addAll(JsonReaderUtil.loadGuests(guestJson));
-            roomService.addAll(JsonReaderUtil.loadRooms(roomJson));
-            maintenanceService.addAll(JsonReaderUtil.loadMaintenances(maintenanceJson));
+            guestService.addAll(JsonReaderUtil.readConfig(Constants.guestJson, Guest[].class));
+            roomService.addAll(JsonReaderUtil.readConfig(Constants.roomJson, Room[].class));
+            maintenanceService.addAll(JsonReaderUtil.readConfig(Constants.maintenanceJson, Maintenance[].class));
+            guestService.addAllArchived(JsonReaderUtil.readConfig(Constants.archivedGuestJson, Guest[].class));
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

@@ -29,8 +29,10 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
     @Override
     public List<Guest> getLastNGuests(long roomId) throws NoSuchElementException {
-        List<Guest> allTimeList = roomDao.getById(roomId).getAllTimeList();
-        return allTimeList.stream().sorted(
+        List<Long> archivedGuestIdList = roomDao.getById(roomId).getArchivedGuestIdList();
+        List<Guest> guestList = new ArrayList<>();
+        archivedGuestIdList.forEach(id -> guestList.add(guestDao.getFromArchivedRepositoryById(id)));
+        return guestList.stream().sorted(
                 Comparator.comparing(Guest::getCheckInDate).reversed()).limit(lastNGuests).collect(Collectors.toList());
     }
 
@@ -43,6 +45,7 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
     @Override
     public void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price) {
+        roomDao.synchronizeNextSuppliedId(getAll().get(getAll().size() - 1).getId());
         roomDao.addToRepo(new Room(roomDao.supplyId(), name, capacity, starsNumber, roomStatus, price));
     }
 

@@ -14,7 +14,7 @@ public class Room extends AbstractEntity {
     private int capacity;
     private int starsNumber;
     private final List<Long> currentGuestIdList = new ArrayList<>();
-    private final List<Guest> allTimeList = new ArrayList<>();
+    private final List<Long> archivedGuestIdList = new ArrayList<>();
     private RoomStatus roomStatus;
     private String details;
 
@@ -29,14 +29,14 @@ public class Room extends AbstractEntity {
 
     //total constructor
     public Room(long id, String name, int price, int capacity, int starsNumber, RoomStatus roomStatus, String details,
-                List<Long> currentGuestIdList, List<Guest> allTimeList) {
+                List<Long> currentGuestIdList, List<Long> archivedGuestIdList) {
         super(id, name, price);
         this.capacity = capacity;
         this.starsNumber = starsNumber;
         this.roomStatus = roomStatus;
         this.details = details;
         this.currentGuestIdList.addAll(currentGuestIdList);
-        this.allTimeList.addAll(allTimeList);
+        this.archivedGuestIdList.addAll(archivedGuestIdList);
     }
 
     public Room() {
@@ -48,11 +48,11 @@ public class Room extends AbstractEntity {
         setRoomStatus(BUSY);
     }
 
-    public void removeGuest(Guest guest) throws NoSuchElementException, CloneNotSupportedException {
-        if(!currentGuestIdList.remove(guest.getId())) {
+    public void removeGuest(long guestId) throws NoSuchElementException {
+        if(!currentGuestIdList.remove(guestId)) {
             throw new NoSuchElementException("Such guest does not exist in that room");
         }
-        allTimeList.add(guest.clone());
+        archivedGuestIdList.add(guestId);
         if (getCurrentGuestIdList().isEmpty()) setRoomStatus(FREE);
     }
 
@@ -60,8 +60,8 @@ public class Room extends AbstractEntity {
         return new ArrayList<>(currentGuestIdList);
     }
 
-    public List<Guest> getAllTimeList() {
-        return new ArrayList<>(allTimeList);
+    public List<Long> getArchivedGuestIdList() {
+        return new ArrayList<>(archivedGuestIdList);
     }
 
     public int getCapacity() {

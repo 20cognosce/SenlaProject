@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 
 public interface AbstractDao<T> {
     List<T> getAll();
+
     T getById(long id) throws NoSuchElementException;
     T getByName(String fullName) throws NoSuchElementException;
     List<T> getSorted(List<T> listToSort, Comparator<T> comparator);

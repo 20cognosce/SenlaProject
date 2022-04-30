@@ -1,0 +1,51 @@
+[ {
+  "id" : 1,
+  "name" : "1",
+  "price" : 2000,
+  "capacity" : 2,
+  "starsNumber" : 3,
+  "currentGuestIdList" : [ 4 ],
+  "archivedGuestIdList" : [ ],
+  "roomStatus" : "BUSY",
+  "details" : ""
+}, {
+  "id" : 2,
+  "name" : "2",
+  "price" : 5000,
+  "capacity" : 5,
+  "starsNumber" : 4,
+  "currentGuestIdList" : [ 1 ],
+  "archivedGuestIdList" : [ 2 ],
+  "roomStatus" : "BUSY",
+  "details" : ""
+}, {
+  "id" : 3,
+  "name" : "3",
+  "price" : 3500,
+  "capacity" : 3,
+  "starsNumber" : 3,
+  "currentGuestIdList" : [ ],
+  "archivedGuestIdList" : [ ],
+  "roomStatus" : "UNDER_REPAIR",
+  "details" : ""
+}, {
+  "id" : 4,
+  "name" : "4",
+  "price" : 7500,
+  "capacity" : 6,
+  "starsNumber" : 4,
+  "currentGuestIdList" : [ ],
+  "archivedGuestIdList" : [ ],
+  "roomStatus" : "CLEANING",
+  "details" : ""
+}, {
+  "id" : 5,
+  "name" : "5",
+  "price" : 9000,
+  "capacity" : 4,
+  "starsNumber" : 5,
+  "currentGuestIdList" : [ ],
+  "archivedGuestIdList" : [ ],
+  "roomStatus" : "FREE",
+  "details" : ""
+} ]

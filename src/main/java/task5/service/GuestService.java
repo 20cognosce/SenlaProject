@@ -18,4 +18,7 @@ public interface GuestService extends AbstractService<Guest> {
     List<Guest> sortByAddition();
     List<Guest> sortByAlphabet();
     List<Guest> sortByCheckOutDate();
+
+    void addAllArchived(List<Guest> list);
+    List<Guest> getArchivedAll();
 }
