@@ -1,5 +1,6 @@
 package task5.service.impl;
 
+import task5.config.DI.DependencyDaoAutowired;
 import task5.dao.AbstractDao;
 import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
@@ -11,16 +12,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends AbstractDao<T>> implements AbstractService<T> {
+    @DependencyDaoAutowired()
     protected D currentDao;
+    @DependencyDaoAutowired(daoClass = GuestDao.class)
     protected GuestDao guestDao;
+    @DependencyDaoAutowired(daoClass = RoomDao.class)
     protected RoomDao roomDao;
+    @DependencyDaoAutowired(daoClass = MaintenanceDao.class)
     protected MaintenanceDao maintenanceDao;
+    private final Class<D> typeParameterClass;
 
-    public AbstractServiceImpl (D currentDao, GuestDao guestDao, RoomDao roomDao, MaintenanceDao maintenanceDao) {
-        this.guestDao = guestDao;
-        this.maintenanceDao = maintenanceDao;
-        this.roomDao = roomDao;
-        this.currentDao = currentDao;
+    AbstractServiceImpl(Class<D> typeParameterClass) {
+        this.typeParameterClass = typeParameterClass;
     }
 
     @Override

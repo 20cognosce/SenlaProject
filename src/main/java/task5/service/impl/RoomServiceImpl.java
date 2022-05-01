@@ -2,8 +2,6 @@ package task5.service.impl;
 
 import task5.controller.PropertiesUtil;
 import task5.controller.action.SortEnum;
-import task5.dao.GuestDao;
-import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;
@@ -20,12 +18,11 @@ import java.util.stream.Collectors;
 
 
 public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implements RoomService {
+    public RoomServiceImpl() {
+        super(RoomDao.class);
+    }
     String changeRoomStatusPossibility = PropertiesUtil.property.getProperty("ChangeRoomStatusPossibility");
     int lastNGuests = Integer.parseInt(PropertiesUtil.property.getProperty("GuestsNumberInRoomHistory"));
-
-    public RoomServiceImpl (GuestDao guestDao, RoomDao roomDao, MaintenanceDao maintenanceDao) {
-        super(roomDao, guestDao, roomDao, maintenanceDao);
-    }
 
     @Override
     public List<Guest> getLastNGuests(long roomId) throws NoSuchElementException {

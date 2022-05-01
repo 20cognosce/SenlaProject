@@ -1,6 +1,6 @@
 package task5.controller;
 
-import task5.config.Constants;
+import task5.config.CI.Constants;
 
 import java.io.FileInputStream;
 import java.io.IOException;

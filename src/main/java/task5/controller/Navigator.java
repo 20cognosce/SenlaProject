@@ -1,15 +1,14 @@
 package task5.controller;
 
+import task5.config.DI.DependencyMenuAutowired;
+
 import java.util.Locale;
 import java.util.Objects;
 
 public class Navigator {
+    @DependencyMenuAutowired(menuClass = Menu.class)
     Menu currentMenu;
     int indexOfAction = -1;
-
-    public Navigator(Menu currentMenu) {
-        this.currentMenu = currentMenu;
-    }
 
     void doAction() {
         currentMenu.getMenuItems().get(indexOfAction).doAction();

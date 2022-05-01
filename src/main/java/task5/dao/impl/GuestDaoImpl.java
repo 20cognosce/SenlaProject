@@ -1,7 +1,7 @@
 package task5.dao.impl;
 
-import task5.config.ConfigFileEnum;
-import task5.config.ConfigProperty;
+import task5.config.CI.ConfigFileEnum;
+import task5.config.CI.ConfigProperty;
 import task5.dao.GuestDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;

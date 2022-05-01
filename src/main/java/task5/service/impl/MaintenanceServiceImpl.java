@@ -1,9 +1,7 @@
 package task5.service.impl;
 
 import task5.controller.action.SortEnum;
-import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
-import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Maintenance;
 import task5.dao.entity.MaintenanceCategory;
@@ -17,10 +15,9 @@ import java.util.NoSuchElementException;
 
 
 public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, MaintenanceDao> implements MaintenanceService {
-    public MaintenanceServiceImpl (GuestDao guestDao, RoomDao roomDao, MaintenanceDao maintenanceDao) {
-        super(maintenanceDao, guestDao, roomDao, maintenanceDao);
+    public MaintenanceServiceImpl() {
+        super(MaintenanceDao.class);
     }
-
     @Override
     public void createMaintenance(String maintenanceName, int price, MaintenanceCategory category) {
         maintenanceDao.synchronizeNextSuppliedId(getAll().get(getAll().size() - 1).getId());

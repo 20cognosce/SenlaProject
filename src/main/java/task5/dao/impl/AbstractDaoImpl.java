@@ -1,7 +1,7 @@
 package task5.dao.impl;
 
-import task5.config.ConfigFileEnum;
-import task5.config.ConfigProperty;
+import task5.config.CI.ConfigFileEnum;
+import task5.config.CI.ConfigProperty;
 import task5.dao.AbstractDao;
 import task5.dao.entity.*;
 
@@ -18,7 +18,7 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity> implements Abstr
     @ConfigProperty(configFileEnum = ConfigFileEnum.MAINTENANCE_JSON, type = Maintenance[].class)
     private final List<T> repository = new ArrayList<>();
     private final IdSupplier idSupplier = new IdSupplier();
-    protected final Class<T[]> typeParameterClassArray;
+    private final Class<T[]> typeParameterClassArray;
 
     AbstractDaoImpl(Class<T[]> typeParameterClassArray) {
         this.typeParameterClassArray = typeParameterClassArray;

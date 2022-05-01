@@ -1,8 +1,8 @@
-package task5.config;
+package task5.config.CI;
 
 import java.lang.annotation.*;
 
-import static task5.config.ConfigFileEnum.DEFAULT_JSON;
+import static task5.config.CI.ConfigFileEnum.DEFAULT_JSON;
 
 @Repeatable(ConfigProperties.class)
 @Retention(RetentionPolicy.RUNTIME)

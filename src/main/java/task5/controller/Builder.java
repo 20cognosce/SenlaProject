@@ -1,6 +1,7 @@
 package task5.controller;
 
-import task5.config.Constants;
+import task5.config.CI.Constants;
+import task5.config.DI.DependencyServiceAutowired;
 import task5.config.json_util.reader.JsonReaderUtil;
 import task5.config.json_util.writer.JsonWriterUtil;
 import task5.controller.action.guest.PrintAllAction;
@@ -19,25 +20,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Builder {
-    private final GuestService guestService;
-    private final RoomService roomService;
-    private final MaintenanceService maintenanceService;
-    private Menu rootMenu;
-
-    public Builder (GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
-        this.guestService = guestService;
-        this.roomService = roomService;
-        this.maintenanceService = maintenanceService;
-    }
+    @DependencyServiceAutowired(serviceClass = GuestService.class)
+    private GuestService guestService;
+    @DependencyServiceAutowired(serviceClass = RoomService.class)
+    private RoomService roomService;
+    @DependencyServiceAutowired(serviceClass = MaintenanceService.class)
+    private MaintenanceService maintenanceService;
+    private final List<MenuItem> rootMenuList = new ArrayList<>();
+    private final Menu rootMenu = new Menu ("Главное меню управления отелем", rootMenuList);
 
     public Menu getRootMenu() {
         return rootMenu;
     }
 
     public void buildMenu() {
-        List<MenuItem> rootMenuList = new ArrayList<>();
-        rootMenu = new Menu ("Главное меню управления отелем", rootMenuList);
-
         List<MenuItem> guestMenuItemsList = new ArrayList<>();
         List<MenuItem> roomMenuItemsList = new ArrayList<>();
         List<MenuItem> maintenanceMenuItemsList = new ArrayList<>();
@@ -110,7 +106,6 @@ public class Builder {
         maintenanceMenuItemsList.add(new MenuItem("Полная информация об услуге", new PrintMaintenanceByIdAction(guestService, roomService, maintenanceService),null, rootMenu));
         maintenanceMenuItemsList.add(new MenuItem("Импортировать данные услуг", new ImportMaintenanceDataAction(guestService, roomService, maintenanceService), null, rootMenu));
         maintenanceMenuItemsList.add(new MenuItem("Экспортировать данные услуг", new ExportMaintenanceDataAction(guestService, roomService, maintenanceService), null, rootMenu));
-
     }
 
     public void saveSystemState() {

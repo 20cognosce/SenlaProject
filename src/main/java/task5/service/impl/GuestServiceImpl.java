@@ -2,8 +2,6 @@ package task5.service.impl;
 
 import task5.controller.action.SortEnum;
 import task5.dao.GuestDao;
-import task5.dao.MaintenanceDao;
-import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;
 import task5.service.GuestService;
@@ -18,8 +16,8 @@ import java.util.NoSuchElementException;
 
 
 public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> implements GuestService {
-    public GuestServiceImpl (GuestDao guestDao, RoomDao roomDao, MaintenanceDao maintenanceDao) {
-        super(guestDao, guestDao, roomDao, maintenanceDao);
+    public GuestServiceImpl () {
+        super(GuestDao.class);
     }
 
     @Override

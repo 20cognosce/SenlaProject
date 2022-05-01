@@ -1,4 +1,4 @@
-package task5.config;
+package task5.config.CI;
 
 import task5.config.json_util.reader.JsonReaderUtil;
 import task5.dao.impl.AbstractDaoImpl;
@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ConfigInstaller {
-    public void installConfiguration(Object bean) {
+public class ConfigInjector {
+
+    public static void injectConfiguration(@Configurable Object bean) {
         Class<?> beanClass = bean.getClass();
         List<Field> declaredFields = getAllFields(new ArrayList<>(), beanClass);
 
@@ -28,7 +29,7 @@ public class ConfigInstaller {
                         Class<?> type = ((Class<?>) classField.get(bean)).getComponentType();
 
                         if (type == configProperty.type().getComponentType()) {
-                            installFieldConfig(bean, field, configProperty);
+                            injectFieldConfig(bean, field, configProperty);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -40,7 +41,7 @@ public class ConfigInstaller {
 
     //Пока работает только для репозиториев в DAO
     @SuppressWarnings("unchecked сast")
-    private <T> void installFieldConfig(Object bean, Field field, ConfigProperty configProperty) {
+    public static <T> void injectFieldConfig(Object bean, Field field, ConfigProperty configProperty) {
         if (configProperty.type().isArray()) {
             try {
                 File file = configProperty.configFileEnum().getConfigFile();
@@ -56,7 +57,7 @@ public class ConfigInstaller {
         }
     }
 
-    private List<Field> getAllFields(List<Field> fields, Class<?> objectClass) {
+    public static List<Field> getAllFields(List<Field> fields, Class<?> objectClass) {
         fields.addAll(Arrays.asList(objectClass.getDeclaredFields()));
         if (objectClass.getSuperclass() != null) {
             getAllFields(fields, objectClass.getSuperclass());

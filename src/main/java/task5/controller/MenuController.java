@@ -1,15 +1,11 @@
 package task5.controller;
 
+import task5.config.DI.DependencyNavigatorAutowired;
 import task5.controller.action.ConsoleReaderUtil;
 
 public class MenuController {
-    Builder builder;
+    @DependencyNavigatorAutowired(navigatorClass = Navigator.class)
     Navigator navigator;
-
-    public MenuController (Builder builder, Navigator navigator) {
-        this.navigator = navigator;
-        this.builder = builder;
-    }
 
     public void run() {
         int index = -1;
