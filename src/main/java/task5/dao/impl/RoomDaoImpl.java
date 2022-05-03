@@ -1,5 +1,6 @@
 package task5.dao.impl;
 
+import task5.build.factory.CustomSingleton;
 import task5.dao.GuestDao;
 import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
@@ -13,6 +14,7 @@ import java.util.Objects;
 
 import static task5.dao.entity.RoomStatus.FREE;
 
+@CustomSingleton
 public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     public RoomDaoImpl() {
         super(Room[].class);

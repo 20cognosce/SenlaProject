@@ -1,4 +1,4 @@
-package task5.config.CI;
+package task5.build.config;
 
 import java.io.File;
 

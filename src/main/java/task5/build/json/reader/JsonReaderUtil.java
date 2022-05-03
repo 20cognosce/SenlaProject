@@ -1,4 +1,4 @@
-package task5.config.json_util.reader;
+package task5.build.json.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

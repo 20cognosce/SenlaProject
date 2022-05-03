@@ -1,12 +1,14 @@
 package task5.controller;
 
-import task5.config.DI.DependencyMenuAutowired;
+import task5.build.DI.DependencyAutowired;
+import task5.build.factory.CustomSingleton;
 
 import java.util.Locale;
 import java.util.Objects;
 
+@CustomSingleton
 public class Navigator {
-    @DependencyMenuAutowired(menuClass = Menu.class)
+    @DependencyAutowired(dependencyClass = Menu.class)
     Menu currentMenu;
     int indexOfAction = -1;
 

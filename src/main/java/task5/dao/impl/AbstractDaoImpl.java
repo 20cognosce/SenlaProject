@@ -1,7 +1,7 @@
 package task5.dao.impl;
 
-import task5.config.CI.ConfigFileEnum;
-import task5.config.CI.ConfigProperty;
+import task5.build.config.ConfigFileEnum;
+import task5.build.config.ConfigProperty;
 import task5.dao.AbstractDao;
 import task5.dao.entity.*;
 

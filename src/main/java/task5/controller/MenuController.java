@@ -1,10 +1,12 @@
 package task5.controller;
 
-import task5.config.DI.DependencyNavigatorAutowired;
+import task5.build.DI.DependencyAutowired;
+import task5.build.factory.CustomSingleton;
 import task5.controller.action.ConsoleReaderUtil;
 
+@CustomSingleton
 public class MenuController {
-    @DependencyNavigatorAutowired(navigatorClass = Navigator.class)
+    @DependencyAutowired(dependencyClass = Navigator.class)
     Navigator navigator;
 
     public void run() {

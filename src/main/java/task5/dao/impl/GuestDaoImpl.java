@@ -1,7 +1,8 @@
 package task5.dao.impl;
 
-import task5.config.CI.ConfigFileEnum;
-import task5.config.CI.ConfigProperty;
+import task5.build.config.ConfigFileEnum;
+import task5.build.config.ConfigProperty;
+import task5.build.factory.CustomSingleton;
 import task5.dao.GuestDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+@CustomSingleton
 public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
     @ConfigProperty(configFileEnum = ConfigFileEnum.ARCHIVED_GUEST_JSON, type = Guest[].class)
     private final List<Guest> archivedRepository = new ArrayList<>();

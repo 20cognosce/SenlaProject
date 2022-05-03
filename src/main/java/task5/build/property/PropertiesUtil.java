@@ -1,6 +1,6 @@
-package task5.controller;
+package task5.build.property;
 
-import task5.config.CI.Constants;
+import task5.build.config.Constants;
 
 import java.io.FileInputStream;
 import java.io.IOException;

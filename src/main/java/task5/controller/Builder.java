@@ -1,9 +1,10 @@
 package task5.controller;
 
-import task5.config.CI.Constants;
-import task5.config.DI.DependencyServiceAutowired;
-import task5.config.json_util.reader.JsonReaderUtil;
-import task5.config.json_util.writer.JsonWriterUtil;
+import task5.build.DI.DependencyAutowired;
+import task5.build.config.Constants;
+import task5.build.factory.CustomSingleton;
+import task5.build.json.reader.JsonReaderUtil;
+import task5.build.json.writer.JsonWriterUtil;
 import task5.controller.action.guest.PrintAllAction;
 import task5.controller.action.guest.*;
 import task5.controller.action.maintenance.PrintAllSortedByPrice;
@@ -19,12 +20,13 @@ import task5.service.RoomService;
 import java.util.ArrayList;
 import java.util.List;
 
+@CustomSingleton
 public class Builder {
-    @DependencyServiceAutowired(serviceClass = GuestService.class)
+    @DependencyAutowired(dependencyClass = GuestService.class)
     private GuestService guestService;
-    @DependencyServiceAutowired(serviceClass = RoomService.class)
+    @DependencyAutowired(dependencyClass = RoomService.class)
     private RoomService roomService;
-    @DependencyServiceAutowired(serviceClass = MaintenanceService.class)
+    @DependencyAutowired(dependencyClass = MaintenanceService.class)
     private MaintenanceService maintenanceService;
     private final List<MenuItem> rootMenuList = new ArrayList<>();
     private final Menu rootMenu = new Menu ("Главное меню управления отелем", rootMenuList);

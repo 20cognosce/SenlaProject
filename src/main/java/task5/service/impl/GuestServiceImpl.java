@@ -1,5 +1,6 @@
 package task5.service.impl;
 
+import task5.build.factory.CustomSingleton;
 import task5.controller.action.SortEnum;
 import task5.dao.GuestDao;
 import task5.dao.entity.Guest;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 
+@CustomSingleton
 public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> implements GuestService {
     public GuestServiceImpl () {
         super(GuestDao.class);

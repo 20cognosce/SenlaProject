@@ -1,4 +1,4 @@
-package task5.config.DI;
+package task5.build.DI;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface DependencyDaoAutowired {
-    Class<?> daoClass() default String.class;
+public @interface DependencyAutowired {
+    Class<?> dependencyClass() default String.class;
 }
