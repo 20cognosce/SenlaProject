@@ -7,6 +7,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface DependencyAutowired {
-    Class<?> dependencyClass() default String.class;
+public @interface Autowired {
 }

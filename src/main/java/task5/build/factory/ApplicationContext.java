@@ -13,10 +13,9 @@ public class ApplicationContext {
         this.config = config;
     }
 
-    @SuppressWarnings("unchecked cast")
+    @SuppressWarnings("unchecked")
     public <T> T getObject(Class<T> type) {
         if (cache.containsKey(type)) {
-            System.out.println("get " + type.getCanonicalName());
             return (T) cache.get(type);
         }
 
@@ -26,8 +25,7 @@ public class ApplicationContext {
         }
 
         T t = factory.createObject(implClass);
-        if (implClass.isAnnotationPresent(CustomSingleton.class)) {
-            System.out.println("put " + type.getCanonicalName() + " " + t.toString());
+        if (implClass.isAnnotationPresent(Component.class)) {
             cache.put(type, t);
         }
 

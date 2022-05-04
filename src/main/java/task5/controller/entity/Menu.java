@@ -1,4 +1,4 @@
-package task5.controller;
+package task5.controller.entity;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ public class Menu {
     private final String name;
     private final List<MenuItem> menuItems;
 
-    Menu (String name, List<MenuItem> menuItems) {
+    public Menu (String name, List<MenuItem> menuItems) {
         this.name = name;
         this.menuItems = menuItems;
     }

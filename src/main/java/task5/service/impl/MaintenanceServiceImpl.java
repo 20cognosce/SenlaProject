@@ -1,6 +1,6 @@
 package task5.service.impl;
 
-import task5.build.factory.CustomSingleton;
+import task5.build.factory.Component;
 import task5.controller.action.SortEnum;
 import task5.dao.MaintenanceDao;
 import task5.dao.entity.Guest;
@@ -14,7 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@CustomSingleton
+@Component
 public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, MaintenanceDao> implements MaintenanceService {
     public MaintenanceServiceImpl() {
         super(MaintenanceDao.class);

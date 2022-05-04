@@ -1,6 +1,6 @@
 package task5.service.impl;
 
-import task5.build.factory.CustomSingleton;
+import task5.build.factory.Component;
 import task5.build.property.PropertiesUtil;
 import task5.controller.action.SortEnum;
 import task5.dao.RoomDao;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-@CustomSingleton
+@Component
 public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implements RoomService {
     public RoomServiceImpl() {
         super(RoomDao.class);

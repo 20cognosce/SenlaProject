@@ -1,6 +1,7 @@
 package task5.service.impl;
 
-import task5.build.DI.DependencyAutowired;
+import task5.build.DI.Autowired;
+import task5.build.factory.Component;
 import task5.dao.AbstractDao;
 import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
@@ -11,15 +12,17 @@ import task5.service.AbstractService;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+@Component
 public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends AbstractDao<T>> implements AbstractService<T> {
-    @DependencyAutowired()
+    @Autowired
     protected D currentDao;
-    @DependencyAutowired(dependencyClass = GuestDao.class)
+    @Autowired
     protected GuestDao guestDao;
-    @DependencyAutowired(dependencyClass = RoomDao.class)
+    @Autowired
     protected RoomDao roomDao;
-    @DependencyAutowired(dependencyClass = MaintenanceDao.class)
+    @Autowired
     protected MaintenanceDao maintenanceDao;
+    @SuppressWarnings("FieldCanBeLocal")
     private final Class<D> typeParameterClass;
 
     AbstractServiceImpl(Class<D> typeParameterClass) {

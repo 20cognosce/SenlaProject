@@ -2,6 +2,7 @@ package task5.dao.impl;
 
 import task5.build.config.ConfigFileEnum;
 import task5.build.config.ConfigProperty;
+import task5.build.factory.Component;
 import task5.dao.AbstractDao;
 import task5.dao.entity.*;
 
@@ -12,12 +13,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+@Component
 public abstract class AbstractDaoImpl<T extends AbstractEntity> implements AbstractDao<T> {
     @ConfigProperty(configFileEnum = ConfigFileEnum.ROOM_JSON, type = Room[].class)
     @ConfigProperty(configFileEnum = ConfigFileEnum.GUEST_JSON, type = Guest[].class)
     @ConfigProperty(configFileEnum = ConfigFileEnum.MAINTENANCE_JSON, type = Maintenance[].class)
     private final List<T> repository = new ArrayList<>();
     private final IdSupplier idSupplier = new IdSupplier();
+    @SuppressWarnings("FieldCanBeLocal")
     private final Class<T[]> typeParameterClassArray;
 
     AbstractDaoImpl(Class<T[]> typeParameterClassArray) {
