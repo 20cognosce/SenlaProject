@@ -5,7 +5,6 @@ import task5.controller.action.SortEnum;
 import task5.dao.GuestDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;
-import task5.dao.impl.GuestDaoImpl;
 import task5.service.GuestService;
 
 import javax.management.InvalidAttributeValueException;
