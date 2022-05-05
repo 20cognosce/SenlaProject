@@ -26,12 +26,7 @@ public class ConfigInjector {
 
             Arrays.stream(annotations).forEach(configProperty -> {
                 try {
-                    /* я вынужден хранить класс сущности в AbstractDao,
-                    иначе я не знаю какая именно имплементация сейчас конфигурируется */
-                    Field classField = bean.getClass().getSuperclass().getDeclaredField("typeParameterClassArray");
-                    classField.setAccessible(true);
-                    Class<?> type = ((Class<?>) classField.get(bean)).getComponentType();
-
+                    Class<?> type = ((AbstractDao<?>) bean).getDaoEntity().getClass();
                     if (type == configProperty.type().getComponentType()) {
                         injectFieldConfig(bean, field, configProperty);
                     }
@@ -42,14 +37,12 @@ public class ConfigInjector {
         });
     }
 
-    //Пока работает только для репозиториев в DAO
-    @SuppressWarnings("unchecked сast")
     private <T> void injectFieldConfig(Object bean, Field field, ConfigProperty configProperty) {
         if (configProperty.type().isArray()) {
             try {
                 File file = configProperty.configFileEnum().getConfigFile();
                 Class<T[]> type = (Class<T[]>) configProperty.type();
-                Object valueList = JsonReaderUtil.readConfig(file, type);
+                List<T> valueList = JsonReaderUtil.readConfig(file, type);
 
                 if (AbstractDaoImpl.class.isAssignableFrom(bean.getClass())) {
                     field.set(bean, valueList);

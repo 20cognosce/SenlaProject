@@ -20,12 +20,9 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity> implements Abstr
     @ConfigProperty(configFileEnum = ConfigFileEnum.MAINTENANCE_JSON, type = Maintenance[].class)
     private final List<T> repository = new ArrayList<>();
     private final IdSupplier idSupplier = new IdSupplier();
-    @SuppressWarnings("FieldCanBeLocal")
-    private final Class<T[]> typeParameterClassArray;
 
-    AbstractDaoImpl(Class<T[]> typeParameterClassArray) {
-        this.typeParameterClassArray = typeParameterClassArray;
-    }
+    @Override
+    public abstract T getDaoEntity();
 
     @Override
     public List<T> getAll() {
@@ -53,9 +50,11 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity> implements Abstr
 
     @Override
     public void addToRepo(T element) throws KeyAlreadyExistsException {
-        if (repository.contains(element)) {
-            throw new KeyAlreadyExistsException();
-        }
+        repository.forEach(e -> {
+            if (element.getId() == e.getId()) {
+                throw new KeyAlreadyExistsException(element + " == " + e);
+            }
+        });
         repository.add(element);
     }
 

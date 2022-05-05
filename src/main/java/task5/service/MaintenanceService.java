@@ -1,13 +1,14 @@
 package task5.service;
 
 import task5.controller.action.SortEnum;
+import task5.dao.MaintenanceDao;
 import task5.dao.entity.Maintenance;
 import task5.dao.entity.MaintenanceCategory;
 
 import java.util.Comparator;
 import java.util.List;
 
-public interface MaintenanceService extends AbstractService<Maintenance>{
+public interface MaintenanceService extends AbstractService<Maintenance, MaintenanceDao>{
     void createMaintenance(String maintenanceName, int price, MaintenanceCategory category);
     List<Maintenance> getMaintenancesOfGuest(long guestId);
     List<Maintenance> getMaintenancesOfGuest(long guestId, Comparator<Maintenance> comparator);

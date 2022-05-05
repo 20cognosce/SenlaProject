@@ -5,6 +5,7 @@ import task5.controller.action.SortEnum;
 import task5.dao.GuestDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;
+import task5.dao.impl.GuestDaoImpl;
 import task5.service.GuestService;
 
 import javax.management.InvalidAttributeValueException;
@@ -19,7 +20,7 @@ import java.util.NoSuchElementException;
 @Component
 public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> implements GuestService {
     public GuestServiceImpl () {
-        super(GuestDao.class);
+        super();
     }
 
     @Override
@@ -85,10 +86,10 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     @Override
     public List<Guest> getSorted(List<Guest> listToSort, SortEnum sortBy) throws NoSuchElementException {
         switch (sortBy) {
-            case BY_ADDITION: return currentDao.getSorted(listToSort, Comparator.comparingLong(Guest::getId));
-            case BY_PRICE: return currentDao.getSorted(listToSort, Comparator.comparingInt(Guest::getPrice));
-            case BY_ALPHABET: return currentDao.getSorted(listToSort, Comparator.comparing(Guest::getName));
-            case BY_CHECKOUT_DATE: return currentDao.getSorted(listToSort, Comparator.comparing(Guest::getCheckOutDate));
+            case BY_ADDITION: return getDefaultDao().getSorted(listToSort, Comparator.comparingLong(Guest::getId));
+            case BY_PRICE: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Guest::getPrice));
+            case BY_ALPHABET: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Guest::getName));
+            case BY_CHECKOUT_DATE: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Guest::getCheckOutDate));
         }
         throw new NoSuchElementException();
     }
@@ -195,6 +196,12 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
 
     @Override
     public String exportData(long id) throws NoSuchElementException {
-        return currentDao.exportData(getById(id));
+        return getDefaultDao().exportData(getById(id));
     }
+
+    @Override
+    public GuestDao getDefaultDao() {
+        return guestDao;
+    }
+
 }

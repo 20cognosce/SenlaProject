@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 @Component
 public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, MaintenanceDao> implements MaintenanceService {
     public MaintenanceServiceImpl() {
-        super(MaintenanceDao.class);
+        super();
     }
     @Override
     public void createMaintenance(String maintenanceName, int price, MaintenanceCategory category) {
@@ -65,10 +65,10 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     @Override
     public List<Maintenance> getSorted(List<Maintenance> listToSort, SortEnum sortBy) throws NoSuchElementException {
         switch (sortBy) {
-            case BY_ADDITION: return currentDao.getSorted(listToSort, Comparator.comparingLong(Maintenance::getId));
-            case BY_PRICE: return currentDao.getSorted(listToSort, Comparator.comparingInt(Maintenance::getPrice));
-            case BY_CATEGORY: return currentDao.getSorted(listToSort, Comparator.comparing(Maintenance::getCategory));
-            case BY_TIME: return currentDao.getSorted(listToSort, Comparator.comparing(Maintenance::getOrderTime));
+            case BY_ADDITION: return getDefaultDao().getSorted(listToSort, Comparator.comparingLong(Maintenance::getId));
+            case BY_PRICE: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Maintenance::getPrice));
+            case BY_CATEGORY: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Maintenance::getCategory));
+            case BY_TIME: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Maintenance::getOrderTime));
         }
         throw new NoSuchElementException();
     }
@@ -134,6 +134,11 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
 
     @Override
     public String exportData(long id) throws NoSuchElementException {
-        return currentDao.exportData(getById(id));
+        return getDefaultDao().exportData(getById(id));
+    }
+
+    @Override
+    public MaintenanceDao getDefaultDao() {
+        return maintenanceDao;
     }
 }

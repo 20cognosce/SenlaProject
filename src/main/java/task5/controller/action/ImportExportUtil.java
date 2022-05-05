@@ -27,7 +27,7 @@ public class ImportExportUtil {
         return records;
     }
 
-    public static <T extends AbstractService<?>> List<String> getDataForExport(T service) {
+    public static <T extends AbstractService<?, ?>> List<String> getDataForExport(T service) {
         List<Long> idList = new ArrayList<>();
         long entityId;
 

@@ -1,6 +1,7 @@
 package task5.service;
 
 import task5.controller.action.SortEnum;
+import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;
 import task5.dao.entity.RoomStatus;
@@ -10,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public interface RoomService extends AbstractService<Room> {
+public interface RoomService extends AbstractService<Room, RoomDao> {
     void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price);
     List<Room> getFree();
     List<Room> getFree(LocalDate asAtSpecificDate);

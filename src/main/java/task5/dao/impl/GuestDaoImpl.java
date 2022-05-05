@@ -18,7 +18,7 @@ public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
     private final List<Guest> archivedRepository = new ArrayList<>();
 
     public GuestDaoImpl() {
-        super(Guest[].class);
+        super();
     }
 
     @Override
@@ -54,5 +54,10 @@ public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
     @Override
     public List<Guest> getArchivedAll() {
         return new ArrayList<>(archivedRepository);
+    }
+
+    @Override
+    public Guest getDaoEntity() {
+        return new Guest();
     }
 }

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Component
 public class MaintenanceDaoImpl extends AbstractDaoImpl<Maintenance> implements MaintenanceDao {
     public MaintenanceDaoImpl() {
-        super(Maintenance[].class);
+        super();
     }
 
     @Override
@@ -31,5 +31,10 @@ public class MaintenanceDaoImpl extends AbstractDaoImpl<Maintenance> implements 
                 maintenance.getName() + "," +
                 maintenance.getPrice() + "," +
                 maintenance.getCategory();
+    }
+
+    @Override
+    public Maintenance getDaoEntity() {
+        return new Maintenance();
     }
 }

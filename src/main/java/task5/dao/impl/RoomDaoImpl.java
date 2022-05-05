@@ -17,7 +17,7 @@ import static task5.dao.entity.RoomStatus.FREE;
 @Component
 public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     public RoomDaoImpl() {
-        super(Room[].class);
+        super();
     }
 
     @Override
@@ -72,5 +72,10 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
                 room.getStarsNumber() + "," +
                 room.getRoomStatus() + "," +
                 room.getPrice();
+    }
+
+    @Override
+    public Room getDaoEntity() {
+        return new Room();
     }
 }
