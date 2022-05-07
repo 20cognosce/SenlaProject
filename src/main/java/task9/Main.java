@@ -4,30 +4,30 @@ import task9.exer1.BlockedState;
 import task9.exer1.TimedWaitedState;
 import task9.exer1.WaitingState;
 import task9.exer2.ThreadNamePrinter;
+import task9.exer3.Buffer;
+import task9.exer3.ConsumerThread;
+import task9.exer3.ProducerThread;
 import task9.exer4.TimeLoggerThread;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         exercise1();
-        exercise2();
-        exercise3();
+        // exercise2();
+        // exercise3();
         exercise4();
     }
 
     /*
     * Необходимо создать новый поток и воспроизвести все его состояния, выведя их в консоль. Необходимые состояния:
-    NEW,
-    RUNNABLE,
-    BLOCKED,
-    WAITING,
-    TIMED_WAITING,
-    TERMINATED;
+    * NEW,
+    * RUNNABLE,
+    * BLOCKED,
+    * WAITING,
+    * TIMED_WAITING,
+    * TERMINATED;
     * */
     static void exercise1() throws InterruptedException {
-        Runnable runnable1 = new Runnable() {
-            @Override
-            public void run() {}
-        };
+        Runnable runnable1 = () -> {};
         Thread t1 = new Thread(runnable1);
         System.out.println(t1.getState());
         t1.start();
@@ -60,40 +60,52 @@ public class Main {
     * */
     static void exercise2() throws InterruptedException {
         ThreadNamePrinter threadNamePrinter = new ThreadNamePrinter();
+        int iterations = 333333;
 
-        Runnable first = () -> {
-            for (int i = 0; i < 5; i++) {
-                synchronized (threadNamePrinter) {
-                    try {
-                        threadNamePrinter.wait(); //1: Заходит first и лочится на .wait()
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+        //боже какие костыли я только не сооружал, но эти вроде ходят
+        Runnable runnable0 = () -> {
+            synchronized (threadNamePrinter) {
+                for (int i = 0; i < iterations + 1; i++) {
+                    if (threadNamePrinter.flag) {
+                        try {
+                            threadNamePrinter.notifyAll();
+                            if (i == iterations) {
+                                return;
+                            }
+                            threadNamePrinter.wait();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
-                    threadNamePrinter.print(); //5: second отпустил, печатается Thread-6
-                    threadNamePrinter.notifyAll(); //6: отпускается для second, новая итерации снова лочится на wait()
+                    threadNamePrinter.print();
+                    threadNamePrinter.flag = true;
                 }
             }
         };
 
-        Runnable second = () -> {
-            for (int i = 0; i < 5; i++) {
-                synchronized (threadNamePrinter) { //7: first отпустил, цикл повторяется
-                    threadNamePrinter.print(); //2: Печатается Thread-7
-                    threadNamePrinter.notifyAll(); //3: Отпускается для first
-                    try {
-                        threadNamePrinter.wait(); //4: second лочится на .wait() и не может перейти к следующей итерации
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+        Runnable runnable1 = () -> {
+            synchronized (threadNamePrinter) {
+                for (int i = 0; i < iterations; i++) {
+                    if (!threadNamePrinter.flag) {
+                        try {
+                            threadNamePrinter.notifyAll();
+                            threadNamePrinter.wait();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
+                    threadNamePrinter.print();
+                    threadNamePrinter.flag = false;
                 }
             }
         };
-
-        Thread t1 = new Thread(first);
-        Thread t2 = new Thread(second);
-        t1.start();
-        Thread.sleep(1000); //важен порядок
-        t2.start();
+        Thread thread0 = new Thread(runnable0);
+        Thread thread1 = new Thread(runnable1);
+        thread0.start();
+        thread1.start();
+        thread0.join();
+        thread1.join();
+        System.out.println(threadNamePrinter.i);
     }
 
     /*
@@ -101,11 +113,14 @@ public class Main {
     * Производитель будет генерировать рандомные числа, потребитель - потреблять их.
     * Два потока разделяют общий буфер данных, размер которого ограничен.
     * Если буфер пуст, потребитель должен ждать, пока там появятся данные.
-    * Если буфер заполнен полностью, производитель должен ждать,
-    * пока потребитель заберёт данные, и место освободится.
+    * Если буфер заполнен полностью, производитель должен ждать, пока потребитель заберёт данные, и место освободится.
     * */
     static void exercise3() {
-
+        Buffer buffer = new Buffer();
+        ConsumerThread consumerThread = new ConsumerThread(buffer);
+        ProducerThread producerThread = new ProducerThread(buffer);
+        producerThread.start();
+        consumerThread.start();
     }
 
     /*
