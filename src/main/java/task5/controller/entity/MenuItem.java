@@ -1,4 +1,6 @@
-package task5.controller;
+package task5.controller.entity;
+
+import task5.controller.IAction;
 
 public class MenuItem {
     private final String title;
@@ -6,7 +8,7 @@ public class MenuItem {
     private final Menu nextMenu;
     private final Menu previousMenu;
 
-    MenuItem(String title, IAction action, Menu nextMenu, Menu previousMenu) {
+    public MenuItem(String title, IAction action, Menu nextMenu, Menu previousMenu) {
         this.title = title;
         this.action = action;
         this.nextMenu = nextMenu;
@@ -25,7 +27,7 @@ public class MenuItem {
         return title;
     }
 
-    void doAction(){
+    public void doAction(){
         action.execute();
     }
 

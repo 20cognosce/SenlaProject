@@ -1,4 +1,6 @@
-package task5.controller;
+package task5.build.property;
+
+import task5.build.config.Constants;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,7 +11,7 @@ public class PropertiesUtil {
 
     static {
         try {
-            fis = new FileInputStream("src/main/java/task5/resources/config.properties");
+            fis = new FileInputStream(Constants.configPropertiesPath);
             property = new java.util.Properties();
             property.load(fis);
         } catch (IOException e) {

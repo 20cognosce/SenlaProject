@@ -1,11 +1,11 @@
 package task5.service.impl;
 
+import task5.build.factory.Component;
 import task5.controller.action.SortEnum;
 import task5.dao.GuestDao;
-import task5.dao.MaintenanceDao;
-import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;
+import task5.dao.impl.GuestDaoImpl;
 import task5.service.GuestService;
 
 import javax.management.InvalidAttributeValueException;
@@ -17,9 +17,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 
+@Component
 public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> implements GuestService {
-    public GuestServiceImpl (GuestDao guestDao, RoomDao roomDao, MaintenanceDao maintenanceDao) {
-        super(guestDao, guestDao, roomDao, maintenanceDao);
+    public GuestServiceImpl () {
+        super();
     }
 
     @Override
@@ -32,6 +33,7 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
             e.printStackTrace();
             return;
         }
+        guestDao.synchronizeNextSuppliedId(getAll().get(getAll().size() - 1).getId());
         long suppliedId = guestDao.supplyId();
         guestDao.addToRepo(new Guest(suppliedId, fullName, passport, checkInTime, checkOutTime, roomId));
         if (roomId != 0) guestDao.updatePrice(guestDao.getById(suppliedId), roomDao.getById(roomId));
@@ -61,7 +63,9 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         Guest guest;
         try {
             guest = guestDao.getById(guestId);
-            roomDao.getById(guest.getRoomId()).removeGuest(guest);
+
+            guestDao.addToArchivedRepository(guestDao.getById(guestId));
+            roomDao.getById(guest.getRoomId()).removeGuest(guestId);
             guest.setRoomId(0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,6 +76,7 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     public void deleteGuest(long guestId) {
         try {
             removeGuestFromRoom(guestId);
+            guestDao.addToArchivedRepository(guestDao.getById(guestId));
             guestDao.deleteFromRepo(guestDao.getById(guestId));
         } catch (Exception e) {
             e.printStackTrace();
@@ -81,10 +86,10 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     @Override
     public List<Guest> getSorted(List<Guest> listToSort, SortEnum sortBy) throws NoSuchElementException {
         switch (sortBy) {
-            case BY_ADDITION: return currentDao.getSorted(listToSort, Comparator.comparingLong(Guest::getId));
-            case BY_PRICE: return currentDao.getSorted(listToSort, Comparator.comparingInt(Guest::getPrice));
-            case BY_ALPHABET: return currentDao.getSorted(listToSort, Comparator.comparing(Guest::getName));
-            case BY_CHECKOUT_DATE: return currentDao.getSorted(listToSort, Comparator.comparing(Guest::getCheckOutDate));
+            case BY_ADDITION: return getDefaultDao().getSorted(listToSort, Comparator.comparingLong(Guest::getId));
+            case BY_PRICE: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Guest::getPrice));
+            case BY_ALPHABET: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Guest::getName));
+            case BY_CHECKOUT_DATE: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Guest::getCheckOutDate));
         }
         throw new NoSuchElementException();
     }
@@ -112,6 +117,22 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     @Override
     public List<Guest> sortByCheckOutDate() {
         return getSorted(getAll(), SortEnum.BY_CHECKOUT_DATE);
+    }
+
+    @Override
+    public void addAllArchived(List<Guest> list) {
+        list.forEach(guest -> {
+            try {
+                guestDao.addToArchivedRepository(guest);
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public List<Guest> getArchivedAll() {
+        return guestDao.getArchivedAll();
     }
 
     @Override
@@ -175,6 +196,12 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
 
     @Override
     public String exportData(long id) throws NoSuchElementException {
-        return currentDao.exportData(getById(id));
+        return getDefaultDao().exportData(getById(id));
     }
+
+    @Override
+    public GuestDao getDefaultDao() {
+        return guestDao;
+    }
+
 }

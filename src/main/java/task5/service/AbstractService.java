@@ -1,12 +1,15 @@
 package task5.service;
 
+import task5.dao.AbstractDao;
+import task5.dao.entity.AbstractEntity;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public interface AbstractService<T> {
+public interface AbstractService<T extends AbstractEntity, D extends AbstractDao<T>> {
     List<T> getAll();
     void addAll(List<T> list);
     T getByName(String name) throws NoSuchElementException;

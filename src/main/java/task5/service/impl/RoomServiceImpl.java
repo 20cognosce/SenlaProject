@@ -1,9 +1,8 @@
 package task5.service.impl;
 
-import task5.controller.PropertiesUtil;
+import task5.build.factory.Component;
+import task5.build.property.PropertiesUtil;
 import task5.controller.action.SortEnum;
-import task5.dao.GuestDao;
-import task5.dao.MaintenanceDao;
 import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Room;
@@ -18,19 +17,20 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-
+@Component
 public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implements RoomService {
+    public RoomServiceImpl() {
+        super();
+    }
     String changeRoomStatusPossibility = PropertiesUtil.property.getProperty("ChangeRoomStatusPossibility");
     int lastNGuests = Integer.parseInt(PropertiesUtil.property.getProperty("GuestsNumberInRoomHistory"));
 
-    public RoomServiceImpl (GuestDao guestDao, RoomDao roomDao, MaintenanceDao maintenanceDao) {
-        super(roomDao, guestDao, roomDao, maintenanceDao);
-    }
-
     @Override
     public List<Guest> getLastNGuests(long roomId) throws NoSuchElementException {
-        List<Guest> allTimeList = roomDao.getById(roomId).getAllTimeList();
-        return allTimeList.stream().sorted(
+        List<Long> archivedGuestIdList = roomDao.getById(roomId).getArchivedGuestIdList();
+        List<Guest> guestList = new ArrayList<>();
+        archivedGuestIdList.forEach(id -> guestList.add(guestDao.getFromArchivedRepositoryById(id)));
+        return guestList.stream().sorted(
                 Comparator.comparing(Guest::getCheckInDate).reversed()).limit(lastNGuests).collect(Collectors.toList());
     }
 
@@ -43,6 +43,7 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
     @Override
     public void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price) {
+        roomDao.synchronizeNextSuppliedId(getAll().get(getAll().size() - 1).getId());
         roomDao.addToRepo(new Room(roomDao.supplyId(), name, capacity, starsNumber, roomStatus, price));
     }
 
@@ -141,10 +142,10 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     @Override
     public List<Room> getSorted(List<Room> listToSort, SortEnum sortBy) throws NoSuchElementException {
         switch (sortBy) {
-            case BY_ADDITION: return currentDao.getSorted(listToSort, Comparator.comparingLong(Room::getId));
-            case BY_PRICE: return currentDao.getSorted(listToSort, Comparator.comparingInt(Room::getPrice));
-            case BY_CAPACITY: return currentDao.getSorted(listToSort, Comparator.comparingInt(Room::getCapacity));
-            case BY_STARS: return currentDao.getSorted(listToSort, Comparator.comparingInt(Room::getStarsNumber));
+            case BY_ADDITION: return getDefaultDao().getSorted(listToSort, Comparator.comparingLong(Room::getId));
+            case BY_PRICE: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Room::getPrice));
+            case BY_CAPACITY: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Room::getCapacity));
+            case BY_STARS: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Room::getStarsNumber));
         }
         throw new NoSuchElementException();
     }
@@ -156,6 +157,11 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
     @Override
     public String exportData(long id) throws NoSuchElementException {
-        return currentDao.exportData(getById(id));
+        return getDefaultDao().exportData(getById(id));
+    }
+
+    @Override
+    public RoomDao getDefaultDao() {
+        return roomDao;
     }
 }

@@ -3,7 +3,7 @@
   "name" : "Ivanov Ivan Ivanovich",
   "price" : 5000,
   "passport" : "1111222222",
-  "roomId" : 0,
+  "roomId" : 2,
   "checkInDate" : [ 2022, 3, 2 ],
   "checkOutDate" : [ 2022, 3, 5 ],
   "orderedMaintenances" : [ ]

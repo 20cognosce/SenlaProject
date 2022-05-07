@@ -1,5 +1,6 @@
 package task5.dao.impl;
 
+import task5.build.factory.Component;
 import task5.dao.GuestDao;
 import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
@@ -13,6 +14,7 @@ import java.util.Objects;
 
 import static task5.dao.entity.RoomStatus.FREE;
 
+@Component
 public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     public RoomDaoImpl() {
         super();
@@ -35,7 +37,6 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
 
         List<Room> freeRooms = new ArrayList<>();
         getAll().forEach(room -> {
-            //TODO test lambda false setting
             final boolean[] isFree = {true};
 
             if (room.getCurrentGuestIdList().isEmpty()) {
@@ -71,5 +72,10 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
                 room.getStarsNumber() + "," +
                 room.getRoomStatus() + "," +
                 room.getPrice();
+    }
+
+    @Override
+    public Room getDaoEntity() {
+        return new Room();
     }
 }

@@ -1,8 +1,10 @@
 package task5.dao.impl;
 
+import task5.build.config.ConfigFileEnum;
+import task5.build.config.ConfigProperty;
+import task5.build.factory.Component;
 import task5.dao.AbstractDao;
-import task5.dao.entity.AbstractEntity;
-import task5.dao.entity.IdSupplier;
+import task5.dao.entity.*;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 import java.util.ArrayList;
@@ -11,9 +13,16 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+@Component
 public abstract class AbstractDaoImpl<T extends AbstractEntity> implements AbstractDao<T> {
+    @ConfigProperty(configFileEnum = ConfigFileEnum.ROOM_JSON, type = Room[].class)
+    @ConfigProperty(configFileEnum = ConfigFileEnum.GUEST_JSON, type = Guest[].class)
+    @ConfigProperty(configFileEnum = ConfigFileEnum.MAINTENANCE_JSON, type = Maintenance[].class)
     private final List<T> repository = new ArrayList<>();
     private final IdSupplier idSupplier = new IdSupplier();
+
+    @Override
+    public abstract T getDaoEntity();
 
     @Override
     public List<T> getAll() {
@@ -41,9 +50,11 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity> implements Abstr
 
     @Override
     public void addToRepo(T element) throws KeyAlreadyExistsException {
-        if (repository.contains(element)) {
-            throw new KeyAlreadyExistsException();
-        }
+        repository.forEach(e -> {
+            if (element.getId() == e.getId()) {
+                throw new KeyAlreadyExistsException(element + " == " + e);
+            }
+        });
         repository.add(element);
     }
 

@@ -1,9 +1,8 @@
 package task5.service.impl;
 
+import task5.build.factory.Component;
 import task5.controller.action.SortEnum;
-import task5.dao.GuestDao;
 import task5.dao.MaintenanceDao;
-import task5.dao.RoomDao;
 import task5.dao.entity.Guest;
 import task5.dao.entity.Maintenance;
 import task5.dao.entity.MaintenanceCategory;
@@ -15,14 +14,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-
+@Component
 public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, MaintenanceDao> implements MaintenanceService {
-    public MaintenanceServiceImpl (GuestDao guestDao, RoomDao roomDao, MaintenanceDao maintenanceDao) {
-        super(maintenanceDao, guestDao, roomDao, maintenanceDao);
+    public MaintenanceServiceImpl() {
+        super();
     }
-
     @Override
     public void createMaintenance(String maintenanceName, int price, MaintenanceCategory category) {
+        maintenanceDao.synchronizeNextSuppliedId(getAll().get(getAll().size() - 1).getId());
         maintenanceDao.addToRepo(new Maintenance(maintenanceDao.supplyId(), maintenanceName, price, category, null));
     }
 
@@ -66,10 +65,10 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     @Override
     public List<Maintenance> getSorted(List<Maintenance> listToSort, SortEnum sortBy) throws NoSuchElementException {
         switch (sortBy) {
-            case BY_ADDITION: return currentDao.getSorted(listToSort, Comparator.comparingLong(Maintenance::getId));
-            case BY_PRICE: return currentDao.getSorted(listToSort, Comparator.comparingInt(Maintenance::getPrice));
-            case BY_CATEGORY: return currentDao.getSorted(listToSort, Comparator.comparing(Maintenance::getCategory));
-            case BY_TIME: return currentDao.getSorted(listToSort, Comparator.comparing(Maintenance::getOrderTime));
+            case BY_ADDITION: return getDefaultDao().getSorted(listToSort, Comparator.comparingLong(Maintenance::getId));
+            case BY_PRICE: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Maintenance::getPrice));
+            case BY_CATEGORY: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Maintenance::getCategory));
+            case BY_TIME: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Maintenance::getOrderTime));
         }
         throw new NoSuchElementException();
     }
@@ -135,6 +134,11 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
 
     @Override
     public String exportData(long id) throws NoSuchElementException {
-        return currentDao.exportData(getById(id));
+        return getDefaultDao().exportData(getById(id));
+    }
+
+    @Override
+    public MaintenanceDao getDefaultDao() {
+        return maintenanceDao;
     }
 }

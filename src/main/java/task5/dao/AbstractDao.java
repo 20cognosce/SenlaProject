@@ -17,4 +17,5 @@ public interface AbstractDao<T> {
     void synchronizeNextSuppliedId(long id);
 
     String exportData(T element);
+    T getDaoEntity();
 }

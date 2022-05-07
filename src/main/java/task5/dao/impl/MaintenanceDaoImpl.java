@@ -1,17 +1,16 @@
 package task5.dao.impl;
 
+import task5.build.factory.Component;
 import task5.dao.MaintenanceDao;
 import task5.dao.entity.Guest;
-import task5.dao.entity.IdSupplier;
 import task5.dao.entity.Maintenance;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class MaintenanceDaoImpl extends AbstractDaoImpl<Maintenance> implements MaintenanceDao {
-    private final IdSupplier idSupplier = new IdSupplier();
-
     public MaintenanceDaoImpl() {
         super();
     }
@@ -32,5 +31,10 @@ public class MaintenanceDaoImpl extends AbstractDaoImpl<Maintenance> implements 
                 maintenance.getName() + "," +
                 maintenance.getPrice() + "," +
                 maintenance.getCategory();
+    }
+
+    @Override
+    public Maintenance getDaoEntity() {
+        return new Maintenance();
     }
 }
