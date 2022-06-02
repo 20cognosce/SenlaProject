@@ -48,14 +48,23 @@ end;
 select distinct maker from product where
     count_devices(maker, 'Laptop') = 0 and count_devices(maker, 'PC') > 0;
 
+-- ИСПРАВЛЕНО
+select distinct maker
+from product p
+where type = 'PC' and maker not in
+(
+select distinct maker
+from product p
+where type = 'Laptop'
+);
+
 -- 9 Найти производителей ПК с процессором не менее 450 Мгц. Вывести поля: maker.
 select maker from pc join product p on p.model = pc.model
     where speed >= 450;
 
 -- 10 Найти принтеры, имеющие самую высокую цену. Вывести поля: model, price.
 select model, price from printer
-    order by price desc
-    limit 2;
+where price in (select max(price) from printer);
 
 -- 11 Найти среднюю скорость ПК.
 select avg(speed) from pc;
@@ -82,6 +91,11 @@ end;
 
 select distinct speed, calculate_avg_price(speed) from pc;
 -- задание 22 аналогично, там я уже постиг group by
+
+-- ИСПРАВЛЕНО
+select speed, avg(price)
+from pc
+group by speed;
 
 -- 15 Найти размеры жестких дисков, совпадающих у двух и более PC. Вывести поля: hd.
 select hd from
@@ -110,18 +124,21 @@ where (select speed, ram)
 */
 
 -- 17 Найти модели ноутбуков, скорость которых меньше скорости любого из ПК. Вывести поля: type, model, speed.
-set @lowest_pc_speed := (select speed from pc order by speed limit 1);
--- select @lowest_pc_speed;
+set @lowest_pc_speed := (select min(speed) from pc);
+select @lowest_pc_speed;
 select type, laptop.model, speed
     from laptop join product p on laptop.model = p.model
     where speed < @lowest_pc_speed;
 
 
 -- 18 Найти производителей самых дешевых цветных принтеров. Вывести поля: maker, price.
+with color_printers as
+(
 select maker, price
 from printer join product p on printer.model = p.model
-    where color = 'y'
-    order by price limit 1;
+where color = 'y'
+)
+select maker, price from color_printers where price = (select min(price) from color_printers);
 
 -- 19 Для каждого производителя найти средний размер экрана выпускаемых им ноутбуков.
 -- Вывести поля: maker, средний размер экрана.
@@ -145,7 +162,7 @@ GROUP by maker;
 select distinct speed, calculate_avg_price(speed) from pc
     where speed > 600;
 
-select distinct speed, avg(price) from pc
+select speed, avg(price) from pc
     where speed > 600
     group by speed;
 
@@ -162,20 +179,20 @@ where maker in
 
 
 -- 24 Перечислить номера моделей любых типов, имеющих самую высокую цену по всей имеющейся в базе данных продукции.
-select model from
+with global_select as
 (
 select maker, product.model, price from product join laptop l on product.model = l.model
 union
 select maker, product.model, price from product join pc p on product.model = p.model
 union
 select maker, product.model, price from product join printer p2 on product.model = p2.model
-order by price desc
-limit 5
-) as global_table;
+)
+select model from global_select where price = (select max(price) from global_select);
+
 
 -- 25 Найти производителей принтеров, которые производят ПК с наименьшим объемом RAM
 -- и с самым быстрым процессором среди всех ПК, имеющих наименьший объем RAM. Вывести поля: maker
-set @lowest_ram := (select ram from pc order by ram limit 1);
+set @lowest_ram := (select min(ram) from pc);
 set @highest_speed_of_lowest_ram := (select max(speed) from pc where (ram = @lowest_ram));
 select distinct maker
 from printer join product p on p.model = printer.model

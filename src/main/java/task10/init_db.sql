@@ -37,5 +37,5 @@ insert ignore into laptop (code, model, speed, ram, hd, screen, price)
 insert ignore into printer (code, model, color, type, price)
     values (1, 2, 'y', 'Laser', 299),
            (2, 9, 'n', 'Matrix', 69),
-           (3, 10, 'n', 'Jet', 99),
+           (3, 10, 'n', 'Jet', 2499),
            (4, 16, 'y', 'Laser', 349)
