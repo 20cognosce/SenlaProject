@@ -5,13 +5,14 @@ import javacourse.task5.build.factory.Component;
 import javacourse.task5.controller.MenuController;
 import javacourse.task5.controller.Navigator;
 import javacourse.task5.controller.action.ConsoleReaderUtil;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;;
 
 @Component
 public class MenuControllerImpl implements MenuController {
     @Autowired
     Navigator navigator;
-    private static final Logger logger = Logger.getLogger(MenuControllerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MenuControllerImpl.class);
 
     @Override
     public void run() {
@@ -28,7 +29,7 @@ public class MenuControllerImpl implements MenuController {
                 try {
                     navigator.doAction();
                 } catch (Exception exception) {
-                    logger.error(exception.getMessage(), e);
+                    logger.error(e.getMessage(), e);
                 }
             } catch (IndexOutOfBoundsException e) {
                 continue;
