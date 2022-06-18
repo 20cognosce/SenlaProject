@@ -2,17 +2,40 @@ package javacourse.task5.dao.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+@Entity
 public class Room extends AbstractEntity {
+    @Column(name="capacity")
     private int capacity;
+    @Column(name="stars_number")
     private int starsNumber;
+    //TODO: прописать логику того, что в данное поле идут только текущие гости
+    /*Хранит id гостей из таблицы room_guest
+    * */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="room_guest", joinColumns=@JoinColumn(name="room_id"))
+    @Column(name="guest_id")
     private final List<Long> currentGuestIdList = new ArrayList<>();
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="room_guest", joinColumns=@JoinColumn(name="room_id"))
+    @Column(name="guest_id")
     private final List<Long> archivedGuestIdList = new ArrayList<>();
+    @Column(name="room_status")
+    @Enumerated(EnumType.STRING)
     private RoomStatus roomStatus;
+    @Column(name="details")
     private String details;
 
     //new Room constructor

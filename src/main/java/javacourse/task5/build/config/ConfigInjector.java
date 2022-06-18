@@ -1,6 +1,7 @@
 package javacourse.task5.build.config;
 
 import javacourse.task5.build.json.reader.JsonReaderUtil;
+import javacourse.task5.build.orm.DatabaseOrmManager;
 import javacourse.task5.dao.AbstractDao;
 import javacourse.task5.dao.impl.AbstractDaoImpl;
 
@@ -12,12 +13,12 @@ import java.util.List;
 
 public class ConfigInjector {
 
-    public void injectDaoConfiguration(Object bean) {
-        if (!AbstractDao.class.isAssignableFrom(bean.getClass())) {
-            throw new IllegalArgumentException("Passed bean is not dao instance: " + bean.getClass());
+    public void injectDaoConfiguration(Object beanDao) {
+        if (!AbstractDao.class.isAssignableFrom(beanDao.getClass())) {
+            throw new IllegalArgumentException("Passed beanDao is not dao instance: " + beanDao.getClass());
         }
 
-        Class<?> beanClass = bean.getClass();
+        Class<?> beanClass = beanDao.getClass();
         List<Field> declaredFields = getAllFields(new ArrayList<>(), beanClass);
 
         declaredFields.forEach(field -> {
@@ -26,9 +27,10 @@ public class ConfigInjector {
 
             Arrays.stream(annotations).forEach(configProperty -> {
                 try {
-                    Class<?> type = ((AbstractDao<?>) bean).getDaoEntity().getClass();
+                    Class<?> type = ((AbstractDao<?>) beanDao).getDaoEntity().getClass();
                     if (type == configProperty.type().getComponentType()) {
-                        injectFieldConfig(bean, field, configProperty);
+                        //injectFieldConfigFromJson(beanDao, field, configProperty);
+                        injectFieldConfigFromHibernate(beanDao, field, configProperty);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -37,12 +39,28 @@ public class ConfigInjector {
         });
     }
 
-    private <T> void injectFieldConfig(Object bean, Field field, ConfigProperty configProperty) {
+    private <T> void injectFieldConfigFromJson(Object bean, Field field, ConfigProperty configProperty) {
         if (configProperty.type().isArray()) {
             try {
                 File file = configProperty.configFileEnum().getConfigFile();
                 Class<T[]> type = (Class<T[]>) configProperty.type();
                 List<T> valueList = JsonReaderUtil.readConfig(file, type);
+
+                if (AbstractDaoImpl.class.isAssignableFrom(bean.getClass())) {
+                    field.set(bean, valueList);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private <T> void injectFieldConfigFromHibernate(Object bean, Field field, ConfigProperty configProperty) {
+        if (configProperty.type().isArray()) {
+            try {
+                Class<T[]> type = (Class<T[]>) configProperty.type();
+                Class<T> clazz = (Class<T>) type.getComponentType();
+                List<T> valueList = DatabaseOrmManager.getListFromDatabase(clazz);
 
                 if (AbstractDaoImpl.class.isAssignableFrom(bean.getClass())) {
                     field.set(bean, valueList);

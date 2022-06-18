@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 
 @Component
@@ -46,7 +47,7 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
             guest = guestDao.getById(guestId);
             room = roomDao.getById(roomId);
             if (room.isUnavailableToSettle()) throw new RuntimeException("Room is unavailable");
-            if (guest.getRoomId() != 0) removeGuestFromRoom(guestId);
+            if (!Objects.isNull(guest.getRoomId())) removeGuestFromRoom(guestId);
         } catch (Exception e) {
             e.printStackTrace();
             return;

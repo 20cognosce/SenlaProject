@@ -1,14 +1,28 @@
 package javacourse.task5.dao.entity;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+@Entity
 public class Guest extends AbstractEntity implements Cloneable {
+    @Column(name="passport")
     private String passport;
-    private long roomId;
+    @Column(name="room_id")
+    private Long roomId;
+    @Column(name="check_in_date")
     private LocalDate checkInDate;
+    @Column(name="check_out_date")
     private LocalDate checkOutDate;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "guest_id")
     private final List<Maintenance> orderedMaintenances = new ArrayList<>();
 
     //new guest constructor
@@ -68,7 +82,7 @@ public class Guest extends AbstractEntity implements Cloneable {
         orderedMaintenances.add(maintenance);
     }
 
-    public long getRoomId() {
+    public Long getRoomId() {
         return roomId;
     }
 
@@ -83,7 +97,7 @@ public class Guest extends AbstractEntity implements Cloneable {
                     .append("; Гость: ").append(getName())
                     .append("; Паспорт: ").append(getPassport())
                     .append("; Комната: ");
-            if (getRoomId() == 0) {
+            if (Objects.isNull(getRoomId())) {
                 out.append("без комнаты");
             } else {
                 out.append(getRoomId());

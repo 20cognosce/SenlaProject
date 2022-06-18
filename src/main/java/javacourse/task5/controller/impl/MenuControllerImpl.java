@@ -6,7 +6,9 @@ import javacourse.task5.controller.MenuController;
 import javacourse.task5.controller.Navigator;
 import javacourse.task5.controller.action.ConsoleReaderUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;;
+import org.slf4j.LoggerFactory;
+
+;
 
 @Component
 public class MenuControllerImpl implements MenuController {

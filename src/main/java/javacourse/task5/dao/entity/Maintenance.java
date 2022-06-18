@@ -1,24 +1,39 @@
 package javacourse.task5.dao.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+@Entity
+@Table(name="maintenance_instance")
 public class Maintenance extends AbstractEntity implements Cloneable {
+    @Column(name="category")
+    @Enumerated(EnumType.STRING)
     private MaintenanceCategory category;
+    @Column(name="order_timestamp")
     private LocalDateTime orderTime;
+
+    @Column(name="guest_id")
+    private Long guestId;
 
     public Maintenance(long id, String name, int price, MaintenanceCategory category, LocalDateTime orderTime) {
         super(id, name,  price);
         this.category = category;
         this.orderTime = orderTime;
+        this.guestId = 0L;
     }
 
     public Maintenance() {
         super(0, "", 0);
         category = null;
         orderTime = null;
+        guestId = 0L;
     }
 
     public MaintenanceCategory getCategory() {
@@ -37,6 +52,14 @@ public class Maintenance extends AbstractEntity implements Cloneable {
         this.orderTime = orderTime;
     }
 
+    public Long getGuestId() {
+        return guestId;
+    }
+
+    public Long setGuestId(Long guestId) {
+        return this.guestId = guestId;
+    }
+
     @Override
     public String toString() {
         String orderTime;
@@ -49,6 +72,7 @@ public class Maintenance extends AbstractEntity implements Cloneable {
                 "; Цена: " + getPrice() +
                 "; Категория: " + getCategory() +
                 "; Время заказа: " + orderTime +
+                "; id гостя: " + getGuestId() +
                 "\n";
     }
 
