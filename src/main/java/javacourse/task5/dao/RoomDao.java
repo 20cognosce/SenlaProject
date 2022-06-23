@@ -9,5 +9,8 @@ import java.util.List;
 public interface RoomDao extends AbstractDao<Room> {
     List<Room> getFree();
     List<Room> getFree(LocalDate asAtSpecificDate, GuestDao guestDao);
-    void setStatus(long roomId, RoomStatus roomStatus);
+    void removeGuest(long roomId, long guestId);
+    void addGuestToRoom(long roomId, long guestId);
+    void updateRoomStatus(long roomId, RoomStatus roomStatus);
+    void updateRoomPrice(long roomId, int price);
 }

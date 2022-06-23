@@ -1,37 +1,54 @@
 package javacourse.task5.dao.impl;
 
-import javacourse.task5.build.config.ConfigFileEnum;
-import javacourse.task5.build.config.ConfigProperty;
 import javacourse.task5.build.factory.Component;
+import javacourse.task5.build.orm.OrmManagementUtil;
 import javacourse.task5.dao.GuestDao;
 import javacourse.task5.dao.entity.Guest;
-import javacourse.task5.dao.entity.Room;
+import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
 
 @Component
 public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
-    @ConfigProperty(configFileEnum = ConfigFileEnum.ARCHIVED_GUEST_JSON, type = Guest[].class)
-    private final List<Guest> archivedRepository = new ArrayList<>();
+    private static final Logger logger = LoggerFactory.getLogger(GuestDaoImpl.class);
 
     public GuestDaoImpl() {
         super();
     }
 
     @Override
-    public void updatePrice(Guest guest, Room room) {
-        //pay only the first settled after the room was empty
-        if (!Objects.isNull(room) && room.getCurrentGuestIdList().size() == 1) {
-            guest.setPrice(room.getPrice());
+    public void updatePrice(long guestId, int price) {
+        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+            session.beginTransaction();
+            Guest guest = getById(guestId);
+            guest.setPrice(price);
+            session.update(guest);
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
         }
     }
 
     @Override
-    public void addToArchivedRepository(Guest guest) throws CloneNotSupportedException {
-        archivedRepository.add(guest.clone());
+    public void updateRoomId(long guestId, long roomId) {
+        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+            session.beginTransaction();
+            Guest guest = getById(guestId);
+            if (roomId == 0) {
+                guest.setRoomId(null);
+            } else {
+                guest.setRoomId(roomId);
+            }
+            session.update(guest);
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
@@ -42,18 +59,6 @@ public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
                 guest.getCheckInDate() + "," +
                 guest.getCheckOutDate() + "," +
                 guest.getRoomId();
-    }
-
-    @Override
-    public Guest getFromArchivedRepositoryById(long id) throws NoSuchElementException {
-        return archivedRepository.stream()
-                .filter(element -> (element.getId() == id))
-                .findFirst().orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    public List<Guest> getArchivedAll() {
-        return new ArrayList<>(archivedRepository);
     }
 
     @Override

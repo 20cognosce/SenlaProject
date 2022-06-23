@@ -1,8 +1,5 @@
 package javacourse.task5.build.orm;
 
-import javacourse.task5.dao.entity.Guest;
-import javacourse.task5.dao.entity.Maintenance;
-import javacourse.task5.dao.entity.Room;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
@@ -14,18 +11,20 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
-public class DatabaseOrmManager {
-    public static <T> List<T> getListFromDatabase(Class<T> clazz) {
-        SessionFactory sf = buildSessionFactory();
-        Session session = sf.openSession();
-        session.getTransaction().begin();
-        CriteriaBuilder builder = session.getCriteriaBuilder();
+public class OrmManagementUtil {
+    public static final SessionFactory sessionFactory = buildSessionFactory();
 
+    public static <T> List<T> getListFromDatabase(Class<T> clazz) {
+        Session session = sessionFactory.openSession();
+
+        session.beginTransaction();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<T> criteria = builder.createQuery(clazz);
         criteria.from(clazz);
         List<T> resultList = session.createQuery(criteria).getResultList();
-
+        session.getTransaction().commit();
         session.close();
+
         return resultList;
     }
 
@@ -39,5 +38,9 @@ public class DatabaseOrmManager {
         } catch (Throwable e) {
             throw new ExceptionInInitializerError(e);
         }
+    }
+
+    public static void closeConnection() {
+        sessionFactory.close();
     }
 }

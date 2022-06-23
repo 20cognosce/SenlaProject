@@ -158,7 +158,7 @@ public class BuilderImpl implements Builder {
             JsonWriterUtil.writeConfig(roomService.getAll(), Constants.roomJson);
             JsonWriterUtil.writeConfig(guestService.getAll(), Constants.guestJson);
             JsonWriterUtil.writeConfig(maintenanceService.getAll(), Constants.maintenanceJson);
-            JsonWriterUtil.writeConfig(guestService.getArchivedAll(), Constants.archivedGuestJson);
+            //JsonWriterUtil.writeConfig(guestService.getArchivedAll(), Constants.archivedGuestJson);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -170,7 +170,7 @@ public class BuilderImpl implements Builder {
             guestService.addAll(JsonReaderUtil.readConfig(Constants.guestJson, Guest[].class));
             roomService.addAll(JsonReaderUtil.readConfig(Constants.roomJson, Room[].class));
             maintenanceService.addAll(JsonReaderUtil.readConfig(Constants.maintenanceJson, Maintenance[].class));
-            guestService.addAllArchived(JsonReaderUtil.readConfig(Constants.archivedGuestJson, Guest[].class));
+            //guestService.addAllArchived(JsonReaderUtil.readConfig(Constants.archivedGuestJson, Guest[].class));
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

@@ -33,19 +33,24 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
             e.printStackTrace();
             return;
         }
-        guestDao.synchronizeNextSuppliedId(getAll().get(getAll().size() - 1).getId());
-        long suppliedId = guestDao.supplyId();
-        guestDao.addToRepo(new Guest(suppliedId, fullName, passport, checkInTime, checkOutTime, roomId));
-        if (roomId != 0) guestDao.updatePrice(guestDao.getById(suppliedId), roomDao.getById(roomId));
+        Long objectRoomId;
+        if (roomId == 0) {
+            objectRoomId = null;
+        } else {
+            objectRoomId = roomId;
+        }
+        Guest guest = new Guest(fullName, passport, checkInTime, checkOutTime, objectRoomId);
+        guestDao.addToRepo(guest);
+        if (roomId != 0) guestDao.updatePrice(guest.getId(), roomDao.getById(roomId).getPrice());
     }
+
 
     @Override
     public void addGuestToRoom(long guestId, long roomId) {
-        Guest guest;
-        Room room;
+
         try {
-            guest = guestDao.getById(guestId);
-            room = roomDao.getById(roomId);
+            Guest guest = guestDao.getById(guestId);
+            Room room = roomDao.getById(roomId);
             if (room.isUnavailableToSettle()) throw new RuntimeException("Room is unavailable");
             if (!Objects.isNull(guest.getRoomId())) removeGuestFromRoom(guestId);
         } catch (Exception e) {
@@ -53,9 +58,16 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
             return;
         }
 
-        room.addGuest(guest);
-        guest.setRoomId(room.getId());
-        guestDao.updatePrice(guest, room);
+        //Как это добавить в одну транзакцию?
+        roomDao.addGuestToRoom(roomId, guestId);
+        guestDao.updateRoomId(guestId, roomId);
+        Room roomUpdated = roomDao.getById(roomId);
+        if (roomUpdated.getCurrentGuestIdList().size() == 1) {
+            //pay only the first settled after the room was empty
+            guestDao.updatePrice(guestId, roomUpdated.getPrice());
+        }
+        //careful, getId return different objects each time.
+        //after updating it in the previous methods we must call getId again for update
     }
 
     @Override
@@ -63,10 +75,12 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         Guest guest;
         try {
             guest = guestDao.getById(guestId);
-
-            guestDao.addToArchivedRepository(guestDao.getById(guestId));
-            roomDao.getById(guest.getRoomId()).removeGuest(guestId);
-            guest.setRoomId(0);
+            if (Objects.isNull(guest.getRoomId())) {
+                return;
+            }
+            roomDao.removeGuest(guest.getRoomId(), guestId);
+            guestDao.updateRoomId(guestId, 0L);
+            guestDao.updatePrice(guestId, 0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,7 +90,6 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     public void deleteGuest(long guestId) {
         try {
             removeGuestFromRoom(guestId);
-            guestDao.addToArchivedRepository(guestDao.getById(guestId));
             guestDao.deleteFromRepo(guestDao.getById(guestId));
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,22 +130,6 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     @Override
     public List<Guest> sortByCheckOutDate() {
         return getSorted(getAll(), SortEnum.BY_CHECKOUT_DATE);
-    }
-
-    @Override
-    public void addAllArchived(List<Guest> list) {
-        list.forEach(guest -> {
-            try {
-                guestDao.addToArchivedRepository(guest);
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    @Override
-    public List<Guest> getArchivedAll() {
-        return guestDao.getArchivedAll();
     }
 
     @Override
@@ -182,7 +179,6 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
                     addGuestToRoom(guestId, roomId);
                 }
             } catch (NoSuchElementException e) {
-                guestDao.synchronizeNextSuppliedId(guestId);
                 createGuest(name, passport, checkInDate, checkOutDate, 0);
                 if (roomId != 0) addGuestToRoom(guestId, roomId);
             }

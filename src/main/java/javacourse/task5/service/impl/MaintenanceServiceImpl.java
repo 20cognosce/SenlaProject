@@ -21,8 +21,7 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     }
     @Override
     public void createMaintenance(String maintenanceName, int price, MaintenanceCategory category) {
-        maintenanceDao.synchronizeNextSuppliedId(getAll().get(getAll().size() - 1).getId());
-        maintenanceDao.addToRepo(new Maintenance(maintenanceDao.supplyId(), maintenanceName, price, category, null));
+        maintenanceDao.addToRepo(new Maintenance(maintenanceName, price, category, null, null));
     }
 
     @Override
@@ -41,25 +40,24 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
         Guest guest;
         try {
             maintenanceInstance = maintenanceDao.getById(maintenanceId).clone();
+            maintenanceInstance.setGuestId(guestId);
             guest = guestDao.getById(guestId);
-            //В оригинале будет храниться время последнего заказа
-            maintenanceDao.getById(maintenanceId).setOrderTime(maintenanceInstance.getOrderTime());
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
 
+        maintenanceDao.addGuestMaintenance(maintenanceInstance);
+        guestDao.updatePrice(guestId, (guest.getPrice() + maintenanceInstance.getPrice()));
         System.out.println("Услуга " + maintenanceInstance.getName()
                 + " для " + guest.getName()
                 + " исполнена. Цена услуги: " + maintenanceInstance.getPrice()
                 + "; Дата: " + maintenanceInstance.getOrderTime().truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME));
-        guest.addMaintenance(maintenanceInstance);
-        guest.setPrice(guest.getPrice() + maintenanceInstance.getPrice());
     }
 
     @Override
-    public void setPrice(long maintenanceId, int price) {
-        maintenanceDao.getById(maintenanceId).setPrice(price);
+    public void updateMaintenancePrice(long maintenanceId, int price) {
+        maintenanceDao.updateMaintenancePrice(maintenanceId, price);
     }
 
     @Override
@@ -118,7 +116,6 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
                     maintenance.setPrice(price);
                     maintenance.setCategory(maintenanceCategory);
                 } catch (NoSuchElementException e) {
-                    maintenanceDao.synchronizeNextSuppliedId(maintenanceId);
                     createMaintenance(name, price, maintenanceCategory);
                 }
             } catch (Exception e) {

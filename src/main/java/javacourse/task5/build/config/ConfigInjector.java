@@ -1,7 +1,7 @@
 package javacourse.task5.build.config;
 
 import javacourse.task5.build.json.reader.JsonReaderUtil;
-import javacourse.task5.build.orm.DatabaseOrmManager;
+import javacourse.task5.build.orm.OrmManagementUtil;
 import javacourse.task5.dao.AbstractDao;
 import javacourse.task5.dao.impl.AbstractDaoImpl;
 
@@ -29,8 +29,15 @@ public class ConfigInjector {
                 try {
                     Class<?> type = ((AbstractDao<?>) beanDao).getDaoEntity().getClass();
                     if (type == configProperty.type().getComponentType()) {
+
+                        /*
+                        * Здесь в repository DAO добавлялись сущности
+                        * теперь это условие будет проигнорировано,
+                        * а сущности будут браться при конкретном обращении к БД
+                        * */
+
                         //injectFieldConfigFromJson(beanDao, field, configProperty);
-                        injectFieldConfigFromHibernate(beanDao, field, configProperty);
+                        //injectFieldConfigFromHibernate(beanDao, field, configProperty);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -60,7 +67,7 @@ public class ConfigInjector {
             try {
                 Class<T[]> type = (Class<T[]>) configProperty.type();
                 Class<T> clazz = (Class<T>) type.getComponentType();
-                List<T> valueList = DatabaseOrmManager.getListFromDatabase(clazz);
+                List<T> valueList = OrmManagementUtil.getListFromDatabase(clazz);
 
                 if (AbstractDaoImpl.class.isAssignableFrom(bean.getClass())) {
                     field.set(bean, valueList);

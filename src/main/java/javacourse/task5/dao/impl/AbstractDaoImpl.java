@@ -1,50 +1,93 @@
 package javacourse.task5.dao.impl;
 
-import javacourse.task5.build.config.ConfigFileEnum;
-import javacourse.task5.build.config.ConfigProperty;
 import javacourse.task5.build.factory.Component;
+import javacourse.task5.build.orm.OrmManagementUtil;
 import javacourse.task5.dao.AbstractDao;
 import javacourse.task5.dao.entity.AbstractEntity;
-import javacourse.task5.dao.entity.Guest;
-import javacourse.task5.dao.entity.IdSupplier;
-import javacourse.task5.dao.entity.Maintenance;
-import javacourse.task5.dao.entity.Room;
+import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
-import java.util.ArrayList;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
 public abstract class AbstractDaoImpl<T extends AbstractEntity> implements AbstractDao<T> {
-    @ConfigProperty(configFileEnum = ConfigFileEnum.ROOM_JSON, type = Room[].class)
-    @ConfigProperty(configFileEnum = ConfigFileEnum.GUEST_JSON, type = Guest[].class)
-    @ConfigProperty(configFileEnum = ConfigFileEnum.MAINTENANCE_JSON, type = Maintenance[].class)
-    private final List<T> repository = new ArrayList<>();
-    private final IdSupplier idSupplier = new IdSupplier();
+    private static final Logger logger = LoggerFactory.getLogger(AbstractDaoImpl.class);
 
     @Override
     public abstract T getDaoEntity();
 
     @Override
     public List<T> getAll() {
-        return new ArrayList<>(repository);
+        List<T> resultList;
+
+        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+            Class<T> clazz = (Class<T>) getDaoEntity().getClass();
+            session.beginTransaction();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<T> criteria = builder.createQuery(clazz);
+            Root<T> root = criteria.from(clazz);
+            criteria.select(root);
+            resultList = session.createQuery(criteria).getResultList();
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+        return resultList;
     }
 
     @Override
     public T getById(long id) throws NoSuchElementException {
-        return repository.stream()
-                .filter(element -> (element.getId() == id))
-                .findFirst().orElseThrow(NoSuchElementException::new);
+        T result;
+
+        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+            Class<T> clazz = (Class<T>) getDaoEntity().getClass();
+            session.beginTransaction();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<T> criteria = builder.createQuery(clazz);
+            Root<T> root = criteria.from(clazz);
+            criteria.select(root).where(builder.equal(root.get("id"), id));
+            result = session.createQuery(criteria).getSingleResult();
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+
+        return result;
     }
 
     @Override
     public T getByName(String name) throws NoSuchElementException {
-        return repository.stream()
-                .filter(element -> (name.equals(element.getName())))
-                .findFirst().orElseThrow(NoSuchElementException::new);
+        T result;
+
+        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+            Class<T> clazz = (Class<T>) getDaoEntity().getClass();
+            session.beginTransaction();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<T> criteria = builder.createQuery(clazz);
+            Root<T> root = criteria.from(clazz);
+            criteria.select(root).where(builder.equal(root.get("name"), name));
+            result = session.createQuery(criteria).getSingleResult();
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+
+        return result;
     }
 
     @Override
@@ -54,28 +97,27 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity> implements Abstr
 
     @Override
     public void addToRepo(T element) throws KeyAlreadyExistsException {
-        repository.forEach(e -> {
-            if (element.getId() == e.getId()) {
-                throw new KeyAlreadyExistsException(element + " == " + e);
-            }
-        });
-        repository.add(element);
-    }
-
-    @Override
-    public void deleteFromRepo(T element) throws NoSuchElementException {
-        if (!repository.remove(element)) {
-            throw new NoSuchElementException();
+        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.save(element);
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
         }
     }
 
     @Override
-    public long supplyId() {
-        return idSupplier.supplyId();
-    }
-
-    @Override
-    public void synchronizeNextSuppliedId(long id) {
-        idSupplier.synchronizeNextSuppliedId(id);
+    public void deleteFromRepo(T element) throws NoSuchElementException {
+        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.delete(element);
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
     }
 }

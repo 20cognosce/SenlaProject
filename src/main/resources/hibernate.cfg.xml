@@ -14,7 +14,7 @@
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">password123</property>
         <!-- Print executed SQL to stdout -->
-        <property name="show_sql">true</property>
+        <property name="show_sql">false</property>
 
         <!-- Annotated entity classes -->
         <mapping class="javacourse.task5.dao.entity.Room"/>

@@ -9,4 +9,6 @@ import java.util.List;
 public interface MaintenanceDao extends AbstractDao<Maintenance> {
     List<Maintenance> getMaintenancesOfGuest(Guest guest);
     List<Maintenance> getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator);
+    void updateMaintenancePrice(long maintenanceId, int price);
+    void addGuestMaintenance(Maintenance maintenanceInstance);
 }

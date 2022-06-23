@@ -1,11 +1,17 @@
 package javacourse.task5.dao.impl;
 
 import javacourse.task5.build.factory.Component;
+import javacourse.task5.build.orm.OrmManagementUtil;
 import javacourse.task5.dao.GuestDao;
 import javacourse.task5.dao.RoomDao;
 import javacourse.task5.dao.entity.Guest;
 import javacourse.task5.dao.entity.Room;
 import javacourse.task5.dao.entity.RoomStatus;
+
+import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,6 +20,7 @@ import java.util.Objects;
 
 @Component
 public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
+    private static final Logger logger = LoggerFactory.getLogger(RoomDaoImpl.class);
     public RoomDaoImpl() {
         super();
     }
@@ -58,8 +65,69 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     }
 
     @Override
-    public void setStatus(long roomId, RoomStatus roomStatus) {
-        getById(roomId).setRoomStatus(roomStatus);
+    public void updateRoomStatus(long roomId, RoomStatus roomStatus) {
+        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+            session.beginTransaction();
+            Room room = getById(roomId);
+            room.setRoomStatus(roomStatus);
+            session.update(room);
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void updateRoomPrice(long roomId, int price) {
+        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+            session.beginTransaction();
+            Room room = getById(roomId);
+            room.setPrice(price);
+            session.update(room);
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void removeGuest(long roomId, long guestId) {
+        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+            session.beginTransaction();
+            Room room = getById(roomId);
+            room.removeGuest(guestId);
+            session.update(room);
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void addGuestToRoom(long roomId, long guestId) {
+        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+            session.beginTransaction();
+            Room room = getById(roomId);
+            room.addGuest(guestId);
+            session.update(room);
+            /*LocalDate checkInDate = guest.getCheckInDate();
+            LocalDate checkOutDate = guest.getCheckOutDate();
+            Query query = session.createSQLQuery("" +
+                    "INSERT INTO room_guest (room_id, guest_id, check_in_date, check_out_date)" +
+                    "VALUES (:roomId, :guestId, $checkInDate, $checkOutDate)");
+            query.executeUpdate();*/
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override

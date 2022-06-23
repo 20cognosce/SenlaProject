@@ -22,25 +22,16 @@ create table guest
 
 CREATE TABLE room_guest
 (
+    id           serial,
     room_id      int REFERENCES room (id),
     guest_id     int REFERENCES guest (id),
-    booking_time timestamp not null,
-    CONSTRAINT room_guest_pkey PRIMARY KEY (room_id, guest_id, booking_time)
-);
-
--- Шаблоны услуг maintenance не будут иметь время заказа
-create table maintenance_template
-(
-    id       smallserial PRIMARY KEY,
-    name     varchar(100),
-    price    decimal(19, 4),
-    category varchar(20)
+    CONSTRAINT room_guest_pkey PRIMARY KEY (id, room_id, guest_id)
 );
 
 -- При заказе будет выбираться maintenance_template по имени/id
 -- и в maintenance_instance будет вставляться строка с его копией
 -- но с уже заполненным временем и новым id, плюс id гостя
-create table maintenance_instance
+create table maintenance
 (
     id              serial PRIMARY KEY,
     name            varchar(100),
@@ -49,3 +40,8 @@ create table maintenance_instance
     order_timestamp timestamp,
     guest_id        int references guest (id)
 );
+
+/*DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;*/

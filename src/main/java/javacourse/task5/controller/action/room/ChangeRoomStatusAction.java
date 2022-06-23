@@ -36,7 +36,7 @@ public class ChangeRoomStatusAction extends AbstractAction  {
             while (roomStatusIndex < 1 || roomStatusIndex > roomStatuses.size()) {
                 roomStatusIndex = scanner.nextInt();
             }
-            getRoomService().setStatus(roomId, roomStatuses.get(roomStatusIndex - 1));
+            getRoomService().updateRoomStatus(roomId, roomStatuses.get(roomStatusIndex - 1));
         } catch (Exception e) {
             System.out.println(e.getClass().getCanonicalName() + ": " + e.getMessage());
         }

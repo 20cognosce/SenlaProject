@@ -19,8 +19,8 @@ public interface RoomService extends AbstractService<Room, RoomDao> {
     List<Guest> getGuestsList(long roomId) throws NoSuchElementException;
     List<Room> getSorted(List<Room> listToSort, SortEnum sortBy);
 
-    void setPrice(long roomId, int price);
-    void setStatus(long roomId, RoomStatus roomStatus) throws ServiceUnavailableException;
+    void updateRoomPrice(long roomId, int price);
+    void updateRoomStatus(long roomId, RoomStatus roomStatus) throws ServiceUnavailableException;
 
     List<Room> sortByAddition();
     List<Room> sortByCapacity();

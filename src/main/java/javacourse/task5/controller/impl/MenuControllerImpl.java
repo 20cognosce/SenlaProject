@@ -2,13 +2,12 @@ package javacourse.task5.controller.impl;
 
 import javacourse.task5.build.DI.Autowired;
 import javacourse.task5.build.factory.Component;
+import javacourse.task5.build.orm.OrmManagementUtil;
 import javacourse.task5.controller.MenuController;
 import javacourse.task5.controller.Navigator;
 import javacourse.task5.controller.action.ConsoleReaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-;
 
 @Component
 public class MenuControllerImpl implements MenuController {
@@ -31,7 +30,7 @@ public class MenuControllerImpl implements MenuController {
                 try {
                     navigator.doAction();
                 } catch (Exception exception) {
-                    logger.error(e.getMessage(), e);
+                    logger.error(exception.getMessage(), exception);
                 }
             } catch (IndexOutOfBoundsException e) {
                 continue;
@@ -41,6 +40,12 @@ public class MenuControllerImpl implements MenuController {
 
             System.out.println("Press Enter key to continue...");
             ConsoleReaderUtil.readLine();
+        }
+
+        try {
+            OrmManagementUtil.closeConnection();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
     }
 }
