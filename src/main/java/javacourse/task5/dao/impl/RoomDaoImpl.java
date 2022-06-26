@@ -7,12 +7,16 @@ import javacourse.task5.dao.RoomDao;
 import javacourse.task5.dao.entity.Guest;
 import javacourse.task5.dao.entity.Room;
 import javacourse.task5.dao.entity.RoomStatus;
-
 import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ListJoin;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,114 +24,98 @@ import java.util.Objects;
 
 @Component
 public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
-    private static final Logger logger = LoggerFactory.getLogger(RoomDaoImpl.class);
     public RoomDaoImpl() {
         super();
     }
 
     @Override
     public List<Room> getFree() {
-        List<Room> freeRooms = new ArrayList<>();
-        getAll().forEach((room) -> {
-            if (room.getRoomStatus() == RoomStatus.FREE) freeRooms.add(room);
-        });
-        return freeRooms;
+        var ref = new Object() {
+            List<Room> freeRooms;
+        };
+        openSessionAndExecuteTransactionTask(((session, criteriaBuilder) -> {
+            CriteriaQuery<Room> criteria = criteriaBuilder.createQuery(Room.class);
+            Root<Room> root = criteria.from(Room.class);
+            criteria.select(root).where(criteriaBuilder.equal(root.get("roomStatus"), RoomStatus.FREE));
+            ref.freeRooms = session.createQuery(criteria).getResultList();
+        }));
+        return ref.freeRooms;
     }
 
     @Override
-    public List<Room> getFree(LocalDate asAtSpecificDate, GuestDao guestDao) {
+    public List<Room> getFree(LocalDate asAtSpecificDate, String fieldNameToSortBy) {
         if (Objects.equals(asAtSpecificDate, LocalDate.now())) {
             return getFree();
         }
 
-        List<Room> freeRooms = new ArrayList<>();
+        /*List<Room> freeRooms = getFree();
+        //TODO: Ну тут без getAll вообще никак, такой навороченный предикат вне моих способностей
         getAll().forEach(room -> {
-            final boolean[] isFree = {true};
-
-            if (room.getCurrentGuestIdList().isEmpty()) {
-                if (room.getRoomStatus() == RoomStatus.FREE) {
+            room.getCurrentGuestList().forEach(guest -> {
+                if (guest.getCheckInDate().isAfter(asAtSpecificDate) || guest.getCheckOutDate().isBefore(asAtSpecificDate)) {
                     freeRooms.add(room);
                 }
-                return;
-            }
-
-            room.getCurrentGuestIdList().forEach(guestId -> {
-                Guest guest = guestDao.getById(guestId);
-                if (!guest.getCheckInDate().isAfter(asAtSpecificDate) &&
-                        guest.getCheckOutDate().isAfter(asAtSpecificDate)) isFree[0] = false;
             });
-            if (isFree[0]) {
-                freeRooms.add(room);
-            }
+        });*/
+
+        var ref = new Object() {
+            List<Room> list;
+        };
+
+        //Это сумасшедший предикат
+        openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
+            CriteriaQuery<Room> criteriaQuery = criteriaBuilder.createQuery(Room.class);
+            Root<Room> root = criteriaQuery.from(Room.class);
+
+            ListJoin<Room, Guest> currentGuestList = root.joinList("currentGuestList");
+            Predicate predicateCheckInIsAfter = criteriaBuilder.greaterThan(currentGuestList.get("checkInDate"), asAtSpecificDate);
+            Predicate predicateCheckOutIsBefore = criteriaBuilder.lessThan(currentGuestList.get("checkOutDate"),asAtSpecificDate);
+            Predicate predicate = criteriaBuilder.or(predicateCheckInIsAfter, predicateCheckOutIsBefore);
+
+            List<Order> orderList = new ArrayList<>();
+            orderList.add(criteriaBuilder.asc(root.get(fieldNameToSortBy)));
+            TypedQuery<Room> query = session.createQuery(criteriaQuery
+                    .select(root)
+                    .where(predicate)
+                    .orderBy(orderList)
+                    .distinct(true));
+
+            ref.list = query.getResultList();
         });
 
-        return freeRooms;
+        return ref.list;
     }
 
     @Override
-    public void updateRoomStatus(long roomId, RoomStatus roomStatus) {
-        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
-            session.beginTransaction();
-            Room room = getById(roomId);
+    public void updateRoomStatus(Room room, RoomStatus roomStatus) {
+        openSessionAndExecuteTransactionTask(((session, criteriaBuilder) -> {
             room.setRoomStatus(roomStatus);
             session.update(room);
-            session.getTransaction().commit();
-            session.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        }));
     }
 
     @Override
-    public void updateRoomPrice(long roomId, int price) {
-        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
-            session.beginTransaction();
-            Room room = getById(roomId);
+    public void updateRoomPrice(Room room, int price) {
+        openSessionAndExecuteTransactionTask(((session, criteriaBuilder) -> {
             room.setPrice(price);
             session.update(room);
-            session.getTransaction().commit();
-            session.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        }));
     }
 
     @Override
-    public void removeGuest(long roomId, long guestId) {
-        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
-            session.beginTransaction();
-            Room room = getById(roomId);
-            room.removeGuest(guestId);
+    public void removeGuest(Room room, Guest guest) {
+        openSessionAndExecuteTransactionTask(((session, criteriaBuilder) -> {
+            room.removeGuest(guest);
             session.update(room);
-            session.getTransaction().commit();
-            session.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        }));
     }
 
     @Override
-    public void addGuestToRoom(long roomId, long guestId) {
-        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
-            session.beginTransaction();
-            Room room = getById(roomId);
-            room.addGuest(guestId);
+    public void addGuestToRoom(Room room, Guest guest) {
+        openSessionAndExecuteTransactionTask(((session, criteriaBuilder) -> {
+            room.addGuest(guest);
             session.update(room);
-            /*LocalDate checkInDate = guest.getCheckInDate();
-            LocalDate checkOutDate = guest.getCheckOutDate();
-            Query query = session.createSQLQuery("" +
-                    "INSERT INTO room_guest (room_id, guest_id, check_in_date, check_out_date)" +
-                    "VALUES (:roomId, :guestId, $checkInDate, $checkOutDate)");
-            query.executeUpdate();*/
-            session.getTransaction().commit();
-            session.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        }));
     }
 
     @Override

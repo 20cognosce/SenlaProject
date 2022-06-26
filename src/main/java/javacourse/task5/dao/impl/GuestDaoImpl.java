@@ -1,54 +1,32 @@
 package javacourse.task5.dao.impl;
 
 import javacourse.task5.build.factory.Component;
-import javacourse.task5.build.orm.OrmManagementUtil;
 import javacourse.task5.dao.GuestDao;
 import javacourse.task5.dao.entity.Guest;
-import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javacourse.task5.dao.entity.Room;
 
 
 @Component
 public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
-    private static final Logger logger = LoggerFactory.getLogger(GuestDaoImpl.class);
 
     public GuestDaoImpl() {
         super();
     }
 
     @Override
-    public void updatePrice(long guestId, int price) {
-        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
-            session.beginTransaction();
-            Guest guest = getById(guestId);
+    public void updateGuestPrice(Guest guest, int price) {
+        openSessionAndExecuteTransactionTask(((session, criteriaBuilder) -> {
             guest.setPrice(price);
             session.update(guest);
-            session.getTransaction().commit();
-            session.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        }));
     }
 
     @Override
-    public void updateRoomId(long guestId, long roomId) {
-        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
-            session.beginTransaction();
-            Guest guest = getById(guestId);
-            if (roomId == 0) {
-                guest.setRoomId(null);
-            } else {
-                guest.setRoomId(roomId);
-            }
+    public void updateGuestRoom(Guest guest, Room room) { //TODO: check null option in service
+        openSessionAndExecuteTransactionTask(((session, criteriaBuilder) -> {
+            guest.setRoom(room);
             session.update(guest);
-            session.getTransaction().commit();
-            session.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        }));
     }
 
     @Override
@@ -58,7 +36,7 @@ public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
                 guest.getPassport() + "," +
                 guest.getCheckInDate() + "," +
                 guest.getCheckOutDate() + "," +
-                guest.getRoomId();
+                guest.getRoom().getId();
     }
 
     @Override

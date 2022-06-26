@@ -5,11 +5,17 @@ import javacourse.task5.build.property.PropertiesUtil;
 import javacourse.task5.controller.action.SortEnum;
 import javacourse.task5.dao.RoomDao;
 import javacourse.task5.dao.entity.Guest;
+import javacourse.task5.dao.entity.Maintenance;
 import javacourse.task5.dao.entity.Room;
 import javacourse.task5.dao.entity.RoomStatus;
 import javacourse.task5.service.RoomService;
 
 import javax.naming.ServiceUnavailableException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,18 +33,14 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
     @Override
     public List<Guest> getLastNGuests(long roomId) throws NoSuchElementException {
-        List<Long> currentGuestIdList = roomDao.getById(roomId).getCurrentGuestIdList();
-        List<Guest> guestList = new ArrayList<>();
-        currentGuestIdList.forEach(id -> guestList.add(guestDao.getById(id)));
-        return guestList.stream().sorted(
+        List<Guest> currentGuestList = roomDao.getById(roomId).getCurrentGuestList();
+        return currentGuestList.stream().sorted(
                 Comparator.comparing(Guest::getCheckInDate).reversed()).limit(lastNGuests).collect(Collectors.toList());
     }
 
     @Override
     public List<Guest> getGuestsList(long roomId) throws NoSuchElementException {
-        List<Guest> guestList = new ArrayList<>();
-        getById(roomId).getCurrentGuestIdList().forEach(guestId -> guestList.add(guestDao.getById(guestId)));
-        return guestList;
+        return getById(roomId).getCurrentGuestList();
     }
 
     @Override
@@ -53,13 +55,13 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
     @Override
     public List<Room> getFree(LocalDate asAtSpecificDate) {
-        return roomDao.getFree(asAtSpecificDate, guestDao);
+        return getFreeRoomsSorted(asAtSpecificDate, SortEnum.BY_ADDITION);
     }
 
 
     @Override
     public void updateRoomPrice(long roomId, int price) throws NoSuchElementException {
-        roomDao.updateRoomPrice(roomId, price);
+        roomDao.updateRoomPrice(getById(roomId), price);
     }
 
     @Override
@@ -67,47 +69,47 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
         if ("no".equals(changeRoomStatusPossibility)) {
             throw new ServiceUnavailableException("Опция недоступна");
         }
-        roomDao.updateRoomStatus(roomId, roomStatus);
+        roomDao.updateRoomStatus(getById(roomId), roomStatus);
     }
 
     @Override
     public List<Room> sortByAddition() {
-        return getSorted(getAll(), SortEnum.BY_ADDITION);
+        return getRoomsSorted(SortEnum.BY_ADDITION);
     }
 
     @Override
     public List<Room> sortByCapacity() {
-        return getSorted(getAll(), SortEnum.BY_CAPACITY);
+        return getRoomsSorted(SortEnum.BY_CAPACITY);
     }
 
     @Override
     public List<Room> sortByPrice() {
-        return getSorted(getAll(), SortEnum.BY_PRICE);
+        return getRoomsSorted(SortEnum.BY_PRICE);
     }
 
     @Override
     public List<Room> sortByStars() {
-        return getSorted(getAll(), SortEnum.BY_STARS);
+        return getRoomsSorted(SortEnum.BY_STARS);
     }
 
     @Override
     public List<Room> sortFreeRoomsByAddition(LocalDate specificDate) {
-        return getSorted(getFree(specificDate), SortEnum.BY_CAPACITY);
+        return getFreeRoomsSorted(specificDate, SortEnum.BY_CAPACITY);
     }
 
     @Override
     public List<Room> sortFreeRoomsByCapacity(LocalDate specificDate) {
-        return getSorted(getFree(specificDate), SortEnum.BY_CAPACITY);
+        return getFreeRoomsSorted(specificDate, SortEnum.BY_CAPACITY);
     }
 
     @Override
     public List<Room> sortFreeRoomsByPrice(LocalDate specificDate) {
-        return getSorted(getFree(specificDate), SortEnum.BY_PRICE);
+        return getFreeRoomsSorted(specificDate, SortEnum.BY_PRICE);
     }
 
     @Override
     public List<Room> sortFreeRoomsByStars(LocalDate specificDate) {
-        return getSorted(getFree(specificDate), SortEnum.BY_STARS);
+        return getFreeRoomsSorted(specificDate, SortEnum.BY_STARS);
     }
 
     @Override
@@ -138,14 +140,44 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     }
 
     @Override
-    public List<Room> getSorted(List<Room> listToSort, SortEnum sortBy) throws NoSuchElementException {
-        switch (sortBy) {
-            case BY_ADDITION: return getDefaultDao().getSorted(listToSort, Comparator.comparingLong(Room::getId));
-            case BY_PRICE: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Room::getPrice));
-            case BY_CAPACITY: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Room::getCapacity));
-            case BY_STARS: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Room::getStarsNumber));
+    public List<Room> getRoomsSorted(SortEnum sortEnum) {
+        var ref = new Object() {
+            String fieldToSort;
+            List<Room> result;
+        };
+
+        switch (sortEnum) {
+            case BY_ADDITION: ref.fieldToSort = "id"; break;
+            case BY_PRICE: ref.fieldToSort = "price"; break;
+            case BY_CAPACITY:  ref.fieldToSort = "capacity"; break;
+            case BY_STARS: ref.fieldToSort = "starsNumber";
         }
-        throw new NoSuchElementException();
+
+        getDefaultDao().openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
+            CriteriaQuery<Room> criteriaQuery = criteriaBuilder.createQuery(Room.class);
+            Root<Room> root = criteriaQuery.from(Room.class);
+            List<Order> orderList = new ArrayList<>();
+            orderList.add(criteriaBuilder.asc(root.get(ref.fieldToSort)));
+            TypedQuery<Room> query
+                    = session.createQuery(criteriaQuery.select(root).orderBy(orderList));
+            ref.result = query.getResultList();
+        });
+
+        return ref.result;
+    }
+
+    public List<Room> getFreeRoomsSorted(LocalDate specificDate, SortEnum sortEnum) {
+        String fieldToSort;
+
+        switch (sortEnum) {
+            case BY_ADDITION: fieldToSort = "id"; break;
+            case BY_PRICE: fieldToSort = "price"; break;
+            case BY_CAPACITY:  fieldToSort = "capacity"; break;
+            case BY_STARS: fieldToSort = "starsNumber"; break;
+            default: throw new NoSuchElementException("Such sortEnum does not exist");
+        }
+
+        return getDefaultDao().getFree(specificDate, fieldToSort);
     }
 
     @Override

@@ -5,11 +5,19 @@ import javacourse.task5.build.factory.ApplicationContext;
 import javacourse.task5.build.orm.OrmManagementUtil;
 import javacourse.task5.controller.Builder;
 import javacourse.task5.controller.MenuController;
-import javacourse.task5.dao.entity.Maintenance;
+import javacourse.task5.dao.entity.Guest;
+import javacourse.task5.dao.entity.Room;
 import org.hibernate.Session;
 
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ListJoin;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {

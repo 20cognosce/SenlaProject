@@ -4,20 +4,26 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Entity
 public class Room extends AbstractEntity {
+    @Getter
+    @Setter
+    @Column(name="name")
+    private String name;
+    @Getter
+    @Setter
+    @Column(name="price")
+    private int price;
     @Getter
     @Setter
     @Column(name="capacity")
@@ -27,10 +33,8 @@ public class Room extends AbstractEntity {
     @Column(name="stars_number")
     private int starsNumber;
     @Getter
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="room_guest", joinColumns=@JoinColumn(name="room_id"))
-    @Column(name="guest_id")
-    private final List<Long> currentGuestIdList = new ArrayList<>();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "room")
+    private final List<Guest> currentGuestList = new ArrayList<>();
     @Getter
     @Setter
     @Column(name="room_status")
@@ -43,7 +47,8 @@ public class Room extends AbstractEntity {
 
     //new Room constructor
     public Room(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price) {
-        super(name, price);
+        this.name = name;
+        this.price = price;
         this.capacity = capacity;
         this.starsNumber = starsNumber;
         this.roomStatus = roomStatus;
@@ -52,35 +57,36 @@ public class Room extends AbstractEntity {
 
     //total constructor
     public Room(String name, int price, int capacity, int starsNumber, RoomStatus roomStatus, String details,
-                List<Long> currentGuestIdList) {
-        super(name, price);
+                List<Guest> currentGuestList) {
+        this.name = name;
+        this.price = price;
         this.capacity = capacity;
         this.starsNumber = starsNumber;
         this.roomStatus = roomStatus;
         this.details = details;
-        this.currentGuestIdList.addAll(currentGuestIdList);
+        this.currentGuestList.addAll(currentGuestList);
     }
 
     public Room() {
-        super("", 0);
+
     }
 
-    public void addGuest(long guestId) throws RuntimeException {
-        currentGuestIdList.add(guestId);
+    public void addGuest(Guest guest) throws RuntimeException {
+        currentGuestList.add(guest);
         setRoomStatus(RoomStatus.BUSY);
     }
 
-    public void removeGuest(long guestId) throws NoSuchElementException {
-        if (!currentGuestIdList.remove(guestId)) {
+    public void removeGuest(Guest guest) throws NoSuchElementException {
+        if (!currentGuestList.remove(guest)) {
             throw new NoSuchElementException("Such guest does not exist in that room");
         }
-        if (getCurrentGuestIdList().isEmpty()) setRoomStatus(RoomStatus.FREE);
+        if (getCurrentGuestList().isEmpty()) setRoomStatus(RoomStatus.FREE);
     }
 
     @JsonIgnore
     public boolean isUnavailableToSettle() {
         return (this.getRoomStatus() != RoomStatus.FREE && this.getRoomStatus() != RoomStatus.BUSY)
-                || (getCurrentGuestIdList().size() >= getCapacity());
+                || (getCurrentGuestList().size() >= getCapacity());
     }
 
     @Override

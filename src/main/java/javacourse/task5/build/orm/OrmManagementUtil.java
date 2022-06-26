@@ -14,20 +14,6 @@ import java.util.List;
 public class OrmManagementUtil {
     public static final SessionFactory sessionFactory = buildSessionFactory();
 
-    public static <T> List<T> getListFromDatabase(Class<T> clazz) {
-        Session session = sessionFactory.openSession();
-
-        session.beginTransaction();
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<T> criteria = builder.createQuery(clazz);
-        criteria.from(clazz);
-        List<T> resultList = session.createQuery(criteria).getResultList();
-        session.getTransaction().commit();
-        session.close();
-
-        return resultList;
-    }
-
     private static SessionFactory buildSessionFactory() {
         try {
             StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
@@ -42,5 +28,19 @@ public class OrmManagementUtil {
 
     public static void closeConnection() {
         sessionFactory.close();
+    }
+
+    public static <T> List<T> getListFromDatabase(Class<T> clazz) {
+        Session session = sessionFactory.openSession();
+
+        session.beginTransaction();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<T> criteria = builder.createQuery(clazz);
+        criteria.from(clazz);
+        List<T> resultList = session.createQuery(criteria).getResultList();
+        session.getTransaction().commit();
+        session.close();
+
+        return resultList;
     }
 }

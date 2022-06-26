@@ -155,10 +155,10 @@ public class BuilderImpl implements Builder {
 
     public void saveSystemState() {
         try {
-            JsonWriterUtil.writeConfig(roomService.getAll(), Constants.roomJson);
+            /*JsonWriterUtil.writeConfig(roomService.getAll(), Constants.roomJson);
             JsonWriterUtil.writeConfig(guestService.getAll(), Constants.guestJson);
             JsonWriterUtil.writeConfig(maintenanceService.getAll(), Constants.maintenanceJson);
-            //JsonWriterUtil.writeConfig(guestService.getArchivedAll(), Constants.archivedGuestJson);
+            JsonWriterUtil.writeConfig(guestService.getArchivedAll(), Constants.archivedGuestJson);*/
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

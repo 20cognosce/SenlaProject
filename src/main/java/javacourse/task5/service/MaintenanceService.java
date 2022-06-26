@@ -15,7 +15,6 @@ public interface MaintenanceService extends AbstractService<Maintenance, Mainten
 
     void executeMaintenance(long guestId, long maintenanceId);
     void updateMaintenancePrice(long maintenanceId, int price);
-    List<Maintenance> getSorted(List<Maintenance> listToSort, SortEnum sortBy);
 
     List<Maintenance> sortByAddition();
     List<Maintenance> sortByPrice();

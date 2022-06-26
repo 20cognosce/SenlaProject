@@ -9,9 +9,13 @@ import javacourse.task5.service.GuestService;
 
 import javax.management.InvalidAttributeValueException;
 import javax.management.openmbean.KeyAlreadyExistsException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -24,92 +28,103 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     }
 
     @Override
-    public void createGuest(String fullName, String passport,
-                            LocalDate checkInTime, LocalDate checkOutTime,
+    public void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime,
                             long roomId) throws KeyAlreadyExistsException {
-        try {
-            if (roomId != 0) roomDao.getById(roomId);
-        } catch (NoSuchElementException e) {
-            e.printStackTrace();
-            return;
-        }
-        Long objectRoomId;
-        if (roomId == 0) {
-            objectRoomId = null;
-        } else {
-            objectRoomId = roomId;
-        }
-        Guest guest = new Guest(fullName, passport, checkInTime, checkOutTime, objectRoomId);
-        guestDao.addToRepo(guest);
-        if (roomId != 0) guestDao.updatePrice(guest.getId(), roomDao.getById(roomId).getPrice());
+        guestDao.openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
+            Room room;
+            if (roomId == 0) {
+                room = null;
+            } else {
+                room = roomDao.getById(roomId);
+            }
+            Guest guest = new Guest(fullName, passport, checkInTime, checkOutTime, room);
+            guestDao.addToRepo(guest);
+            if (!Objects.isNull(room)) guestDao.updateGuestPrice(guest, room.getPrice());
+        });
     }
 
 
     @Override
     public void addGuestToRoom(long guestId, long roomId) {
-
-        try {
+        guestDao.openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
             Guest guest = guestDao.getById(guestId);
             Room room = roomDao.getById(roomId);
             if (room.isUnavailableToSettle()) throw new RuntimeException("Room is unavailable");
-            if (!Objects.isNull(guest.getRoomId())) removeGuestFromRoom(guestId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
+            if (!Objects.isNull(guest.getRoom())) removeGuestFromRoom(guestId);
 
-        //Как это добавить в одну транзакцию?
-        roomDao.addGuestToRoom(roomId, guestId);
-        guestDao.updateRoomId(guestId, roomId);
-        Room roomUpdated = roomDao.getById(roomId);
-        if (roomUpdated.getCurrentGuestIdList().size() == 1) {
-            //pay only the first settled after the room was empty
-            guestDao.updatePrice(guestId, roomUpdated.getPrice());
-        }
-        //careful, getId return different objects each time.
-        //after updating it in the previous methods we must call getId again for update
+            roomDao.addGuestToRoom(room, guest);
+            guestDao.updateGuestRoom(guest, room);
+            Room roomUpdated = roomDao.getById(roomId);
+            if (roomUpdated.getCurrentGuestList().size() == 1) {
+                //pay only the first settled after the room was empty
+                guestDao.updateGuestPrice(guest, roomUpdated.getPrice());
+            }
+        });
     }
 
     @Override
     public void removeGuestFromRoom(long guestId) {
-        Guest guest;
-        try {
+        guestDao.openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
+            Guest guest;
             guest = guestDao.getById(guestId);
-            if (Objects.isNull(guest.getRoomId())) {
+            if (Objects.isNull(guest.getRoom())) {
                 return;
             }
-            roomDao.removeGuest(guest.getRoomId(), guestId);
-            guestDao.updateRoomId(guestId, 0L);
-            guestDao.updatePrice(guestId, 0);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            roomDao.removeGuest(guest.getRoom(), guest);
+            guestDao.updateGuestRoom(guest, null);
+            guestDao.updateGuestPrice(guest, 0);
+        });
     }
 
     @Override
     public void deleteGuest(long guestId) {
-        try {
+        guestDao.openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
             removeGuestFromRoom(guestId);
             guestDao.deleteFromRepo(guestDao.getById(guestId));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     @Override
-    public List<Guest> getSorted(List<Guest> listToSort, SortEnum sortBy) throws NoSuchElementException {
-        switch (sortBy) {
-            case BY_ADDITION: return getDefaultDao().getSorted(listToSort, Comparator.comparingLong(Guest::getId));
-            case BY_PRICE: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Guest::getPrice));
-            case BY_ALPHABET: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Guest::getName));
-            case BY_CHECKOUT_DATE: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Guest::getCheckOutDate));
+    public List<Guest> getGuestsSorted(SortEnum sortEnum) {
+        var ref = new Object() {
+            String fieldToSort;
+            List<Guest> result;
+        };
+
+        switch (sortEnum) {
+            case BY_ADDITION: ref.fieldToSort = "id"; break;
+            case BY_PRICE: ref.fieldToSort = "price"; break;
+            case BY_ALPHABET:  ref.fieldToSort = "name"; break;
+            case BY_CHECKOUT_DATE: ref.fieldToSort = "checkOutDate";
         }
-        throw new NoSuchElementException();
+
+        getDefaultDao().openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
+            CriteriaQuery<Guest> criteriaQuery = criteriaBuilder.createQuery(Guest.class);
+            Root<Guest> root = criteriaQuery.from(Guest.class);
+            List<Order> orderList = new ArrayList<>();
+            orderList.add(criteriaBuilder.asc(root.get(ref.fieldToSort)));
+            TypedQuery<Guest> query
+                    = session.createQuery(criteriaQuery.select(root).orderBy(orderList));
+            ref.result = query.getResultList();
+        });
+
+        return ref.result;
     }
 
     @Override
-    public Integer getAllAmount() {
-        return guestDao.getAll().size();
+    public Long getAllAmount() {
+        var ref = new Object() {
+            Long count = 0L;
+        };
+        getDefaultDao().openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
+            CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+            Root<Guest> root = criteriaQuery.from(Guest.class);
+            criteriaQuery.select(criteriaBuilder.count(root));
+            TypedQuery<Long> query = session.createQuery(criteriaQuery);
+            ref.count = query.getSingleResult();
+        });
+
+        return ref.count;
     }
 
     @Override
@@ -119,17 +134,17 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
 
     @Override
     public List<Guest> sortByAddition() {
-        return getSorted(getAll(), SortEnum.BY_ADDITION);
+        return getGuestsSorted(SortEnum.BY_ADDITION);
     }
 
     @Override
     public List<Guest> sortByAlphabet() {
-        return getSorted(getAll(), SortEnum.BY_ALPHABET);
+        return getGuestsSorted(SortEnum.BY_ALPHABET);
     }
 
     @Override
     public List<Guest> sortByCheckOutDate() {
-        return getSorted(getAll(), SortEnum.BY_CHECKOUT_DATE);
+        return getGuestsSorted(SortEnum.BY_CHECKOUT_DATE);
     }
 
     @Override

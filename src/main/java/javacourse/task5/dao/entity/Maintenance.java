@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,21 +29,29 @@ public class Maintenance extends AbstractEntity implements Cloneable {
     private LocalDateTime orderTime;
     @Getter
     @Setter
-    @Column(name="guest_id")
-    private Long guestId;
+    @JoinColumn(name = "guest_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Guest guest;
+    @Getter
+    @Setter
+    @Column(name="name")
+    private String name;
+    @Getter
+    @Setter
+    @Column(name="price")
+    private int price;
 
-    public Maintenance(String name, int price, MaintenanceCategory category, LocalDateTime orderTime, Long guestId) {
-        super(name,  price);
+    public Maintenance(String name, int price, MaintenanceCategory category, LocalDateTime orderTime, Guest guest) {
+        this.name = name;
+        this.price = price;
         this.category = category;
         this.orderTime = orderTime;
-        this.guestId = guestId;
+        this.guest = guest;
     }
 
     public Maintenance() {
-        super("", 0);
-        category = null;
-        orderTime = null;
-        guestId = 0L;
+        name = "";
+        price = 0;
     }
 
     @Override
@@ -55,10 +65,10 @@ public class Maintenance extends AbstractEntity implements Cloneable {
             orderTime = "; Время заказа: " + getOrderTime().truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME);
         }
 
-        if (Objects.isNull(getGuestId())) {
+        if (Objects.isNull(getGuest())) {
             guestId = "";
         } else {
-            guestId = "; id гостя: " + getGuestId();
+            guestId = "; id гостя: " + getGuest().getId();
         }
 
         return "id: " + getId() +

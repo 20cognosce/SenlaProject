@@ -2,6 +2,7 @@ package javacourse.task5.dao.impl;
 
 import javacourse.task5.build.factory.Component;
 import javacourse.task5.build.orm.OrmManagementUtil;
+import javacourse.task5.build.orm.TransactionTaskFunction;
 import javacourse.task5.dao.AbstractDao;
 import javacourse.task5.dao.entity.AbstractEntity;
 import org.hibernate.Session;
@@ -12,11 +13,8 @@ import javax.management.openmbean.KeyAlreadyExistsException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Component
 public abstract class AbstractDaoImpl<T extends AbstractEntity> implements AbstractDao<T> {
@@ -25,20 +23,29 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity> implements Abstr
     @Override
     public abstract T getDaoEntity();
 
+    public List<T> getQueryResult(CriteriaQuery<T> criteria, Class<T> clazz) {
+        var ref = new Object() {
+            List<T> resultQuery;
+        };
+        openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
+            Root<T> root = criteria.from(clazz);
+            criteria.select(root);
+            ref.resultQuery = session.createQuery(criteria).getResultList();
+        });
+        return ref.resultQuery;
+    }
+
     @Override
     public List<T> getAll() {
         List<T> resultList;
 
         try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
             Class<T> clazz = (Class<T>) getDaoEntity().getClass();
-            session.beginTransaction();
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<T> criteria = builder.createQuery(clazz);
             Root<T> root = criteria.from(clazz);
             criteria.select(root);
             resultList = session.createQuery(criteria).getResultList();
-            session.getTransaction().commit();
-            session.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;
@@ -47,76 +54,41 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity> implements Abstr
     }
 
     @Override
-    public T getById(long id) throws NoSuchElementException {
-        T result;
-
-        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+    public T getById(long id) {
+        var ref = new Object() {
+            T result;
+        };
+        openSessionAndExecuteTransactionTask((session, builder) -> {
             Class<T> clazz = (Class<T>) getDaoEntity().getClass();
-            session.beginTransaction();
-            CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<T> criteria = builder.createQuery(clazz);
             Root<T> root = criteria.from(clazz);
             criteria.select(root).where(builder.equal(root.get("id"), id));
-            result = session.createQuery(criteria).getSingleResult();
-            session.getTransaction().commit();
-            session.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
-
-        return result;
-    }
-
-    @Override
-    public T getByName(String name) throws NoSuchElementException {
-        T result;
-
-        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
-            Class<T> clazz = (Class<T>) getDaoEntity().getClass();
-            session.beginTransaction();
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<T> criteria = builder.createQuery(clazz);
-            Root<T> root = criteria.from(clazz);
-            criteria.select(root).where(builder.equal(root.get("name"), name));
-            result = session.createQuery(criteria).getSingleResult();
-            session.getTransaction().commit();
-            session.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<T> getSorted(List<T> listToSort, Comparator<T> comparator) {
-        return listToSort.stream().sorted(comparator).collect(Collectors.toList());
+            ref.result = session.createQuery(criteria).getSingleResult();
+        });
+        return ref.result;
     }
 
     @Override
     public void addToRepo(T element) throws KeyAlreadyExistsException {
-        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
-            session.beginTransaction();
-            session.save(element);
-            session.getTransaction().commit();
-            session.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        }
+        openSessionAndExecuteTransactionTask((session, builder) -> session.save(element));
     }
 
     @Override
     public void deleteFromRepo(T element) throws NoSuchElementException {
-        try (Session session = OrmManagementUtil.sessionFactory.openSession()) {
+        openSessionAndExecuteTransactionTask((session, builder) -> session.delete(element));
+    }
+
+    public void openSessionAndExecuteTransactionTask(TransactionTaskFunction task) {
+        Session session = OrmManagementUtil.sessionFactory.openSession();
+        try {
             session.beginTransaction();
-            session.delete(element);
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            task.execute(session, criteriaBuilder);
             session.getTransaction().commit();
             session.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            session.getTransaction().rollback();
             throw e;
         }
     }

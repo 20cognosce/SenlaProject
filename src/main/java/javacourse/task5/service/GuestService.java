@@ -12,9 +12,9 @@ public interface GuestService extends AbstractService<Guest, GuestDao> {
     void addGuestToRoom(long guestId, long roomId);
     void deleteGuest(long guestId);
     void removeGuestFromRoom(long guestId);
-    List<Guest> getSorted(List<Guest> listToSort, SortEnum sortBy);
+    List<Guest> getGuestsSorted(SortEnum sortBy);
 
-    Integer getAllAmount();
+    Long getAllAmount();
     Integer getPriceByGuest(long guestId);
     List<Guest> sortByAddition();
     List<Guest> sortByAlphabet();

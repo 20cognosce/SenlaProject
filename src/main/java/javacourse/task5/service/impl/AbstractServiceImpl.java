@@ -2,6 +2,7 @@ package javacourse.task5.service.impl;
 
 import javacourse.task5.build.DI.Autowired;
 import javacourse.task5.build.factory.Component;
+import javacourse.task5.build.orm.OrmManagementUtil;
 import javacourse.task5.dao.AbstractDao;
 import javacourse.task5.dao.GuestDao;
 import javacourse.task5.dao.MaintenanceDao;
@@ -11,9 +12,14 @@ import javacourse.task5.dao.impl.GuestDaoImpl;
 import javacourse.task5.dao.impl.MaintenanceDaoImpl;
 import javacourse.task5.dao.impl.RoomDaoImpl;
 import javacourse.task5.service.AbstractService;
+import org.hibernate.Session;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Component
 public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends AbstractDao<T>> implements AbstractService<T, D> {
@@ -32,17 +38,7 @@ public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends Ab
     }
 
     @Override
-    public T getByName(String name) throws NoSuchElementException {
-        return getDefaultDao().getByName(name);
-    }
-
-    @Override
-    public List<T> getAll() {
-        return getDefaultDao().getAll();
-    }
-
-    @Override
     public void addAll(List<T> list) {
-        list.forEach(e -> getDefaultDao().addToRepo(e));
+        getDefaultDao().openSessionAndExecuteTransactionTask((session, builder) -> list.forEach(session::save));
     }
 }

@@ -2,12 +2,15 @@ package javacourse.task5.dao.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,10 +23,14 @@ public class Guest extends AbstractEntity {
     @Setter
     @Column(name="passport")
     private String passport;
+
     @Getter
     @Setter
-    @Column(name="room_id")
-    private Long roomId;
+    @NotFound(action = NotFoundAction.IGNORE)
+    @ManyToOne(fetch = FetchType.EAGER) //TODO: нужен туториал по CascadeType
+    @JoinColumn(name = "room_id")
+    private Room room;
+
     @Getter
     @Setter
     @Column(name="check_in_date")
@@ -32,6 +39,14 @@ public class Guest extends AbstractEntity {
     @Setter
     @Column(name="check_out_date")
     private LocalDate checkOutDate;
+    @Getter
+    @Setter
+    @Column(name="name")
+    private String name;
+    @Getter
+    @Setter
+    @Column(name="price")
+    private int price;
 
     /*
     * На лекции советовали использовать LAZY, но чтобы его реализовать без LazyInitializationException
@@ -39,33 +54,35 @@ public class Guest extends AbstractEntity {
     * а Spring подключать не разрешено в задании
     * */
     @Getter
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "guest_id")
-    private final List<Maintenance> orderedMaintenances = new ArrayList<>();
+    @Setter
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "guest")
+    private List<Maintenance> orderedMaintenances = new ArrayList<>();
 
     //new guest constructor
-    public Guest(String name, String passport, LocalDate checkInTime, LocalDate checkOutTime, Long roomId) {
-        super(name,  0);
+    public Guest(String name, String passport, LocalDate checkInTime, LocalDate checkOutTime, Room room) {
+        this.name = name;
+        this.price = 0;
         this.passport = passport;
         this.checkInDate = checkInTime;
         this.checkOutDate = checkOutTime;
-        this.roomId = roomId;
+        this.room = room;
     }
 
     //total constructor
     public Guest(String name, int price,
-                 String passport, Long roomId,
+                 String passport, Room room,
                  LocalDate checkInDate, LocalDate checkOutDate, List<Maintenance> orderedMaintenances) {
-        super(name, price);
+        this.name = name;
+        this.price = price;
         this.passport = passport;
-        this.roomId = roomId;
+        this.room = room;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.orderedMaintenances.addAll(orderedMaintenances);
     }
 
     public Guest() {
-        super("", 0);
+
     }
 
     @Override
@@ -75,12 +92,10 @@ public class Guest extends AbstractEntity {
                     .append("; Гость: ").append(getName())
                     .append("; Паспорт: ").append(getPassport())
                     .append("; Комната: ");
-            if (Objects.isNull(getRoomId())) {
-                out.append("без комнаты");
-            } else if (getRoomId() == 0L) {
+            if (Objects.isNull(getRoom())) {
                 out.append("без комнаты");
             } else {
-                out.append(getRoomId());
+                out.append(getRoom().getId());
             }
             out.append("; Дата заезда: ").append(getCheckInDate())
                     .append("; Дата выезда: ").append(getCheckOutDate())

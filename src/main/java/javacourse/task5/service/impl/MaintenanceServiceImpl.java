@@ -8,8 +8,14 @@ import javacourse.task5.dao.entity.Maintenance;
 import javacourse.task5.dao.entity.MaintenanceCategory;
 import javacourse.task5.service.MaintenanceService;
 
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -39,66 +45,96 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
         Maintenance maintenanceInstance;
         Guest guest;
         try {
-            maintenanceInstance = maintenanceDao.getById(maintenanceId).clone();
-            maintenanceInstance.setGuestId(guestId);
             guest = guestDao.getById(guestId);
+            maintenanceInstance = maintenanceDao.getById(maintenanceId).clone();
+            maintenanceInstance.setGuest(guest);
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
 
         maintenanceDao.addGuestMaintenance(maintenanceInstance);
-        guestDao.updatePrice(guestId, (guest.getPrice() + maintenanceInstance.getPrice()));
+        guestDao.updateGuestPrice(guest, (guest.getPrice() + maintenanceInstance.getPrice()));
         System.out.println("Услуга " + maintenanceInstance.getName()
                 + " для " + guest.getName()
                 + " исполнена. Цена услуги: " + maintenanceInstance.getPrice()
-                + "; Дата: " + maintenanceInstance.getOrderTime().truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME));
+                + "; Дата: " + maintenanceInstance
+                .getOrderTime()
+                .truncatedTo(ChronoUnit.SECONDS)
+                .format(DateTimeFormatter.ISO_DATE_TIME));
     }
 
     @Override
     public void updateMaintenancePrice(long maintenanceId, int price) {
-        maintenanceDao.updateMaintenancePrice(maintenanceId, price);
+        maintenanceDao.updateMaintenancePrice(getById(maintenanceId), price);
     }
 
-    @Override
-    public List<Maintenance> getSorted(List<Maintenance> listToSort, SortEnum sortBy) throws NoSuchElementException {
-        switch (sortBy) {
-            case BY_ADDITION: return getDefaultDao().getSorted(listToSort, Comparator.comparingLong(Maintenance::getId));
-            case BY_PRICE: return getDefaultDao().getSorted(listToSort, Comparator.comparingInt(Maintenance::getPrice));
-            case BY_CATEGORY: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Maintenance::getCategory));
-            case BY_TIME: return getDefaultDao().getSorted(listToSort, Comparator.comparing(Maintenance::getOrderTime));
+
+    public List<Maintenance> getMaintenancesSorted(Long guestId, SortEnum sortEnum) {
+        var ref = new Object() {
+            String fieldToSort;
+            List<Maintenance> result;
+        };
+
+        switch (sortEnum) {
+            case BY_ADDITION: ref.fieldToSort = "id"; break;
+            case BY_PRICE: ref.fieldToSort = "price"; break;
+            case BY_CATEGORY:  ref.fieldToSort = "category"; break;
+            case BY_TIME: ref.fieldToSort = "orderTime";
         }
-        throw new NoSuchElementException();
+
+        getDefaultDao().openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
+            CriteriaQuery<Maintenance> criteriaQuery = criteriaBuilder.createQuery(Maintenance.class);
+            Root<Maintenance> root = criteriaQuery.from(Maintenance.class);
+
+            Predicate predicate;
+            if (guestId == 0L) {
+                Predicate predicateForGuestId = criteriaBuilder.isNull(root.get("guest"));
+                Predicate predicateForTimeStamp = criteriaBuilder.isNull(root.get("orderTime"));
+                predicate = criteriaBuilder.and(predicateForGuestId, predicateForTimeStamp);
+            } else {
+                predicate = criteriaBuilder.equal(root.get("guest"), guestDao.getById(guestId));
+            }
+
+            List<Order> orderList = new ArrayList<>();
+            orderList.add(criteriaBuilder.asc(root.get(ref.fieldToSort)));
+            TypedQuery<Maintenance> query
+                    = session.createQuery(criteriaQuery.select(root).where(predicate).orderBy(orderList));
+            ref.result = query.getResultList();
+        });
+
+        return ref.result;
     }
 
     @Override
     public List<Maintenance> sortByAddition() {
-        return getSorted(getAll(), SortEnum.BY_ADDITION);
+        return getMaintenancesSorted(0L, SortEnum.BY_ADDITION);
     }
 
     @Override
     public List<Maintenance> sortByPrice() {
-        return getSorted(getAll(), SortEnum.BY_PRICE);
+        return getMaintenancesSorted(0L, SortEnum.BY_PRICE);
     }
 
     @Override
     public List<Maintenance> sortByCategory() {
-        return getSorted(getAll(), SortEnum.BY_CATEGORY);
+        return getMaintenancesSorted(0L, SortEnum.BY_CATEGORY);
     }
 
     @Override
     public List<Maintenance> sortMaintenancesOfGuestByAddition(long guestId) {
-        return getSorted(getMaintenancesOfGuest(guestId), SortEnum.BY_ADDITION);
+        return getMaintenancesSorted(guestId, SortEnum.BY_ADDITION);
     }
 
     @Override
     public List<Maintenance> sortMaintenancesOfGuestByPrice(long guestId) {
-        return getSorted(getMaintenancesOfGuest(guestId), SortEnum.BY_PRICE);
+        return getMaintenancesSorted(guestId, SortEnum.BY_PRICE);
+
     }
 
     @Override
     public List<Maintenance> sortMaintenancesOfGuestByTime(long guestId) {
-        return getSorted(getMaintenancesOfGuest(guestId), SortEnum.BY_TIME);
+        return getMaintenancesSorted(guestId, SortEnum.BY_TIME);
     }
 
     @Override

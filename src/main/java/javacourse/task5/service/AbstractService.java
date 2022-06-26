@@ -10,10 +10,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public interface AbstractService<T extends AbstractEntity, D extends AbstractDao<T>> {
-    List<T> getAll();
     void addAll(List<T> list);
-    T getByName(String name) throws NoSuchElementException;
-    T getById(long id) throws NoSuchElementException;
+    T getById(long id);
 
     String getExportTitleLine();
     String exportData(long id) throws NoSuchElementException, ClassNotFoundException;
