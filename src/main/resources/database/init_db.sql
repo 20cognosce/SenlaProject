@@ -12,10 +12,6 @@ VALUES ('Ivanov Ivan Ivanovich', 5000, '1111222222', 2, '2022-03-02', '2022-03-0
        ('Abramov Nikita Alexandrovich', 0, '7777888888', null, '2022-03-01', '2022-03-14'),
        ('Yakovleva Margarita Vladimirovna', 0, '9999000000', null, '2022-03-01', '2022-03-14');
 
-insert into room_guest (room_id, guest_id)
-VALUES (2, 1),
-       (2, 2),
-       (1, 3);
 
 insert into maintenance (name, price, category, order_timestamp, guest_id)
 values ('Завтрак в номер', 500, 'LOCAL_FOOD', null, null),

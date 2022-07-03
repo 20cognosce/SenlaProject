@@ -20,17 +20,6 @@ create table guest
     room_id        int references room (id) -- будет не null у тех, кто заселён в данный момент
 );
 
-CREATE TABLE room_guest
-(
-    id           serial,
-    room_id      int REFERENCES room (id),
-    guest_id     int REFERENCES guest (id),
-    CONSTRAINT room_guest_pkey PRIMARY KEY (id, room_id, guest_id)
-);
-
--- При заказе будет выбираться maintenance_template по имени/id
--- и в maintenance_instance будет вставляться строка с его копией
--- но с уже заполненным временем и новым id, плюс id гостя
 create table maintenance
 (
     id              serial PRIMARY KEY,
