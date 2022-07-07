@@ -19,7 +19,7 @@ import java.util.Objects;
 @Component
 @Entity
 @Table(name="maintenance")
-public class Maintenance extends AbstractEntity implements Cloneable {
+public class Maintenance extends AbstractEntity {
     @Getter
     @Setter
     @Column(name="category")
@@ -32,7 +32,7 @@ public class Maintenance extends AbstractEntity implements Cloneable {
     @Getter
     @Setter
     @JoinColumn(name = "guest_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne //Optional = false не принимает null из таблицы в методе entityManager.find
     private Guest guest;
     @Getter
     @Setter
@@ -81,9 +81,12 @@ public class Maintenance extends AbstractEntity implements Cloneable {
                 "\n";
     }
 
-    @Override
-    public Maintenance clone() throws CloneNotSupportedException {
-        Maintenance clone = (Maintenance) super.clone();
+    public Maintenance getCloneInstance() {
+        Maintenance clone = new Maintenance();
+        clone.setCategory(this.getCategory());
+        clone.setGuest(this.getGuest());
+        clone.setName(this.getName());
+        clone.setPrice(this.getPrice());
         clone.setOrderTime(LocalDateTime.now());
         return clone;
     }

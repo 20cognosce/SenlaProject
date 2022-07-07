@@ -1,16 +1,18 @@
 package com.senla.javacourse.controller.action.maintenance;
 
-import com.senla.javacourse.controller.action.ConsoleReaderUtil;
-import com.senla.javacourse.service.MaintenanceService;
 import com.senla.javacourse.controller.action.AbstractAction;
+import com.senla.javacourse.controller.action.ConsoleReaderUtil;
 import com.senla.javacourse.service.GuestService;
+import com.senla.javacourse.service.MaintenanceService;
 import com.senla.javacourse.service.RoomService;
+import lombok.SneakyThrows;
 
 public class OrderMaintenanceAction extends AbstractAction  {
     public OrderMaintenanceAction(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
         super(guestService, roomService, maintenanceService);
     }
 
+    @SneakyThrows
     @Override
     public void execute() {
         long guestId = ConsoleReaderUtil.inputId("Введите идентификатор гостя: ");

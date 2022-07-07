@@ -7,6 +7,7 @@ import com.senla.javacourse.dao.RoomDao;
 import com.senla.javacourse.dao.entity.AbstractEntity;
 import com.senla.javacourse.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -26,7 +27,6 @@ public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends Ab
     }
 
     public AbstractServiceImpl() {
-
     }
 
     protected abstract D getDefaultDao();
@@ -37,7 +37,8 @@ public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends Ab
     }
 
     @Override
+    @Transactional
     public void addAll(List<T> list) {
-        getDefaultDao().openSessionAndExecuteTransactionTask((session, builder) -> list.forEach(session::save));
+        list.forEach(e -> getDefaultDao().create(e));
     }
  }

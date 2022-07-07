@@ -1,9 +1,8 @@
 package com.senla.javacourse.service;
 
-import com.senla.javacourse.controller.action.SortEnum;
-import com.senla.javacourse.dao.entity.Room;
 import com.senla.javacourse.dao.RoomDao;
 import com.senla.javacourse.dao.entity.Guest;
+import com.senla.javacourse.dao.entity.Room;
 import com.senla.javacourse.dao.entity.RoomStatus;
 
 import javax.naming.ServiceUnavailableException;
@@ -17,7 +16,6 @@ public interface RoomService extends AbstractService<Room, RoomDao> {
     List<Room> getFree(LocalDate asAtSpecificDate);
     List<Guest> getLastNGuests(long roomId);
     List<Guest> getGuestsList(long roomId) throws NoSuchElementException;
-    List<Room> getRoomsSorted(SortEnum sortBy);
 
     void updateRoomPrice(long roomId, int price);
     void updateRoomStatus(long roomId, RoomStatus roomStatus) throws ServiceUnavailableException;

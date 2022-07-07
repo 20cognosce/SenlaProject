@@ -37,6 +37,7 @@ public class Room extends AbstractEntity {
     @Getter
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "room")
     private final List<Guest> currentGuestList = new ArrayList<>();
+    //TODO: failed to lazily initialize a collection of role: com.senla.javacourse.dao.entity.Room.currentGuestList, could not initialize proxy - no Session
     @Getter
     @Setter
     @Column(name="room_status")

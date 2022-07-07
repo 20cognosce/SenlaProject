@@ -13,6 +13,15 @@ public class Main {
 
         MenuController menuController = ctx.getBean(MenuController.class);
         menuController.run();
+
+        /*GuestDao guestDao = ctx.getBean(GuestDao.class);
+        Guest guest = new Guest("TestName", 0, "TestPassport",
+                LocalDate.of(2022, 7, 7),
+                LocalDate.of(2022, 7, 8),
+                null,
+                null);
+        guestDao.create(guest);*/
+
         ctx.close();
     }
 }

@@ -12,11 +12,21 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
 
 @Configuration
 @ComponentScan
+@EnableTransactionManagement
 public class AppConfig {
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -42,4 +52,39 @@ public class AppConfig {
     public static MenuController menuController(@Qualifier("navigator") Navigator navigator) {
         return new MenuControllerImpl(navigator);
     }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setDatabase(Database.POSTGRESQL);
+        vendorAdapter.setGenerateDdl(true);
+
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setPackagesToScan(getClass().getPackage().getName()); //"com.senla.javacourse"
+        factory.setDataSource(dataSource());
+        return factory;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory);
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        DriverManagerDataSource driver = new DriverManagerDataSource();
+        driver.setDriverClassName("org.postgresql.Driver");
+        driver.setUrl("jdbc:postgresql://localhost/senla_project");
+        driver.setUsername("postgres");
+        driver.setPassword("password123");
+        return driver;
+    }
+
+    /*
+    @Bean
+    public static PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor() {
+        return new PersistenceAnnotationBeanPostProcessor();
+    }*/
 }

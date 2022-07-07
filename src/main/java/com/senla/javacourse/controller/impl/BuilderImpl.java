@@ -2,6 +2,9 @@ package com.senla.javacourse.controller.impl;
 
 import com.senla.javacourse.build.config.Constants;
 import com.senla.javacourse.build.json.reader.JsonReaderUtil;
+import com.senla.javacourse.controller.Builder;
+import com.senla.javacourse.controller.action.guest.AddGuestToRoomAction;
+import com.senla.javacourse.controller.action.guest.CreateGuestAction;
 import com.senla.javacourse.controller.action.guest.DeleteGuestAction;
 import com.senla.javacourse.controller.action.guest.ExportGuestDataAction;
 import com.senla.javacourse.controller.action.guest.ImportGuestDataAction;
@@ -12,10 +15,6 @@ import com.senla.javacourse.controller.action.guest.PrintAllSortedByCheckoutDate
 import com.senla.javacourse.controller.action.guest.PrintAllSortedGuestAdditionOrder;
 import com.senla.javacourse.controller.action.guest.PrintGuestByIdAction;
 import com.senla.javacourse.controller.action.guest.PrintGuestPaymentAction;
-import com.senla.javacourse.controller.action.maintenance.PrintAllSortedByPrice;
-import com.senla.javacourse.controller.Builder;
-import com.senla.javacourse.controller.action.guest.AddGuestToRoomAction;
-import com.senla.javacourse.controller.action.guest.CreateGuestAction;
 import com.senla.javacourse.controller.action.guest.RemoveGuestFromRoomAction;
 import com.senla.javacourse.controller.action.maintenance.ChangeMaintenancePriceAction;
 import com.senla.javacourse.controller.action.maintenance.CreateMaintenanceAction;
@@ -23,6 +22,7 @@ import com.senla.javacourse.controller.action.maintenance.ExportMaintenanceDataA
 import com.senla.javacourse.controller.action.maintenance.ImportMaintenanceDataAction;
 import com.senla.javacourse.controller.action.maintenance.OrderMaintenanceAction;
 import com.senla.javacourse.controller.action.maintenance.PrintAllSortedByCategory;
+import com.senla.javacourse.controller.action.maintenance.PrintAllSortedByPrice;
 import com.senla.javacourse.controller.action.maintenance.PrintAllSortedMaintenanceAdditionOrder;
 import com.senla.javacourse.controller.action.maintenance.PrintMaintenanceByIdAction;
 import com.senla.javacourse.controller.action.maintenance.PrintMaintenancesOfGuestAction;
@@ -55,8 +55,6 @@ import com.senla.javacourse.service.GuestService;
 import com.senla.javacourse.service.MaintenanceService;
 import com.senla.javacourse.service.RoomService;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

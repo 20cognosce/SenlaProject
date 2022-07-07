@@ -1,60 +1,39 @@
 package com.senla.javacourse.service.impl;
 
 import com.senla.javacourse.controller.action.SortEnum;
-import com.senla.javacourse.dao.entity.Maintenance;
-import com.senla.javacourse.service.MaintenanceService;
 import com.senla.javacourse.dao.MaintenanceDao;
 import com.senla.javacourse.dao.entity.Guest;
+import com.senla.javacourse.dao.entity.Maintenance;
 import com.senla.javacourse.dao.entity.MaintenanceCategory;
-import org.springframework.stereotype.Component;
+import com.senla.javacourse.service.MaintenanceService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-@Component
 public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, MaintenanceDao> implements MaintenanceService {
     public MaintenanceServiceImpl() {
         super();
     }
 
+    @Transactional
     @Override
     public void createMaintenance(String maintenanceName, int price, MaintenanceCategory category) {
-        maintenanceDao.addToRepo(new Maintenance(maintenanceName, price, category, null, null));
+        maintenanceDao.create(new Maintenance(maintenanceName, price, category, null, null));
     }
 
-    @Override
-    public List<Maintenance> getMaintenancesOfGuest(long guestId) throws NoSuchElementException {
-        return maintenanceDao.getMaintenancesOfGuest(guestDao.getById(guestId));
-    }
-
-    @Override
-    public List<Maintenance> getMaintenancesOfGuest(long guestId, Comparator<Maintenance> comparator) throws NoSuchElementException {
-        return maintenanceDao.getMaintenancesOfGuest(guestDao.getById(guestId), comparator);
-    }
-
+    @Transactional
     @Override
     public void executeMaintenance(long guestId, long maintenanceId) {
         Maintenance maintenanceInstance;
         Guest guest;
-        try {
-            guest = guestDao.getById(guestId);
-            maintenanceInstance = maintenanceDao.getById(maintenanceId).clone();
-            maintenanceInstance.setGuest(guest);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
+        guest = guestDao.getById(guestId);
+        maintenanceInstance = maintenanceDao.getById(maintenanceId).getCloneInstance();
+        maintenanceInstance.setGuest(guest);
 
         maintenanceDao.addGuestMaintenance(maintenanceInstance);
         guestDao.updateGuestPrice(guest, (guest.getPrice() + maintenanceInstance.getPrice()));
@@ -68,76 +47,71 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     }
 
     @Override
+    @Transactional
     public void updateMaintenancePrice(long maintenanceId, int price) {
         maintenanceDao.updateMaintenancePrice(getById(maintenanceId), price);
     }
 
-
-    public List<Maintenance> getMaintenancesSorted(Long guestId, SortEnum sortEnum) {
-        var ref = new Object() {
-            String fieldToSort;
-            List<Maintenance> result;
-        };
+    @Override
+    public List<Maintenance> getAllMaintenancesSorted(SortEnum sortEnum) {
+        String fieldToSort;
 
         switch (sortEnum) {
-            case BY_ADDITION: ref.fieldToSort = "id"; break;
-            case BY_PRICE: ref.fieldToSort = "price"; break;
-            case BY_CATEGORY:  ref.fieldToSort = "category"; break;
-            case BY_TIME: ref.fieldToSort = "orderTime";
+            case BY_ADDITION: fieldToSort = "id"; break;
+            case BY_PRICE: fieldToSort = "price"; break;
+            case BY_CATEGORY:  fieldToSort = "category"; break;
+            case BY_TIME: fieldToSort = "orderTime"; break;
+            default: throw new NoSuchElementException();
         }
 
-        getDefaultDao().openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
-            CriteriaQuery<Maintenance> criteriaQuery = criteriaBuilder.createQuery(Maintenance.class);
-            Root<Maintenance> root = criteriaQuery.from(Maintenance.class);
+        return getDefaultDao().getAll(fieldToSort);
+    }
 
-            Predicate predicate;
-            if (guestId == 0L) {
-                Predicate predicateForGuestId = criteriaBuilder.isNull(root.get("guest"));
-                Predicate predicateForTimeStamp = criteriaBuilder.isNull(root.get("orderTime"));
-                predicate = criteriaBuilder.and(predicateForGuestId, predicateForTimeStamp);
-            } else {
-                predicate = criteriaBuilder.equal(root.get("guest"), guestDao.getById(guestId));
-            }
+    @Override
+    public List<Maintenance> getMaintenancesOfGuestSorted(Long guestId, SortEnum sortEnum) {
+        String fieldToSort;
 
-            List<Order> orderList = new ArrayList<>();
-            orderList.add(criteriaBuilder.asc(root.get(ref.fieldToSort)));
-            TypedQuery<Maintenance> query
-                    = session.createQuery(criteriaQuery.select(root).where(predicate).orderBy(orderList));
-            ref.result = query.getResultList();
-        });
+        switch (sortEnum) {
+            case BY_ADDITION: fieldToSort = "id"; break;
+            case BY_PRICE: fieldToSort = "price"; break;
+            case BY_CATEGORY:  fieldToSort = "category"; break;
+            case BY_TIME: fieldToSort = "orderTime"; break;
+            default: throw new NoSuchElementException();
+        }
 
-        return ref.result;
+        Guest guest = guestDao.getById(guestId);
+        return getDefaultDao().getMaintenancesOfGuest(guest, fieldToSort);
     }
 
     @Override
     public List<Maintenance> sortByAddition() {
-        return getMaintenancesSorted(0L, SortEnum.BY_ADDITION);
+        return getAllMaintenancesSorted(SortEnum.BY_ADDITION);
     }
 
     @Override
     public List<Maintenance> sortByPrice() {
-        return getMaintenancesSorted(0L, SortEnum.BY_PRICE);
+        return getAllMaintenancesSorted(SortEnum.BY_PRICE);
     }
 
     @Override
     public List<Maintenance> sortByCategory() {
-        return getMaintenancesSorted(0L, SortEnum.BY_CATEGORY);
+        return getAllMaintenancesSorted(SortEnum.BY_CATEGORY);
     }
 
     @Override
     public List<Maintenance> sortMaintenancesOfGuestByAddition(long guestId) {
-        return getMaintenancesSorted(guestId, SortEnum.BY_ADDITION);
+        return getMaintenancesOfGuestSorted(guestId, SortEnum.BY_ADDITION);
     }
 
     @Override
     public List<Maintenance> sortMaintenancesOfGuestByPrice(long guestId) {
-        return getMaintenancesSorted(guestId, SortEnum.BY_PRICE);
+        return getMaintenancesOfGuestSorted(guestId, SortEnum.BY_PRICE);
 
     }
 
     @Override
     public List<Maintenance> sortMaintenancesOfGuestByTime(long guestId) {
-        return getMaintenancesSorted(guestId, SortEnum.BY_TIME);
+        return getMaintenancesOfGuestSorted(guestId, SortEnum.BY_TIME);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class Guest extends AbstractEntity {
     @Getter
     @Setter
     @NotFound(action = NotFoundAction.IGNORE)
-    @ManyToOne(fetch = FetchType.EAGER) //TODO: нужен туториал по CascadeType
+    @ManyToOne //TODO: нужен туториал по CascadeType
     @JoinColumn(name = "room_id")
     private Room room;
 
@@ -50,11 +50,6 @@ public class Guest extends AbstractEntity {
     @Column(name="price")
     private int price;
 
-    /*
-    * На лекции советовали использовать LAZY, но чтобы его реализовать без LazyInitializationException
-    * в интернете советуют использовать @Transactional
-    * а Spring подключать не разрешено в задании
-    * */
     @Getter
     @Setter
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "guest")
@@ -69,7 +64,7 @@ public class Guest extends AbstractEntity {
         this.room = room;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
-        this.orderedMaintenances.addAll(orderedMaintenances);
+        this.orderedMaintenances = orderedMaintenances;
     }
 
     public Guest() {
