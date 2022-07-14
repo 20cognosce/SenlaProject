@@ -5,55 +5,25 @@ import com.senla.javacourse.dao.RoomDao;
 import com.senla.javacourse.dao.entity.Guest;
 import com.senla.javacourse.dao.entity.Room;
 import com.senla.javacourse.dao.entity.RoomStatus;
+import com.senla.javacourse.dao.entity.Room_;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ListJoin;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Repository
+@NoArgsConstructor
 public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    public RoomDaoImpl() {
-        super();
-    }
-
-    @Override
-    public List<Room> getAll(String fieldToSortBy) {
-        /*TypedQuery<Room> q = entityManager.createQuery(
-                "select r from Room r order by :fieldToSortBy", Room.class
-        );
-        q.setParameter("fieldToSortBy", fieldToSortBy);
-        return q.getResultList();*/
-
-        String str = "select r from Room r order by " + fieldToSortBy + " asc";
-        TypedQuery<Room> q = entityManager.createQuery(str, Room.class);
-        return q.getResultList();
-    }
-
-    @Override
-    public Room getById(long id) {
-        Room room = entityManager.find(Room.class, id);
-        if (Objects.isNull(room)) {
-            throw new NoSuchElementException("Room not found");
-        } else {
-            return room;
-        }
-    }
-
     @Override
     public void updateRoomStatus(Room room, RoomStatus roomStatus) {
         room.setRoomStatus(roomStatus);
@@ -93,18 +63,20 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
         if (Objects.equals(asAtSpecificDate, LocalDate.now())) {
             return getFreeRoomsNowSorted(fieldToSortBy);
         }
-
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Room> criteriaQuery = criteriaBuilder.createQuery(Room.class);
         Root<Room> root = criteriaQuery.from(Room.class);
 
-        ListJoin<Room, Guest> currentGuestList = root.joinList("currentGuestList");
-        Predicate predicateCheckInIsAfter = criteriaBuilder.greaterThan(currentGuestList.get("checkInDate"), asAtSpecificDate);
-        Predicate predicateCheckOutIsBefore = criteriaBuilder.lessThan(currentGuestList.get("checkOutDate"),asAtSpecificDate);
+        Join<Room, Guest> roomGuestJoin = root.join(Room_.currentGuestList);
+        //ListJoin<Room, Guest> currentGuestList = root.joinList("currentGuestList");
+
+        Predicate predicateCheckInIsAfter = criteriaBuilder.greaterThan(roomGuestJoin.get("checkInDate"), asAtSpecificDate);
+        Predicate predicateCheckOutIsBefore = criteriaBuilder.lessThan(roomGuestJoin.get("checkOutDate"), asAtSpecificDate);
         Predicate predicate = criteriaBuilder.or(predicateCheckInIsAfter, predicateCheckOutIsBefore);
 
         List<Order> orderList = new ArrayList<>();
         orderList.add(criteriaBuilder.asc(root.get(fieldToSortBy)));
+
         TypedQuery<Room> query = entityManager.createQuery(criteriaQuery
                 .select(root)
                 .where(predicate)
@@ -122,5 +94,24 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
                 room.getStarsNumber() + "," +
                 room.getRoomStatus() + "," +
                 room.getPrice();
+    }
+
+    @Override
+    protected Class<Room> daoEntityClass() {
+        return Room.class;
+    }
+
+    @Override
+    public List<Guest> getGuestsOfRoom(Room room) {
+        /*TypedQuery<Room> q = entityManager.createQuery(
+                "SELECT r FROM Room r JOIN FETCH r.currentGuestList WHERE r.id = :roomId", Room.class
+        );
+        q.setParameter("roomId", roomId);*/
+
+        TypedQuery<Guest> q = entityManager.createQuery(
+                "SELECT g FROM Guest g where g.room = :room", Guest.class
+        );
+        q.setParameter("room", room);
+        return q.getResultList();
     }
 }

@@ -2,8 +2,8 @@ package com.senla.javacourse.dao.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,41 +11,39 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Component
 @Entity
+@NoArgsConstructor
 public class Room extends AbstractEntity {
     @Getter
     @Setter
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
     @Getter
     @Setter
-    @Column(name="price")
+    @Column(name = "price")
     private int price;
     @Getter
     @Setter
-    @Column(name="capacity")
+    @Column(name = "capacity")
     private int capacity;
     @Getter
     @Setter
-    @Column(name="stars_number")
+    @Column(name = "stars_number")
     private int starsNumber;
-    @Getter
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "room")
-    private final List<Guest> currentGuestList = new ArrayList<>();
-    //TODO: failed to lazily initialize a collection of role: com.senla.javacourse.dao.entity.Room.currentGuestList, could not initialize proxy - no Session
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "room")
+    private List<Guest> currentGuestList;
     @Getter
     @Setter
-    @Column(name="room_status")
+    @Column(name = "room_status")
     @Enumerated(EnumType.STRING)
     private RoomStatus roomStatus;
     @Getter
     @Setter
-    @Column(name="details")
+    @Column(name = "details")
     private String details;
 
     //new Room constructor
@@ -70,10 +68,6 @@ public class Room extends AbstractEntity {
         this.currentGuestList.addAll(currentGuestList);
     }
 
-    public Room() {
-
-    }
-
     public void addGuest(Guest guest) throws RuntimeException {
         currentGuestList.add(guest);
         setRoomStatus(RoomStatus.BUSY);
@@ -83,7 +77,7 @@ public class Room extends AbstractEntity {
         if (!currentGuestList.remove(guest)) {
             throw new NoSuchElementException("Such guest does not exist in that room");
         }
-        if (getCurrentGuestList().isEmpty()) {
+        if (currentGuestList.isEmpty()) {
             setRoomStatus(RoomStatus.FREE);
         }
     }
@@ -91,7 +85,7 @@ public class Room extends AbstractEntity {
     @JsonIgnore
     public boolean isUnavailableToSettle() {
         return (this.getRoomStatus() != RoomStatus.FREE && this.getRoomStatus() != RoomStatus.BUSY)
-                || (getCurrentGuestList().size() >= getCapacity());
+                || (currentGuestList.size() >= getCapacity());
     }
 
     @Override

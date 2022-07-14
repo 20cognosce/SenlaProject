@@ -4,16 +4,17 @@ import com.senla.javacourse.build.orm.OrmManagementUtil;
 import com.senla.javacourse.controller.MenuController;
 import com.senla.javacourse.controller.Navigator;
 import com.senla.javacourse.controller.action.ConsoleReaderUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
+@Slf4j
+@RequiredArgsConstructor
+@Component
 public class MenuControllerImpl implements MenuController {
-    Navigator navigator;
-    private static final Logger logger = LoggerFactory.getLogger(MenuControllerImpl.class);
-
-    public MenuControllerImpl(Navigator navigator) {
-        this.navigator = navigator;
-    }
+    private final Navigator navigator;
 
     @Override
     public void run() {
@@ -30,12 +31,12 @@ public class MenuControllerImpl implements MenuController {
                 try {
                     navigator.doAction();
                 } catch (Exception exception) {
-                    logger.error(exception.getMessage(), exception);
+                    log.error(exception.getMessage(), exception);
                 }
             } catch (IndexOutOfBoundsException e) {
                 continue;
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
 
             System.out.println("Press Enter key to continue...");
@@ -45,7 +46,12 @@ public class MenuControllerImpl implements MenuController {
         try {
             OrmManagementUtil.closeConnection();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
+    }
+
+    @PostConstruct
+    public void startApplication() {
+        run();
     }
 }

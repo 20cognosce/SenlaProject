@@ -3,15 +3,18 @@ package com.senla.javacourse.controller.impl;
 import com.senla.javacourse.controller.Navigator;
 import com.senla.javacourse.controller.entity.Menu;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 import java.util.Objects;
 
+@Component
 public class NavigatorImpl implements Navigator {
-    Menu currentMenu;
-    int indexOfAction = -1;
+    @Qualifier("rootMenu")
+    private Menu currentMenu;
+    private int indexOfAction = -1;
 
-    public NavigatorImpl(@Qualifier("rootMenu") Menu currentMenu) {
+    public NavigatorImpl(Menu currentMenu) {
         this.currentMenu = currentMenu;
     }
 
@@ -53,27 +56,3 @@ public class NavigatorImpl implements Navigator {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

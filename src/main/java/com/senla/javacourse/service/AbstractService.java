@@ -11,11 +11,13 @@ import java.util.NoSuchElementException;
 
 public interface AbstractService<T extends AbstractEntity, D extends AbstractDao<T>> {
     void addAll(List<T> list);
+    List<T> getAll();
     T getById(long id);
 
     String getExportTitleLine();
     String exportData(long id) throws NoSuchElementException, ClassNotFoundException;
     void importData(List<List<String>> records);
+
     default void exportRecordsToFile(List<String> records, File csvFile) {
         PrintWriter printWriter;
 

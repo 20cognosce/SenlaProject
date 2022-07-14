@@ -2,13 +2,20 @@ package com.senla.javacourse.dao.impl;
 
 import com.senla.javacourse.dao.AbstractDao;
 import com.senla.javacourse.dao.entity.AbstractEntity;
+import com.senla.javacourse.dao.entity.Maintenance;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public abstract class AbstractDaoImpl<T extends AbstractEntity> implements AbstractDao<T> {
     @PersistenceContext
-    private EntityManager entityManager;
+    protected EntityManager entityManager;
+
+    protected abstract Class<T> daoEntityClass();
 
     @Override
     public void create(T element) {
@@ -25,30 +32,27 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity> implements Abstr
         entityManager.merge(element);
     }
 
-    /*public List<T> getQueryResult(CriteriaQuery<T> criteria, Class<T> clazz) {
-        var ref = new Object() {
-            List<T> resultQuery;
-        };
-        openSessionAndExecuteTransactionTask((session, criteriaBuilder) -> {
-            Root<T> root = criteria.from(clazz);
-            criteria.select(root);
-            ref.resultQuery = session.createQuery(criteria).getResultList();
-        });
-        return ref.resultQuery;
-    }*/
-
-    /*public void openSessionAndExecuteTransactionTask(TransactionTaskFunction task) {
-        Session session = OrmManagementUtil.sessionFactory.openSession();
-        try {
-            session.beginTransaction();
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            task.execute(session, criteriaBuilder);
-            session.getTransaction().commit();
-            session.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            session.getTransaction().rollback();
-            throw e;
+    @Override
+    public List<T> getAll(String fieldToSortBy) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("select e from ").append(daoEntityClass().getName()).append(" e");
+        if (daoEntityClass().isAssignableFrom(Maintenance.class)) {
+            stringBuilder.append(" where e.guest = null and e.orderTime = null");
+            //в maintenance я храню и шаблоны услуг и их инстансы
         }
-    }*/
+        stringBuilder.append(" order by ").append(fieldToSortBy).append(" asc");
+
+        TypedQuery<T> q = entityManager.createQuery(stringBuilder.toString(), daoEntityClass());
+        return q.getResultList();
+    }
+
+    @Override
+    public T getById(long id) throws NoSuchElementException {
+        T entity = entityManager.find(daoEntityClass(), id);
+        if (Objects.isNull(entity)) {
+            throw new NoSuchElementException("Entity not found");
+        } else {
+            return entity;
+        }
+    }
 }

@@ -11,6 +11,4 @@ public interface AbstractDao<T> {
     T getById(long id);
     List<T> getAll(String fieldToSortBy);
     String exportData(T element);
-
-    // void openSessionAndExecuteTransactionTask(TransactionTaskFunction task);
 }

@@ -3,6 +3,7 @@ package com.senla.javacourse.service;
 import com.senla.javacourse.controller.action.SortEnum;
 import com.senla.javacourse.dao.GuestDao;
 import com.senla.javacourse.dao.entity.Guest;
+import com.senla.javacourse.dao.entity.Maintenance;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,4 +20,6 @@ public interface GuestService extends AbstractService<Guest, GuestDao> {
     List<Guest> sortByAddition();
     List<Guest> sortByAlphabet();
     List<Guest> sortByCheckOutDate();
+
+    List<Maintenance> getGuestMaintenanceList(long guestId);
 }

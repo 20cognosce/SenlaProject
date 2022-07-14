@@ -2,7 +2,6 @@ package com.senla.javacourse.dao.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,24 +9,21 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
-@Component
 @Entity
-@Table(name="maintenance")
 public class Maintenance extends AbstractEntity {
     @Getter
     @Setter
-    @Column(name="category")
+    @Column(name = "category")
     @Enumerated(EnumType.STRING)
     private MaintenanceCategory category;
     @Getter
     @Setter
-    @Column(name="order_timestamp")
+    @Column(name = "order_timestamp")
     private LocalDateTime orderTime;
     @Getter
     @Setter
@@ -36,11 +32,11 @@ public class Maintenance extends AbstractEntity {
     private Guest guest;
     @Getter
     @Setter
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
     @Getter
     @Setter
-    @Column(name="price")
+    @Column(name = "price")
     private int price;
 
     public Maintenance(String name, int price, MaintenanceCategory category, LocalDateTime orderTime, Guest guest) {

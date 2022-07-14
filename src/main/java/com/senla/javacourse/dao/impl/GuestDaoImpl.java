@@ -3,41 +3,14 @@ package com.senla.javacourse.dao.impl;
 import com.senla.javacourse.dao.GuestDao;
 import com.senla.javacourse.dao.entity.Guest;
 import com.senla.javacourse.dao.entity.Room;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
 
 @Repository
+@NoArgsConstructor
 public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    public GuestDaoImpl() {
-        super();
-    }
-
-    @Override
-    public List<Guest> getAll(String fieldToSortBy) {
-        String str = "select g from Guest g order by " + fieldToSortBy + " asc";
-        TypedQuery<Guest> q = entityManager.createQuery(str, Guest.class);
-        return q.getResultList();
-    }
-
-    @Override
-    public Guest getById(long id) throws NoSuchElementException {
-        Guest guest = entityManager.find(Guest.class, id);
-        if (Objects.isNull(guest)) {
-            throw new NoSuchElementException("Guest not found");
-        } else {
-            return guest;
-        }
-    }
-
     @Override
     public void updateGuestPrice(Guest guest, int price) {
         guest.setPrice(price);
@@ -66,5 +39,10 @@ public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
                 guest.getCheckInDate() + "," +
                 guest.getCheckOutDate() + "," +
                 guest.getRoom().getId();
+    }
+
+    @Override
+    protected Class<Guest> daoEntityClass() {
+        return Guest.class;
     }
 }

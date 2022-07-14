@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,41 +17,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Component
 @Entity
 public class Guest extends AbstractEntity {
     @Getter
     @Setter
-    @Column(name="passport")
+    @Column(name = "passport")
     private String passport;
-
     @Getter
     @Setter
     @NotFound(action = NotFoundAction.IGNORE)
-    @ManyToOne //TODO: нужен туториал по CascadeType
+    @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
-
     @Getter
     @Setter
-    @Column(name="check_in_date")
+    @Column(name = "check_in_date")
     private LocalDate checkInDate;
     @Getter
     @Setter
-    @Column(name="check_out_date")
+    @Column(name = "check_out_date")
     private LocalDate checkOutDate;
     @Getter
     @Setter
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
     @Getter
     @Setter
-    @Column(name="price")
+    @Column(name = "price")
     private int price;
-
-    @Getter
     @Setter
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "guest")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "guest")
     private List<Maintenance> orderedMaintenances = new ArrayList<>();
 
     //total constructor

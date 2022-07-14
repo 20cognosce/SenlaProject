@@ -6,5 +6,5 @@ import javax.persistence.criteria.CriteriaBuilder;
 
 @FunctionalInterface
 public interface TransactionTaskFunction {
-    void execute (Session session, CriteriaBuilder criteriaBuilder);
+    void execute(Session session, CriteriaBuilder criteriaBuilder);
 }

@@ -14,4 +14,5 @@ public interface RoomDao extends AbstractDao<Room> {
     void addGuestToRoom(Room room, Guest guest);
     void updateRoomStatus(Room room, RoomStatus roomStatus);
     void updateRoomPrice(Room room, int price);
+    List<Guest> getGuestsOfRoom(Room room);
 }

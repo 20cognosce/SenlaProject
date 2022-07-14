@@ -2,14 +2,17 @@ package com.senla.javacourse.service.impl;
 
 import com.senla.javacourse.controller.action.SortEnum;
 import com.senla.javacourse.dao.GuestDao;
+import com.senla.javacourse.dao.MaintenanceDao;
+import com.senla.javacourse.dao.RoomDao;
 import com.senla.javacourse.dao.entity.Guest;
+import com.senla.javacourse.dao.entity.Maintenance;
 import com.senla.javacourse.dao.entity.Room;
 import com.senla.javacourse.service.GuestService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.InvalidAttributeValueException;
-import javax.management.openmbean.KeyAlreadyExistsException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -18,15 +21,15 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> implements GuestService {
-    public GuestServiceImpl() {
-        super();
-    }
+    private final GuestDao guestDao;
+    private final RoomDao roomDao;
+    private final MaintenanceDao maintenanceDao;
 
     @Override
     @Transactional
-    public void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime,
-                            long roomId) throws KeyAlreadyExistsException {
+    public void createGuest(String fullName, String passport, LocalDate checkInTime, LocalDate checkOutTime, long roomId) {
         Room room;
         if (roomId == 0) {
             room = null;
@@ -50,7 +53,7 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         guestDao.updateGuestRoom(guest, room);
 
         Room roomUpdated = roomDao.getById(roomId);
-        if (roomUpdated.getCurrentGuestList().size() == 1) {
+        if (roomDao.getGuestsOfRoom(roomUpdated).size() == 1) {
             //pay only the first settled after the room was empty
             guestDao.updateGuestPrice(guest, roomUpdated.getPrice());
         }
@@ -114,6 +117,12 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     @Override
     public List<Guest> sortByCheckOutDate() {
         return getGuestsSorted(SortEnum.BY_CHECKOUT_DATE);
+    }
+
+    @Override
+    public List<Maintenance> getGuestMaintenanceList(long guestId) {
+        Guest guest = getById(guestId);
+        return maintenanceDao.getMaintenancesOfGuest(guest, "id");
     }
 
     @Override

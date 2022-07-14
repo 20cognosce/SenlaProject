@@ -1,7 +1,7 @@
 package com.senla.javacourse.controller.impl;
 
 import com.senla.javacourse.build.config.Constants;
-import com.senla.javacourse.build.json.reader.JsonReaderUtil;
+import com.senla.javacourse.build.json.writer.JsonWriterUtil;
 import com.senla.javacourse.controller.Builder;
 import com.senla.javacourse.controller.action.guest.AddGuestToRoomAction;
 import com.senla.javacourse.controller.action.guest.CreateGuestAction;
@@ -48,19 +48,18 @@ import com.senla.javacourse.controller.action.room.PrintRoomByIdAction;
 import com.senla.javacourse.controller.action.room.PrintRoomDetailsAction;
 import com.senla.javacourse.controller.entity.Menu;
 import com.senla.javacourse.controller.entity.MenuItem;
-import com.senla.javacourse.dao.entity.Guest;
-import com.senla.javacourse.dao.entity.Maintenance;
-import com.senla.javacourse.dao.entity.Room;
 import com.senla.javacourse.service.GuestService;
 import com.senla.javacourse.service.MaintenanceService;
 import com.senla.javacourse.service.RoomService;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class BuilderImpl implements Builder {
     private final GuestService guestService;
     private final RoomService roomService;
@@ -68,12 +67,6 @@ public class BuilderImpl implements Builder {
     private final List<MenuItem> rootMenuList = new ArrayList<>();
     @Getter
     private final Menu rootMenu = new Menu("Главное меню управления отелем", rootMenuList);
-
-    public BuilderImpl(GuestService guestService, RoomService roomService, MaintenanceService maintenanceService) {
-        this.guestService = guestService;
-        this.roomService = roomService;
-        this.maintenanceService = maintenanceService;
-    }
 
     @Override
     public void buildMenu() {
@@ -153,22 +146,9 @@ public class BuilderImpl implements Builder {
 
     public void saveSystemState() {
         try {
-            /*JsonWriterUtil.writeConfig(roomService.getAll(), Constants.roomJson);
+            JsonWriterUtil.writeConfig(roomService.getAll(), Constants.roomJson);
             JsonWriterUtil.writeConfig(guestService.getAll(), Constants.guestJson);
             JsonWriterUtil.writeConfig(maintenanceService.getAll(), Constants.maintenanceJson);
-            JsonWriterUtil.writeConfig(guestService.getArchivedAll(), Constants.archivedGuestJson);*/
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    public void loadSystemState() {
-        try {
-            guestService.addAll(JsonReaderUtil.readConfig(Constants.guestJson, Guest[].class));
-            roomService.addAll(JsonReaderUtil.readConfig(Constants.roomJson, Room[].class));
-            maintenanceService.addAll(JsonReaderUtil.readConfig(Constants.maintenanceJson, Maintenance[].class));
-            //guestService.addAllArchived(JsonReaderUtil.readConfig(Constants.archivedGuestJson, Guest[].class));
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

@@ -15,6 +15,6 @@ public class PrintNLastGuestsAction extends AbstractAction {
     public void execute() {
         long roomId = ConsoleReaderUtil.inputId("Введите идентификатор комнаты: ");
         getRoomService().getLastNGuests(roomId).forEach(guest ->
-                System.out.println(guest.toString() + guest.getOrderedMaintenances() + "\n"));
+                System.out.println(guest.toString() + getGuestService().getGuestMaintenanceList(guest.getId()) + "\n"));
     }
 }

@@ -1,11 +1,13 @@
 package com.senla.javacourse.service.impl;
 
 import com.senla.javacourse.controller.action.SortEnum;
+import com.senla.javacourse.dao.GuestDao;
 import com.senla.javacourse.dao.MaintenanceDao;
 import com.senla.javacourse.dao.entity.Guest;
 import com.senla.javacourse.dao.entity.Maintenance;
 import com.senla.javacourse.dao.entity.MaintenanceCategory;
 import com.senla.javacourse.service.MaintenanceService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +17,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
+@RequiredArgsConstructor
 public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, MaintenanceDao> implements MaintenanceService {
-    public MaintenanceServiceImpl() {
-        super();
-    }
+    private final MaintenanceDao maintenanceDao;
+    private final GuestDao guestDao;
 
     @Transactional
     @Override
@@ -106,7 +108,6 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     @Override
     public List<Maintenance> sortMaintenancesOfGuestByPrice(long guestId) {
         return getMaintenancesOfGuestSorted(guestId, SortEnum.BY_PRICE);
-
     }
 
     @Override

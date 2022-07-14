@@ -6,8 +6,8 @@ import com.senla.javacourse.dao.entity.Guest;
 import com.senla.javacourse.dao.entity.Room;
 import com.senla.javacourse.dao.entity.RoomStatus;
 import com.senla.javacourse.service.RoomService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,27 +19,26 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-@Component
+@RequiredArgsConstructor
 public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implements RoomService {
-    @Value("${ChangeRoomStatusPossibility}")
+    private final RoomDao roomDao;
+    @Value("${change.room.status.possibility}")
     String changeRoomStatusPossibility;
-    @Value("${GuestsNumberInRoomHistory}")
+    @Value("${last.n.guests}") //я не могу придумать семантику лучше для этой переменной
     int lastNGuests;
-
-    public RoomServiceImpl() {
-        super();
-    }
 
     @Override
     public List<Guest> getLastNGuests(long roomId) throws NoSuchElementException {
-        List<Guest> currentGuestList = roomDao.getById(roomId).getCurrentGuestList();
+        Room room = getById(roomId);
+        List<Guest> currentGuestList = roomDao.getGuestsOfRoom(room);
         return currentGuestList.stream().sorted(
                 Comparator.comparing(Guest::getCheckInDate).reversed()).limit(lastNGuests).collect(Collectors.toList());
     }
 
     @Override
     public List<Guest> getGuestsList(long roomId) throws NoSuchElementException {
-        return getById(roomId).getCurrentGuestList();
+        Room room = getById(roomId);
+        return roomDao.getGuestsOfRoom(room);
     }
 
     @Override

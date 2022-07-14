@@ -15,6 +15,6 @@ public class PrintGuestByIdAction extends AbstractAction  {
     public void execute() {
         long guestId = ConsoleReaderUtil.inputId("Введите идентификатор гостя: ");
         System.out.println(getGuestService().getById(guestId).toString()
-                + getGuestService().getById(guestId).getOrderedMaintenances());
+                + getGuestService().getGuestMaintenanceList(guestId));
     }
 }
