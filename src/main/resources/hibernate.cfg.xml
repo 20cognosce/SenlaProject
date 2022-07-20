@@ -17,8 +17,8 @@
         <property name="show_sql">false</property>
 
         <!-- Annotated entity classes -->
-        <mapping class="com.senla.javacourse.dao.entity.Room"/>
-        <mapping class="com.senla.javacourse.dao.entity.Maintenance"/>
-        <mapping class="com.senla.javacourse.dao.entity.Guest"/>
+        <mapping class="com.senla.model.Room"/>
+        <mapping class="com.senla.model.Maintenance"/>
+        <mapping class="com.senla.model.Guest"/>
     </session-factory>
 </hibernate-configuration>
