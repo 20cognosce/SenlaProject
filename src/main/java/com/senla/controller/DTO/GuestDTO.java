@@ -1,6 +1,7 @@
 package com.senla.controller.DTO;
 
 import com.senla.model.Guest;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @NoArgsConstructor
+@AllArgsConstructor
 public class GuestDTO {
 
     @Getter

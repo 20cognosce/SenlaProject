@@ -32,13 +32,12 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class RoomController {
 
-    private final GuestService guestService;
     private final RoomService roomService;
     private final Mapper mapper;
 
     @GetMapping("/{id}")
-    public Room getById(@PathVariable Long id) {
-        return roomService.getById(id);
+    public RoomDTO getById(@PathVariable Long id) {
+        return mapper.toRoomDto(roomService.getById(id));
     }
 
     @GetMapping("/{id}/details")
@@ -136,7 +135,7 @@ public class RoomController {
     @PatchMapping("/{id}/update")
     public ResponseEntity<?> updateRoomThroughDto(
             @PathVariable("id") Long id,
-            @RequestBody RoomDTO roomDTO) throws ServiceUnavailableException {
+            @RequestBody RoomDTO roomDTO) throws ServiceUnavailableException { //Exception возвращает 405
 
         Room detachedRoom = roomService.getById(id);
         Room updatedRoom = roomService.updateEntityFromDto(detachedRoom, roomDTO);
@@ -144,4 +143,5 @@ public class RoomController {
         roomService.updateRoom(updatedRoom);
         return ResponseEntity.ok("Room updated successfully");
     }
+    //В json-запросе не должно быть комментариев!!! https://www.youtube.com/watch?v=bX4-cLPcD2Q
 }

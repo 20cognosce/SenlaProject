@@ -2,6 +2,7 @@ package com.senla.controller.DTO;
 
 import com.senla.model.Room;
 import com.senla.model.RoomStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,8 +10,12 @@ import lombok.Setter;
 import java.util.List;
 
 @NoArgsConstructor
+@AllArgsConstructor
 public class RoomDTO {
 
+    @Getter
+    @Setter
+    private Long id;
     @Getter
     @Setter
     private String name;
@@ -31,6 +36,7 @@ public class RoomDTO {
     private RoomStatus roomStatus;
 
     public RoomDTO(Room room, List<GuestDTO> currentGuestDtoList) {
+        this.id = room.getId();
         this.name = room.getName();
         this.price = room.getPrice();
         this.capacity = room.getCapacity();
