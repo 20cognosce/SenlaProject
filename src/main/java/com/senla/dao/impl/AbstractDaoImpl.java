@@ -12,6 +12,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public abstract class AbstractDaoImpl<T extends AbstractEntity> implements AbstractDao<T> {
+
     @PersistenceContext
     protected EntityManager entityManager;
 

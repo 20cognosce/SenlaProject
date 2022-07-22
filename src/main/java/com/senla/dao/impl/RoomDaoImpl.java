@@ -1,6 +1,5 @@
 package com.senla.dao.impl;
 
-
 import com.senla.dao.RoomDao;
 import com.senla.model.Guest;
 import com.senla.model.Room;
@@ -24,6 +23,7 @@ import java.util.Objects;
 @Repository
 @NoArgsConstructor
 public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
+
     @Override
     public void updateRoomStatus(Room room, RoomStatus roomStatus) {
         room.setRoomStatus(roomStatus);
@@ -46,44 +46,6 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     public void addGuestToRoom(Room room, Guest guest) {
         room.addGuest(guest);
         update(room);
-    }
-
-    @Override
-    public List<Room> getFreeRoomsNowSorted(String fieldToSortBy) {
-        TypedQuery<Room> q = entityManager.createQuery(
-                "select r from Room r where roomStatus = :roomStatus order by :fieldToSortBy", Room.class
-        );
-        q.setParameter("roomStatus", RoomStatus.FREE);
-        q.setParameter("fieldToSortBy", fieldToSortBy);
-        return q.getResultList();
-    }
-
-    @Override
-    public List<Room> getFreeRoomsByDateSorted(LocalDate asAtSpecificDate, String fieldToSortBy) {
-        if (Objects.equals(asAtSpecificDate, LocalDate.now())) {
-            return getFreeRoomsNowSorted(fieldToSortBy);
-        }
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Room> criteriaQuery = criteriaBuilder.createQuery(Room.class);
-        Root<Room> root = criteriaQuery.from(Room.class);
-
-        Join<Room, Guest> roomGuestJoin = root.join(Room_.currentGuestList);
-        //ListJoin<Room, Guest> roomGuestJoin = root.joinList("currentGuestList");
-
-        Predicate predicateCheckInIsAfter = criteriaBuilder.greaterThan(roomGuestJoin.get("checkInDate"), asAtSpecificDate);
-        Predicate predicateCheckOutIsBefore = criteriaBuilder.lessThan(roomGuestJoin.get("checkOutDate"), asAtSpecificDate);
-        Predicate predicate = criteriaBuilder.or(predicateCheckInIsAfter, predicateCheckOutIsBefore);
-
-        List<Order> orderList = new ArrayList<>();
-        orderList.add(criteriaBuilder.asc(root.get(fieldToSortBy)));
-
-        TypedQuery<Room> query = entityManager.createQuery(criteriaQuery
-                .select(root)
-                .where(predicate)
-                .orderBy(orderList)
-                .distinct(true));
-
-        return query.getResultList();
     }
 
     @Override
@@ -113,5 +75,68 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
         );
         q.setParameter("room", room);
         return q.getResultList();
+    }
+
+    private List<Room> getFreeRoomsNowSorted(String fieldToSortBy) {
+        TypedQuery<Room> q = entityManager.createQuery(
+                "select r from Room r where roomStatus = :roomStatus order by :fieldToSortBy", Room.class
+        );
+        q.setParameter("roomStatus", RoomStatus.FREE);
+        q.setParameter("fieldToSortBy", fieldToSortBy);
+        return q.getResultList();
+    }
+
+    @Override
+    public List<Room> getFreeRoomsByDateSorted(LocalDate asAtSpecificDate, String fieldToSortBy) {
+        if (Objects.equals(asAtSpecificDate, LocalDate.now())) {
+            return getFreeRoomsNowSorted(fieldToSortBy);
+        }
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Room> cq = cb.createQuery(Room.class);
+        Root<Room> room = cq.from(Room.class);
+
+        Predicate predicate = getPredicateForFreeRoomsOnDate(asAtSpecificDate, room, cb);
+
+        List<Order> orderList = new ArrayList<>();
+        orderList.add(cb.asc(room.get(fieldToSortBy)));
+
+        TypedQuery<Room> query = entityManager.createQuery(cq
+                .select(room)
+                .where(predicate)
+                .orderBy(orderList)
+                .distinct(true));
+
+        return query.getResultList();
+    }
+
+    @Override
+    public Long getFreeRoomsAmount(LocalDate asAtSpecificDate) {
+        if (Objects.equals(asAtSpecificDate, LocalDate.now())) {
+            TypedQuery<Long> q = entityManager.createQuery(
+                    "SELECT count (*) FROM Room r where r.roomStatus = :FREE", Long.class
+            );
+            q.setParameter("FREE", RoomStatus.FREE);
+            return q.getSingleResult();
+        }
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Room> room = cq.from(Room.class);
+        Predicate predicate = getPredicateForFreeRoomsOnDate(asAtSpecificDate, room, cb);
+
+        TypedQuery<Long> query = entityManager.createQuery(cq
+                .select(cb.countDistinct(room))
+                .where(predicate));
+
+        return query.getSingleResult();
+    }
+
+    private Predicate getPredicateForFreeRoomsOnDate(LocalDate date, Root<Room> room, CriteriaBuilder cb) {
+        Join<Room, Guest> roomGuestJoin = room.join(Room_.currentGuestList);
+        //ListJoin<Room, Guest> roomGuestJoin = root.joinList("currentGuestList");
+        Predicate predicateCheckInIsAfter = cb.greaterThan(roomGuestJoin.get("checkInDate"), date);
+        Predicate predicateCheckOutIsBefore = cb.lessThan(roomGuestJoin.get("checkOutDate"), date);
+
+        return cb.or(predicateCheckInIsAfter, predicateCheckOutIsBefore);
     }
 }

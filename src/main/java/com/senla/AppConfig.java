@@ -1,9 +1,6 @@
 package com.senla;
 
-import com.senla.controller.Builder;
-import com.senla.controller.entity.Menu;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -29,18 +26,14 @@ import java.util.Properties;
 //@EntityScan("com.senla")
 @Slf4j
 public class AppConfig {
+
+    //ConfigurableApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
+
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
         configurer.setLocation(new ClassPathResource("config.properties"));
         return configurer;
-    }
-
-    @Bean
-    @Qualifier("rootMenu")
-    public static Menu rootMenu(Builder builder) {
-        builder.buildMenu();
-        return builder.getRootMenu();
     }
 
     @Bean

@@ -1,10 +1,9 @@
 package com.senla.service.impl;
 
-import com.senla.controller.action.SortEnum;
+import com.senla.build.config.SortEnum;
 import com.senla.dao.RoomDao;
 import com.senla.model.Guest;
 import com.senla.model.Room;
-import com.senla.model.RoomStatus;
 import com.senla.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implements RoomService {
+
     private final RoomDao roomDao;
     @Value("${change.room.status.possibility}")
     String changeRoomStatusPossibility;
@@ -43,23 +43,24 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
     @Override
     @Transactional
-    public void createRoom(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price) {
-        roomDao.create(new Room(name, capacity, starsNumber, roomStatus, price));
+    public void createRoom(Room room) {
+        roomDao.create(room);
     }
 
     @Override
     @Transactional
-    public void updateRoomPrice(long roomId, int price) throws NoSuchElementException {
-        roomDao.updateRoomPrice(getById(roomId), price);
-    }
-
-    @Override
-    @Transactional
-    public void updateRoomStatus(long roomId, RoomStatus roomStatus) throws ServiceUnavailableException {
-        if ("no".equals(changeRoomStatusPossibility)) {
+    public void updateRoom(Room updatedRoom) throws ServiceUnavailableException {
+        Room detachedRoom = roomDao.getById(updatedRoom.getId());
+        if ("no".equals(changeRoomStatusPossibility) && (detachedRoom.getRoomStatus() != updatedRoom.getRoomStatus())) {
             throw new ServiceUnavailableException("Опция недоступна");
         }
-        roomDao.updateRoomStatus(getById(roomId), roomStatus);
+        roomDao.update(updatedRoom);
+    }
+
+    @Override
+    @Transactional
+    public void updateRoomDetails(long roomId, String details) {
+        roomDao.getById(roomId).setDetails(details);
     }
 
     public List<Room> getRoomsSorted(SortEnum sortEnum) {
@@ -112,13 +113,13 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     }
 
     @Override
-    public List<Room> getFree() {
-        return roomDao.getFreeRoomsNowSorted("id");
+    public List<Room> getFree(LocalDate asAtSpecificDate) {
+        return getFreeRoomsSorted(asAtSpecificDate, SortEnum.BY_ADDITION);
     }
 
     @Override
-    public List<Room> getFree(LocalDate asAtSpecificDate) {
-        return getFreeRoomsSorted(asAtSpecificDate, SortEnum.BY_ADDITION);
+    public Long getFreeAmount(LocalDate asAtSpecificDate) {
+        return roomDao.getFreeRoomsAmount(asAtSpecificDate);
     }
 
     @Override
@@ -139,43 +140,6 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     @Override
     public List<Room> sortFreeRoomsByStars(LocalDate specificDate) {
         return getFreeRoomsSorted(specificDate, SortEnum.BY_STARS);
-    }
-
-    @Override
-    public void importData(List<List<String>> records) {
-        records.forEach(entry -> {
-            try {
-                long roomId = Long.parseLong(entry.get(0));
-                String name = entry.get(1);
-                int capacity = Integer.parseInt(entry.get(2));
-                int stars = Integer.parseInt(entry.get(3));
-                RoomStatus roomStatus = RoomStatus.valueOf(entry.get(4));
-                int price = Integer.parseInt(entry.get(5));
-
-                try {
-                    Room room = getById(roomId);
-                    room.setName(name);
-                    room.setCapacity(capacity);
-                    room.setStarsNumber(stars);
-                    room.setRoomStatus(roomStatus);
-                    room.setPrice(price);
-                } catch (NoSuchElementException e) {
-                    createRoom(name, capacity, stars, roomStatus, price);
-                }
-            } catch (Exception e) {
-                System.out.println(e.getClass().getCanonicalName() + ": "  + e.getMessage());
-            }
-        });
-    }
-
-    @Override
-    public String getExportTitleLine() {
-        return "id,Name,Capacity,Stars,Status,Price";
-    }
-
-    @Override
-    public String exportData(long id) throws NoSuchElementException {
-        return getDefaultDao().exportData(getById(id));
     }
 
     @Override

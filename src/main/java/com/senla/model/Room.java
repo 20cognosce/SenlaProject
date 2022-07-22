@@ -1,6 +1,7 @@
 package com.senla.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +17,9 @@ import java.util.NoSuchElementException;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class Room extends AbstractEntity {
+
     @Getter
     @Setter
     @Column(name = "name")
@@ -33,39 +36,27 @@ public class Room extends AbstractEntity {
     @Setter
     @Column(name = "stars_number")
     private int starsNumber;
-    @Setter
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "room")
-    private List<Guest> currentGuestList;
     @Getter
     @Setter
     @Column(name = "room_status")
     @Enumerated(EnumType.STRING)
     private RoomStatus roomStatus;
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "room")
+    private List<Guest> currentGuestList;
     @Getter
     @Setter
     @Column(name = "details")
     private String details;
 
     //new Room constructor
-    public Room(String name, int capacity, int starsNumber, RoomStatus roomStatus, int price) {
+    public Room(String name, int price, int capacity, int starsNumber, RoomStatus roomStatus) {
         this.name = name;
         this.price = price;
         this.capacity = capacity;
         this.starsNumber = starsNumber;
         this.roomStatus = roomStatus;
         this.details = "";
-    }
-
-    //total constructor
-    public Room(String name, int price, int capacity, int starsNumber, RoomStatus roomStatus, String details,
-                List<Guest> currentGuestList) {
-        this.name = name;
-        this.price = price;
-        this.capacity = capacity;
-        this.starsNumber = starsNumber;
-        this.roomStatus = roomStatus;
-        this.details = details;
-        this.currentGuestList.addAll(currentGuestList);
     }
 
     public void addGuest(Guest guest) throws RuntimeException {

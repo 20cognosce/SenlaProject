@@ -13,6 +13,7 @@ import java.io.Serializable;
 @MappedSuperclass
 @NoArgsConstructor
 public abstract class AbstractEntity implements Serializable {
+
     @Getter
     @Setter
     @Id

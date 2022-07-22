@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class JsonReaderUtil {
+
     private static final  ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules()
             .enable(SerializationFeature.INDENT_OUTPUT);
 

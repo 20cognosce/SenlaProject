@@ -1,6 +1,7 @@
-package com.senla.controller.action;
+package com.senla.build.config;
 
 public enum SortEnum {
+
     //Guest
     BY_ALPHABET,
     BY_CHECKOUT_DATE,

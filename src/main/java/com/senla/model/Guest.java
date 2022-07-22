@@ -1,6 +1,8 @@
 package com.senla.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -18,11 +20,22 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Guest extends AbstractEntity {
+
+    @Getter
+    @Setter
+    @Column(name = "name")
+    private String name;
     @Getter
     @Setter
     @Column(name = "passport")
     private String passport;
+    @Getter
+    @Setter
+    @Column(name = "price")
+    private int price;
     @Getter
     @Setter
     @NotFound(action = NotFoundAction.IGNORE)
@@ -37,33 +50,9 @@ public class Guest extends AbstractEntity {
     @Setter
     @Column(name = "check_out_date")
     private LocalDate checkOutDate;
-    @Getter
-    @Setter
-    @Column(name = "name")
-    private String name;
-    @Getter
-    @Setter
-    @Column(name = "price")
-    private int price;
     @Setter
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "guest")
     private List<Maintenance> orderedMaintenances = new ArrayList<>();
-
-    //total constructor
-    public Guest(String name, int price, String passport, LocalDate checkInDate, LocalDate checkOutDate,
-                 Room room, List<Maintenance> orderedMaintenances) {
-        this.name = name;
-        this.price = price;
-        this.passport = passport;
-        this.room = room;
-        this.checkInDate = checkInDate;
-        this.checkOutDate = checkOutDate;
-        this.orderedMaintenances = orderedMaintenances;
-    }
-
-    public Guest() {
-
-    }
 
     @Override
     public String toString() {

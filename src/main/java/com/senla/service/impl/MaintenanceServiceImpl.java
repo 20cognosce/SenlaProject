@@ -1,11 +1,10 @@
 package com.senla.service.impl;
 
-import com.senla.controller.action.SortEnum;
+import com.senla.build.config.SortEnum;
 import com.senla.dao.GuestDao;
 import com.senla.dao.MaintenanceDao;
 import com.senla.model.Guest;
 import com.senla.model.Maintenance;
-import com.senla.model.MaintenanceCategory;
 import com.senla.service.MaintenanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +18,7 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, MaintenanceDao> implements MaintenanceService {
+
     private final MaintenanceDao maintenanceDao;
     private final GuestDao guestDao;
 
@@ -26,12 +26,6 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     @Override
     public void createMaintenance(Maintenance maintenance) {
         maintenanceDao.create(maintenance);
-    }
-
-    @Transactional
-    @Override
-    public void createMaintenance(String maintenanceName, int price, MaintenanceCategory category) {
-        maintenanceDao.create(new Maintenance(maintenanceName, price, category, null, null));
     }
 
     @Transactional
@@ -56,8 +50,8 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
 
     @Override
     @Transactional
-    public void updateMaintenancePrice(long maintenanceId, int price) {
-        maintenanceDao.updateMaintenancePrice(getById(maintenanceId), price);
+    public void updateMaintenance(Maintenance maintenance) {
+        maintenanceDao.update(maintenance);
     }
 
     private List<Maintenance> getAllMaintenancesSorted(SortEnum sortEnum) {
@@ -117,39 +111,6 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
     @Override
     public List<Maintenance> sortMaintenancesOfGuestByTime(long guestId) {
         return getMaintenancesOfGuestSorted(guestId, SortEnum.BY_TIME);
-    }
-
-    @Override
-    public void importData(List<List<String>> records) {
-        records.forEach(entry -> {
-            try {
-                long maintenanceId = Long.parseLong(entry.get(0));
-                String name = entry.get(1);
-                int price = Integer.parseInt(entry.get(2));
-                MaintenanceCategory maintenanceCategory = MaintenanceCategory.valueOf(entry.get(3));
-
-                try {
-                    Maintenance maintenance = getById(maintenanceId);
-                    maintenance.setName(name);
-                    maintenance.setPrice(price);
-                    maintenance.setCategory(maintenanceCategory);
-                } catch (NoSuchElementException e) {
-                    createMaintenance(name, price, maintenanceCategory);
-                }
-            } catch (Exception e) {
-                System.out.println(e.getClass().getCanonicalName() + ": "  + e.getMessage());
-            }
-        });
-    }
-
-    @Override
-    public String getExportTitleLine() {
-        return "id,Name,Price,Category";
-    }
-
-    @Override
-    public String exportData(long id) throws NoSuchElementException {
-        return getDefaultDao().exportData(getById(id));
     }
 
     @Override

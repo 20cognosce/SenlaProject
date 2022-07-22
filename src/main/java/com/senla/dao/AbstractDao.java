@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public interface AbstractDao<T> {
+
     void create(T element) throws KeyAlreadyExistsException;
     void delete(T element) throws NoSuchElementException;
     void update(T element);

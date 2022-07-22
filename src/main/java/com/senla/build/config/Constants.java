@@ -3,6 +3,7 @@ package com.senla.build.config;
 import java.io.File;
 
 public final class Constants {
+
     public static final File roomJson = new File("src/main/resources/json/room.json");
     public static final File guestJson = new File("src/main/resources/json/guest.json");
     public static final File maintenanceJson = new File("src/main/resources/json/maintenance.json");

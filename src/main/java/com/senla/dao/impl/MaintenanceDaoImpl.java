@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @Repository
 @NoArgsConstructor
 public class MaintenanceDaoImpl extends AbstractDaoImpl<Maintenance> implements MaintenanceDao {
+
     @Override
     public List<Maintenance> getMaintenancesOfGuest(Guest guest, String fieldToSortBy) {
         TypedQuery<Maintenance> q = entityManager.createQuery(

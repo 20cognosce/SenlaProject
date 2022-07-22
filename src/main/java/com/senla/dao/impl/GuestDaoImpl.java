@@ -11,6 +11,7 @@ import javax.persistence.TypedQuery;
 @Repository
 @NoArgsConstructor
 public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
+
     @Override
     public void updateGuestPrice(Guest guest, int price) {
         guest.setPrice(price);

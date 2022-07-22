@@ -9,6 +9,7 @@ import java.util.List;
 
 
 public class JsonWriterUtil {
+
     private static final  ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules().enable(SerializationFeature.INDENT_OUTPUT);
 
     public static <T> void writeConfig(List<T> list, File file) throws IOException {
