@@ -1,0 +1,6 @@
+id,Name,Price,Category
+1,Завтрак в номер,500,LOCAL_FOOD
+2,Обед в номер,600,LOCAL_FOOD
+3,Ужин в номер,800,LOCAL_FOOD
+4,Принести доставку в номер,100,DELIVERY_FOOD
+5,Дополнительный набор для душа,200,ACCESSORIES
