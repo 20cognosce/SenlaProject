@@ -2,9 +2,9 @@ package com.senla.service.impl;
 
 import com.senla.build.config.SortEnum;
 import com.senla.dao.GuestDao;
-import com.senla.dao.MaintenanceDao;
 import com.senla.dao.RoomDao;
 import com.senla.model.Guest;
+import com.senla.model.Guest_;
 import com.senla.model.Maintenance;
 import com.senla.model.Room;
 import com.senla.service.GuestService;
@@ -13,8 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Service
@@ -23,7 +27,6 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
 
     private final GuestDao guestDao;
     private final RoomDao roomDao;
-    private final MaintenanceDao maintenanceDao;
 
     @Override
     @Transactional
@@ -51,7 +54,8 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         guestDao.updateGuestRoom(guest, room);
 
         Room roomUpdated = roomDao.getById(roomId);
-        if (roomDao.getGuestsOfRoom(roomUpdated).size() == 1) {
+        //TODO: здесь работа в любом случае внутри транзакции так что можно оставить без root.fetch
+        if (roomUpdated.getCurrentGuestList().size() == 1) {
             //pay only the first settled after the room was empty
             guestDao.updateGuestPrice(guest, roomUpdated.getPrice());
         }
@@ -77,19 +81,9 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         guestDao.delete(guestDao.getById(guestId));
     }
 
-    @Override
-    public List<Guest> getGuestsSorted(SortEnum sortEnum) {
-        String fieldToSort;
-
-        switch (sortEnum) {
-            case BY_ADDITION:fieldToSort = "id"; break;
-            case BY_PRICE: fieldToSort = "price"; break;
-            case BY_ALPHABET:  fieldToSort = "name"; break;
-            case BY_CHECKOUT_DATE:fieldToSort = "checkOutDate"; break;
-            default: throw new NoSuchElementException();
-        }
-
-        return getDefaultDao().getAll(fieldToSort);
+    private List<Guest> getGuestsSorted(SortEnum sortEnum, String order) {
+        String fieldToSort = getFieldToSortFromEnum(sortEnum);
+        return getAll(fieldToSort, order); //this.getAll is a hack to enable @Transactional
     }
 
     @Override
@@ -103,24 +97,34 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     }
 
     @Override
-    public List<Guest> sortByAddition() {
-        return getGuestsSorted(SortEnum.BY_ADDITION);
+    public List<Guest> sortByAddition(String order) {
+        return getGuestsSorted(SortEnum.BY_ADDITION, order);
     }
 
     @Override
-    public List<Guest> sortByAlphabet() {
-        return getGuestsSorted(SortEnum.BY_ALPHABET);
+    public List<Guest> sortByAlphabet(String order) {
+        return getGuestsSorted(SortEnum.BY_ALPHABET, order);
     }
 
     @Override
-    public List<Guest> sortByCheckOutDate() {
-        return getGuestsSorted(SortEnum.BY_CHECKOUT_DATE);
+    public List<Guest> sortByCheckOutDate(String order) {
+        return getGuestsSorted(SortEnum.BY_CHECKOUT_DATE, order);
     }
 
     @Override
     public List<Maintenance> getGuestMaintenanceList(long guestId) {
-        Guest guest = getById(guestId);
-        return maintenanceDao.getMaintenancesOfGuest(guest, "id");
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Guest> cq = cb.createQuery(Guest.class);
+        Root<Guest> root = cq.from(Guest.class);
+        root.fetch("orderedMaintenances", JoinType.LEFT);
+
+        return entityManager.createQuery(cq
+                .select(root)
+                .where(cb.equal(root.get(Guest_.id), guestId))
+        )
+                .getSingleResult()
+                .getOrderedMaintenances();
     }
 
     @Override

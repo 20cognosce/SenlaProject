@@ -12,7 +12,6 @@ import java.util.NoSuchElementException;
 public interface RoomService extends AbstractService<Room, RoomDao> {
 
     void createRoom(Room room);
-    List<Room> getFree(LocalDate asAtSpecificDate);
     Long getFreeAmount(LocalDate asAtSpecificDate);
     List<Guest> getLastNGuests(long roomId);
     List<Guest> getGuestsList(long roomId) throws NoSuchElementException;
@@ -20,15 +19,16 @@ public interface RoomService extends AbstractService<Room, RoomDao> {
     void updateRoom(Room room) throws ServiceUnavailableException;
     void updateRoomDetails(long roomId, String details);
 
-    List<Room> sortByAddition();
-    List<Room> sortByCapacity();
-    List<Room> sortByPrice();
-    List<Room> sortByStars();
+    List<Room> getFree(LocalDate asAtSpecificDate, String order);
+    List<Room> sortByAddition(String order);
+    List<Room> sortByCapacity(String order);
+    List<Room> sortByPrice(String order);
+    List<Room> sortByStars(String order);
 
-    List<Room> sortFreeRoomsByAddition(LocalDate specificDate);
-    List<Room> sortFreeRoomsByCapacity(LocalDate specificDate);
-    List<Room> sortFreeRoomsByPrice(LocalDate specificDate);
-    List<Room> sortFreeRoomsByStars(LocalDate specificDate);
+    List<Room> sortFreeRoomsByAddition(LocalDate specificDate, String order);
+    List<Room> sortFreeRoomsByCapacity(LocalDate specificDate, String order);
+    List<Room> sortFreeRoomsByPrice(LocalDate specificDate, String order);
+    List<Room> sortFreeRoomsByStars(LocalDate specificDate, String order);
 }
 
 

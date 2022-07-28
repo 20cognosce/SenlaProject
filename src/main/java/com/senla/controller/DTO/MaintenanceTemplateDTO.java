@@ -2,27 +2,15 @@ package com.senla.controller.DTO;
 
 import com.senla.model.Maintenance;
 import com.senla.model.MaintenanceCategory;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class MaintenanceTemplateDTO {
 
-    @Getter
-    @Setter
-    private Long id;
-    @Getter
-    @Setter
-    private String name;
-    @Getter
-    @Setter
-    private Integer price;
-    @Getter
-    @Setter
-    private MaintenanceCategory category;
+    private final Long id;
+    private final String name;
+    private final Integer price;
+    private final MaintenanceCategory category;
 
     public MaintenanceTemplateDTO(Maintenance maintenance) {
         this.id = maintenance.getId();

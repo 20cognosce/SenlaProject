@@ -2,8 +2,8 @@ package com.senla.controller;
 
 import com.senla.controller.DTO.RoomCreationDTO;
 import com.senla.controller.DTO.RoomDTO;
+import com.senla.controller.converters.RoomConverter;
 import com.senla.model.Room;
-import com.senla.service.GuestService;
 import com.senla.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -33,11 +33,11 @@ import static java.util.stream.Collectors.toList;
 public class RoomController {
 
     private final RoomService roomService;
-    private final Mapper mapper;
+    private final RoomConverter converter;
 
     @GetMapping("/{id}")
     public RoomDTO getById(@PathVariable Long id) {
-        return mapper.toRoomDto(roomService.getById(id));
+        return converter.convert(roomService.getById(id));
     }
 
     @GetMapping("/{id}/details")
@@ -47,30 +47,32 @@ public class RoomController {
 
     @GetMapping
     public List<RoomDTO> getAll(
-            @RequestParam(value = "sort", defaultValue = "0", required = false) String sort) {
+            @RequestParam(value = "sort", defaultValue = "0", required = false) String sort,
+            @RequestParam(value = "order", defaultValue = "asc", required = false) String order) {
 
         List<Room> all = new ArrayList<>();
 
         if (Objects.equals(sort, "0")) {
-            all = roomService.sortByAddition();
+            all = roomService.sortByAddition(order);
         }
         if (Objects.equals(sort, "1")) {
-            all = roomService.sortByPrice();
+            all = roomService.sortByPrice(order);
         }
         if (Objects.equals(sort, "2")) {
-            all = roomService.sortByStars();
+            all = roomService.sortByStars(order);
         }
         if (Objects.equals(sort, "3")) {
-            all = roomService.sortByCapacity();
+            all = roomService.sortByCapacity(order);
         }
-        return all.stream().map(mapper::toRoomDto).collect(toList());
+        return all.stream().map(converter::convert).collect(toList());
     }
 
     //http://localhost:8080/rooms/free?date=06.03.2022
     @GetMapping("/free")
     public List<RoomDTO> getAllFree(
+            @RequestParam(value = "date", defaultValue = "now", required = false) String date,
             @RequestParam(value = "sort", defaultValue = "0", required = false) String sort,
-            @RequestParam(value = "date", defaultValue = "now", required = false) String date) {
+            @RequestParam(value = "order", defaultValue = "asc", required = false) String order) {
 
         LocalDate dateToSearch;
 
@@ -84,18 +86,18 @@ public class RoomController {
         List<Room> all = new ArrayList<>();
 
         if (Objects.equals(sort, "0")) {
-            all = roomService.sortFreeRoomsByAddition(dateToSearch);
+            all = roomService.sortFreeRoomsByAddition(dateToSearch, order);
         }
         if (Objects.equals(sort, "1")) {
-            all = roomService.sortFreeRoomsByPrice(dateToSearch);
+            all = roomService.sortFreeRoomsByPrice(dateToSearch, order);
         }
         if (Objects.equals(sort, "2")) {
-            all = roomService.sortFreeRoomsByStars(dateToSearch);
+            all = roomService.sortFreeRoomsByStars(dateToSearch, order);
         }
         if (Objects.equals(sort, "3")) {
-            all = roomService.sortFreeRoomsByCapacity(dateToSearch);
+            all = roomService.sortFreeRoomsByCapacity(dateToSearch, order);
         }
-        return all.stream().map(mapper::toRoomDto).collect(toList());
+        return all.stream().map(converter::convert).collect(toList());
     }
 
     @GetMapping("/free/amount")
@@ -113,12 +115,12 @@ public class RoomController {
         return roomService.getFreeAmount(dateToSearch);
     }
 
-    @PostMapping("/new")
+    @PostMapping
     @ResponseBody
     public RoomDTO createRoom(@RequestBody RoomCreationDTO roomCreationDTO) {
-        Room room = mapper.toRoom(roomCreationDTO);
+        Room room = converter.toRoom(roomCreationDTO);
         roomService.createRoom(room);
-        return mapper.toRoomDto(roomService.getById(room.getId()));
+        return converter.convert(roomService.getById(room.getId()));
     }
 
     //another method for details because details are the not part of RoomDTO

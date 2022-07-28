@@ -1,26 +1,14 @@
 package com.senla.controller.DTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class GuestCreationDTO {
 
-    @Getter
-    @Setter
-    private String name;
-    @Getter
-    @Setter
-    private String passport;
-    @Getter
-    @Setter
-    private LocalDate checkInDate;
-    @Getter
-    @Setter
-    private LocalDate checkOutDate;
+    private final String name;
+    private final String passport;
+    private final LocalDate checkInDate;
+    private final LocalDate checkOutDate;
 }

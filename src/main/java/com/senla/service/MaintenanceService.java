@@ -11,11 +11,11 @@ public interface MaintenanceService extends AbstractService<Maintenance, Mainten
     void executeMaintenance(long guestId, long maintenanceId);
     void updateMaintenance(Maintenance maintenance);
 
-    List<Maintenance> sortByAddition();
-    List<Maintenance> sortByPrice();
-    List<Maintenance> sortByCategory();
+    List<Maintenance> sortByAddition(String order);
+    List<Maintenance> sortByPrice(String order);
+    List<Maintenance> sortByCategory(String order);
 
-    List<Maintenance> sortMaintenancesOfGuestByAddition(long guestId);
-    List<Maintenance> sortMaintenancesOfGuestByPrice(long guestId);
-    List<Maintenance> sortMaintenancesOfGuestByTime(long guestId);
+    List<Maintenance> sortMaintenancesOfGuestByAddition(long guestId, String order);
+    List<Maintenance> sortMaintenancesOfGuestByPrice(long guestId, String order);
+    List<Maintenance> sortMaintenancesOfGuestByTime(long guestId, String order);
 }

@@ -18,34 +18,23 @@ import java.util.NoSuchElementException;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class Room extends AbstractEntity {
 
-    @Getter
-    @Setter
     @Column(name = "name")
     private String name;
-    @Getter
-    @Setter
     @Column(name = "price")
     private int price;
-    @Getter
-    @Setter
     @Column(name = "capacity")
     private int capacity;
-    @Getter
-    @Setter
     @Column(name = "stars_number")
     private int starsNumber;
-    @Getter
-    @Setter
     @Column(name = "room_status")
     @Enumerated(EnumType.STRING)
     private RoomStatus roomStatus;
-    @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "room")
     private List<Guest> currentGuestList;
-    @Getter
-    @Setter
     @Column(name = "details")
     private String details;
 
@@ -77,16 +66,5 @@ public class Room extends AbstractEntity {
     public boolean isUnavailableToSettle() {
         return (this.getRoomStatus() != RoomStatus.FREE && this.getRoomStatus() != RoomStatus.BUSY)
                 || (currentGuestList.size() >= getCapacity());
-    }
-
-    @Override
-    public String toString() {
-        return "id: " + getId() +
-                "; Номер: " + getName() +
-                "; Вместимость: " + getCapacity() +
-                "; Звёзды: " + getStarsNumber() +
-                "; Статус: " + getRoomStatus() +
-                "; Цена: " + getPrice() +
-                "\n";
     }
 }

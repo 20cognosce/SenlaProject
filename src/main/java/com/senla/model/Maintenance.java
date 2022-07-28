@@ -1,84 +1,43 @@
 package com.senla.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.Objects;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@Table(name = "maintenance")
 public class Maintenance extends AbstractEntity {
 
-    @Getter
-    @Setter
     @Column(name = "name")
     private String name;
-    @Getter
-    @Setter
     @Column(name = "price")
     private int price;
-    @Getter
-    @Setter
     @Column(name = "category")
     @Enumerated(EnumType.STRING)
     private MaintenanceCategory category;
-    @Getter
-    @Setter
-    @JoinColumn(name = "guest_id", referencedColumnName = "id")
-    @ManyToOne //Optional = false не принимает null из таблицы в методе entityManager.find
-    private Guest guest;
-    @Getter
-    @Setter
-    @Column(name = "order_timestamp")
-    private LocalDateTime orderTime;
 
-    @Override
-    public String toString() {
-        String orderTime;
-        String guestId;
-
-        if (Objects.isNull(getOrderTime())) {
-            orderTime = "";
-        } else {
-            orderTime = "; Время заказа: " + getOrderTime().truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME);
-        }
-
-        if (Objects.isNull(getGuest())) {
-            guestId = "";
-        } else {
-            guestId = "; id гостя: " + getGuest().getId();
-        }
-
-        return "id: " + getId() +
-                "; Услуга: " + getName() +
-                "; Цена: " + getPrice() +
-                "; Категория: " + getCategory() +
-                orderTime +
-                guestId +
-                "\n";
-    }
-
-    @JsonIgnore
-    public Maintenance getCloneInstance() {
-        Maintenance clone = new Maintenance();
-        clone.setCategory(this.getCategory());
-        clone.setGuest(this.getGuest());
-        clone.setName(this.getName());
-        clone.setPrice(this.getPrice());
-        clone.setOrderTime(LocalDateTime.now());
-        return clone;
-    }
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "guest_2_maintenance",
+            joinColumns = @JoinColumn(name = "maintenance_id"),
+            inverseJoinColumns = @JoinColumn(name = "guest_id"))
+    private List<Guest> guests = new ArrayList<>();
 }

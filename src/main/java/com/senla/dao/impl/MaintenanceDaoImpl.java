@@ -2,51 +2,22 @@ package com.senla.dao.impl;
 
 
 import com.senla.dao.MaintenanceDao;
-import com.senla.model.Guest;
 import com.senla.model.Maintenance;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.TypedQuery;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 @Repository
-@NoArgsConstructor
 public class MaintenanceDaoImpl extends AbstractDaoImpl<Maintenance> implements MaintenanceDao {
 
     @Override
-    public List<Maintenance> getMaintenancesOfGuest(Guest guest, String fieldToSortBy) {
-        TypedQuery<Maintenance> q = entityManager.createQuery(
-                "select m from Maintenance m where m.guest = :guest order by " + fieldToSortBy + " asc", Maintenance.class
-        );
-        q.setParameter("guest", guest);
-        return q.getResultList();
-    }
-
-    @Override
-    public List<Maintenance> getMaintenancesOfGuest(Guest guest, Comparator<Maintenance> comparator) {
-        return getMaintenancesOfGuest(guest, "id").stream().sorted(comparator).collect(Collectors.toList());
-    }
-
-    @Override
-    public void updateMaintenancePrice(Maintenance maintenance, int price) {
-        maintenance.setPrice(price);
-        update(maintenance);
-    }
-
-    @Override
-    public void addGuestMaintenance(Maintenance maintenanceInstance) {
-        create(maintenanceInstance);
-    }
-
-    @Override
-    public String exportData(Maintenance maintenance) {
-        return maintenance.getId() + "," +
-                maintenance.getName() + "," +
-                maintenance.getPrice() + "," +
-                maintenance.getCategory();
+    public void addOrderedMaintenance(Long guestId, Long maintenanceId) {
+        entityManager.createNativeQuery(
+                "INSERT INTO guest_2_maintenance (guest_id, maintenance_id, order_timestamp) VALUES (?,?,?)")
+                .setParameter(1, guestId)
+                .setParameter(2, maintenanceId)
+                .setParameter(3, LocalDateTime.now())
+                .executeUpdate();
     }
 
     @Override

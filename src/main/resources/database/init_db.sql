@@ -12,11 +12,12 @@ VALUES ('Ivanov Ivan Ivanovich', 5000, '1111222222', 2, '2022-03-02', '2022-03-0
        ('Abramov Nikita Alexandrovich', 0, '7777888888', null, '2022-03-01', '2022-03-14'),
        ('Yakovleva Margarita Vladimirovna', 0, '9999000000', null, '2022-03-01', '2022-03-14');
 
+insert into maintenance (name, price, category)
+values ('Завтрак в номер', 500, 'LOCAL_FOOD'),
+       ('Обед в номер', 600, 'LOCAL_FOOD'),
+       ('Ужин в номер', 800, 'LOCAL_FOOD'),
+       ('Принести доставку в номер', 200, 'DELIVERY_FOOD'),
+       ('Дополнительный набор для душа', 200, 'ACCESSORIES');
 
-insert into maintenance (name, price, category, order_timestamp, guest_id)
-values ('Завтрак в номер', 500, 'LOCAL_FOOD', null, null),
-       ('Обед в номер', 600, 'LOCAL_FOOD', null, null),
-       ('Ужин в номер', 800, 'LOCAL_FOOD', null, null),
-       ('Принести доставку в номер', 200, 'DELIVERY_FOOD', null, null),
-       ('Дополнительный набор для душа', 200, 'ACCESSORIES', null, null),
-       ('Ужин в номер', 800, 'LOCAL_FOOD', '2022-03-02 14:12:25', 2);
+insert into guest_2_maintenance (guest_id, maintenance_id, order_timestamp)
+values (2, 3, '2022-03-02 14:12:25');

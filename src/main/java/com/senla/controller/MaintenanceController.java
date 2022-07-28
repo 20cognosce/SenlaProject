@@ -2,6 +2,7 @@ package com.senla.controller;
 
 import com.senla.controller.DTO.MaintenanceInstanceDTO;
 import com.senla.controller.DTO.MaintenanceTemplateDTO;
+import com.senla.controller.converters.MaintenanceConverter;
 import com.senla.model.Guest;
 import com.senla.model.Maintenance;
 import com.senla.service.GuestService;
@@ -32,60 +33,57 @@ public class MaintenanceController {
 
     private final MaintenanceService maintenanceService;
     private final GuestService guestService;
-    private final Mapper mapper;
+    private final MaintenanceConverter converter;
 
     @GetMapping("/{id}")
     public MaintenanceTemplateDTO getMaintenanceById(@PathVariable("id") Long id) {
         Maintenance maintenance = maintenanceService.getById(id);
-        if (!Objects.isNull(maintenance.getGuest())) {
-            //Если запрос попытается вытащить инстанс услуги вместо шаблона
-            //Постман не распознает кириллицу((
-            throw new IllegalArgumentException("Forbidden maintenance id");
-        }
         return new MaintenanceTemplateDTO(maintenance);
     }
 
     @GetMapping
     public List<MaintenanceTemplateDTO> getAll(
-            @RequestParam(value = "sort", defaultValue = "0", required = false) String sort) {
+            @RequestParam(value = "sort", defaultValue = "0", required = false) String sort,
+            @RequestParam(value = "order", defaultValue = "asc", required = false) String order) {
 
         List<Maintenance> all = new ArrayList<>();
 
         if (Objects.equals(sort, "0")) {
-            all = maintenanceService.sortByAddition();
+            all = maintenanceService.sortByAddition(order);
         }
         if (Objects.equals(sort, "1")) {
-            all = maintenanceService.sortByPrice();
+            all = maintenanceService.sortByPrice(order);
         }
         if (Objects.equals(sort, "2")) {
-            all = maintenanceService.sortByCategory();
+            all = maintenanceService.sortByCategory(order);
         }
-        return all.stream().map(mapper::toMaintenanceTemplateDTO).collect(toList());
+        return all.stream().map(converter::convert).collect(toList());
     }
 
     @GetMapping(params = {"guest_id"})
     public List<MaintenanceInstanceDTO> getMaintenancesOfGuestById(
             @RequestParam("guest_id") Long guestId,
-            @RequestParam(value = "sort", defaultValue = "0", required = false) String sort) {
+            @RequestParam(value = "sort", defaultValue = "0", required = false) String sort,
+            @RequestParam(value = "order", defaultValue = "asc", required = false) String order) {
 
         List<Maintenance> all = new ArrayList<>();
 
         if (Objects.equals(sort, "0")) {
-            all = maintenanceService.sortMaintenancesOfGuestByAddition(guestId);
+            all = maintenanceService.sortMaintenancesOfGuestByAddition(guestId, order);
         }
         if (Objects.equals(sort, "1")) {
-            all =  maintenanceService.sortMaintenancesOfGuestByPrice(guestId);
+            all =  maintenanceService.sortMaintenancesOfGuestByPrice(guestId, order);
         }
         if (Objects.equals(sort, "2")) {
-            all =  maintenanceService.sortMaintenancesOfGuestByTime(guestId);
+            all =  maintenanceService.sortMaintenancesOfGuestByTime(guestId, order);
         }
-        return all.stream().map(mapper::toMaintenanceInstanceDTO).collect(toList());
+        return all.stream().map(m -> converter.toMaintenanceInstanceDTO(m.getId(), guestId)).collect(toList());
     }
 
-    @PostMapping("/new")
+    @PostMapping
     @ResponseBody
     public MaintenanceTemplateDTO createMaintenance(@RequestBody MaintenanceTemplateDTO maintenanceTemplateDTO) {
-        Maintenance maintenance = mapper.toMaintenance(maintenanceTemplateDTO);
+        Maintenance maintenance = converter.toMaintenance(maintenanceTemplateDTO);
         maintenanceService.createMaintenance(maintenance);
         return new MaintenanceTemplateDTO(maintenanceService.getById(maintenance.getId()));
     }
@@ -96,10 +94,6 @@ public class MaintenanceController {
             @RequestBody MaintenanceTemplateDTO maintenanceTemplateDTO) {
 
         Maintenance detachedMaintenance = maintenanceService.getById(id);
-        if (!Objects.isNull(detachedMaintenance.getGuest())) {
-            //Если запрос попытается вытащить инстанс услуги вместо шаблона
-            throw new IllegalArgumentException("Forbidden maintenance id");
-        }
         Maintenance updatedMaintenance = maintenanceService.updateEntityFromDto(detachedMaintenance, maintenanceTemplateDTO);
 
         maintenanceService.updateMaintenance(updatedMaintenance);
@@ -110,13 +104,7 @@ public class MaintenanceController {
     public MaintenanceInstanceDTO orderMaintenance(@PathVariable("id") Long id, @RequestParam("guest_id") Long guestId) {
         Maintenance maintenance = maintenanceService.getById(id);
         Guest guest = guestService.getById(guestId);
-
-        if (Objects.isNull(maintenance) || Objects.isNull(guest) || !Objects.isNull(maintenance.getGuest())) {
-            throw new IllegalArgumentException("Incorrect maintenance or guest id");
-        }
-
         maintenanceService.executeMaintenance(guestId, id);
-        List<Maintenance> guestMaintenances = maintenanceService.sortMaintenancesOfGuestByAddition(guestId);
-        return new MaintenanceInstanceDTO(guestMaintenances.get(guestMaintenances.size() - 1));
+        return converter.toMaintenanceInstanceDTO(id, guestId);
     }
 }

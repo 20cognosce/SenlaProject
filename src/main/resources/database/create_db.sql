@@ -25,9 +25,15 @@ create table maintenance
     id              serial PRIMARY KEY,
     name            varchar(100),
     price           decimal(19, 4),
-    category        varchar(20),
-    order_timestamp timestamp,
-    guest_id        int references guest (id)
+    category        varchar(20)
+);
+
+create table "guest_2_maintenance"
+(
+    order_id        serial PRIMARY KEY,
+    guest_id        int references guest (id),
+    maintenance_id  int references maintenance (id),
+    order_timestamp timestamp
 );
 
 /*DROP SCHEMA public CASCADE;

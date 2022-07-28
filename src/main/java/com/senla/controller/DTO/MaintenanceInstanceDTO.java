@@ -1,47 +1,31 @@
 package com.senla.controller.DTO;
 
+import com.senla.model.Guest;
 import com.senla.model.Maintenance;
 import com.senla.model.MaintenanceCategory;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class MaintenanceInstanceDTO {
 
-    @Getter
-    @Setter
-    private Long id;
-    @Getter
-    @Setter
-    private String name;
-    @Getter
-    @Setter
-    private int price;
-    @Getter
-    @Setter
-    private MaintenanceCategory category;
-    @Getter
-    @Setter
-    private LocalDateTime orderTime;
-    @Getter
-    @Setter
-    private String guestName;
-    @Getter
-    @Setter
-    private Long guestId;
+    private final Long originalMaintenanceId;
+    private final String name;
+    private final int price;
+    private final MaintenanceCategory category;
+    private final List<LocalDateTime> orderTimes;
+    private final String guestName;
+    private final Long guestId;
 
-    public MaintenanceInstanceDTO(Maintenance maintenance) {
-        this.id = maintenance.getId();
+    public MaintenanceInstanceDTO(Maintenance maintenance, Guest guest, List<LocalDateTime> orderTimes) {
+        this.originalMaintenanceId = maintenance.getId();
         this.name = maintenance.getName();
         this.category = maintenance.getCategory();
         this.price = maintenance.getPrice();
-        this.orderTime = maintenance.getOrderTime();
-        this.guestName = maintenance.getGuest().getName();
-        this.guestId = maintenance.getGuest().getId();
+        this.orderTimes = orderTimes;
+        this.guestName = guest.getName();
+        this.guestId = guest.getId();
     }
 }

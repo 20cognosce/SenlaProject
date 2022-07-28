@@ -2,38 +2,20 @@ package com.senla.controller.DTO;
 
 import com.senla.model.Room;
 import com.senla.model.RoomStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class RoomDTO {
 
-    @Getter
-    @Setter
-    private Long id;
-    @Getter
-    @Setter
-    private String name;
-    @Getter
-    @Setter
-    private int price;
-    @Getter
-    @Setter
-    private int capacity;
-    @Getter
-    @Setter
-    private int starsNumber;
-    @Getter
-    @Setter
-    private List<GuestDTO> currentGuestsDtoList;
-    @Getter
-    @Setter
-    private RoomStatus roomStatus;
+    private final Long id;
+    private final String name;
+    private final int price;
+    private final int capacity;
+    private final int starsNumber;
+    private final List<GuestDTO> currentGuestsDtoList;
+    private final RoomStatus roomStatus;
 
     public RoomDTO(Room room, List<GuestDTO> currentGuestDtoList) {
         this.id = room.getId();

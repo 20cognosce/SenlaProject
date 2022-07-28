@@ -1,43 +1,23 @@
 package com.senla.controller.DTO;
 
 import com.senla.model.Guest;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class GuestDTO {
 
-    @Getter
-    @Setter
-    private Long id;
-    @Getter
-    @Setter
-    private String name;
-    @Getter
-    @Setter
-    private String passport;
-    @Getter
-    @Setter
-    private int price;
-    @Getter
-    @Setter
-    private Long roomId;
-    @Getter
-    @Setter
-    private LocalDate checkInDate;
-    @Getter
-    @Setter
-    private LocalDate checkOutDate;
-    @Getter
-    @Setter
-    private List<MaintenanceInstanceDTO> orderedMaintenancesDtoList;
+    private final Long id;
+    private final String name;
+    private final String passport;
+    private final int price;
+    private final Long roomId;
+    private final LocalDate checkInDate;
+    private final LocalDate checkOutDate;
+    private final List<MaintenanceInstanceDTO> orderedMaintenancesDtoList;
 
     public GuestDTO(Guest guest, List<MaintenanceInstanceDTO> maintenanceInstanceDtoList) {
         this.id = guest.getId();

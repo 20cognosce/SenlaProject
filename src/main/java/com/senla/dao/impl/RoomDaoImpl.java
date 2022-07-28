@@ -5,7 +5,6 @@ import com.senla.model.Guest;
 import com.senla.model.Room;
 import com.senla.model.RoomStatus;
 import com.senla.model.Room_;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.TypedQuery;
@@ -16,25 +15,11 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Repository
-@NoArgsConstructor
 public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
-
-    @Override
-    public void updateRoomStatus(Room room, RoomStatus roomStatus) {
-        room.setRoomStatus(roomStatus);
-        update(room);
-    }
-
-    @Override
-    public void updateRoomPrice(Room room, int price) {
-        room.setPrice(price);
-        update(room);
-    }
 
     @Override
     public void removeGuest(Room room, Guest guest) {
@@ -49,37 +34,13 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     }
 
     @Override
-    public String exportData(Room room) {
-        return room.getId() + "," +
-                room.getName() + "," +
-                room.getCapacity() + "," +
-                room.getStarsNumber() + "," +
-                room.getRoomStatus() + "," +
-                room.getPrice();
-    }
-
-    @Override
     protected Class<Room> daoEntityClass() {
         return Room.class;
     }
 
-    @Override
-    public List<Guest> getGuestsOfRoom(Room room) {
-        /*TypedQuery<Room> q = entityManager.createQuery(
-                "SELECT r FROM Room r JOIN FETCH r.currentGuestList WHERE r.id = :roomId", Room.class
-        );
-        q.setParameter("roomId", roomId);*/
-
-        TypedQuery<Guest> q = entityManager.createQuery(
-                "SELECT g FROM Guest g where g.room = :room", Guest.class
-        );
-        q.setParameter("room", room);
-        return q.getResultList();
-    }
-
-    private List<Room> getFreeRoomsNowSorted(String fieldToSortBy) {
+    private List<Room> getFreeRoomsNowSorted(String fieldToSortBy, String order) {
         TypedQuery<Room> q = entityManager.createQuery(
-                "select r from Room r where roomStatus = :roomStatus order by :fieldToSortBy", Room.class
+                "select r from Room r where roomStatus = :roomStatus order by :fieldToSortBy " + order, Room.class
         );
         q.setParameter("roomStatus", RoomStatus.FREE);
         q.setParameter("fieldToSortBy", fieldToSortBy);
@@ -87,9 +48,9 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
     }
 
     @Override
-    public List<Room> getFreeRoomsByDateSorted(LocalDate asAtSpecificDate, String fieldToSortBy) {
+    public List<Room> getFreeRoomsByDateSorted(LocalDate asAtSpecificDate, String fieldToSortBy, String order) {
         if (Objects.equals(asAtSpecificDate, LocalDate.now())) {
-            return getFreeRoomsNowSorted(fieldToSortBy);
+            return getFreeRoomsNowSorted(fieldToSortBy, order);
         }
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Room> cq = cb.createQuery(Room.class);
@@ -97,8 +58,7 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
 
         Predicate predicate = getPredicateForFreeRoomsOnDate(asAtSpecificDate, room, cb);
 
-        List<Order> orderList = new ArrayList<>();
-        orderList.add(cb.asc(room.get(fieldToSortBy)));
+        List<Order> orderList = getOrderList(order, fieldToSortBy, cb, room);
 
         TypedQuery<Room> query = entityManager.createQuery(cq
                 .select(room)
