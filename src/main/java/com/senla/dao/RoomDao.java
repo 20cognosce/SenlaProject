@@ -12,4 +12,5 @@ public interface RoomDao extends AbstractDao<Room> {
     void removeGuest(Room room, Guest guest);
     void addGuestToRoom(Room room, Guest guest);
     Long getFreeRoomsAmount(LocalDate asAtSpecificDate);
+    List<Guest> getGuestList(Long roomId);
 }

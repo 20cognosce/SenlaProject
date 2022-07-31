@@ -4,6 +4,7 @@ import com.senla.controller.DTO.GuestCreationDTO;
 import com.senla.controller.DTO.GuestDTO;
 import com.senla.model.Guest;
 import com.senla.service.GuestService;
+import com.senla.service.MaintenanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
@@ -16,13 +17,14 @@ import static java.util.stream.Collectors.toList;
 public class GuestConverter implements Converter <Guest, GuestDTO> {
 
     private final GuestService guestService;
-    private final MaintenanceConverter mc;
+    private final MaintenanceService maintenanceService;
+    private final MaintenanceConverter maintenanceConverter;
 
     @Override
     public GuestDTO convert(@NonNull Guest guest) {
-        return new GuestDTO(guest, guestService.getGuestMaintenanceList(guest.getId())
+        return new GuestDTO(guest, maintenanceService.sortMaintenancesOfGuestByAddition(guest.getId(), "asc")
                 .stream()
-                .map(m -> mc.toMaintenanceInstanceDTO(m.getId(), guest.getId()))
+                .map(m -> maintenanceConverter.toMaintenanceInstanceDTO(m.getId(), guest.getId()))
                 .collect(toList()));
     }
 

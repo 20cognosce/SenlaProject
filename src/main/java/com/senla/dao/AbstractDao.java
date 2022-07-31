@@ -1,5 +1,7 @@
 package com.senla.dao;
 
+import com.senla.model.Guest2Maintenance;
+
 import javax.management.openmbean.KeyAlreadyExistsException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Order;
@@ -15,6 +17,6 @@ public interface AbstractDao<T> {
     void update(T element);
     T getById(long id);
     List<T> getAll(String fieldToSortBy, String order);
-    List<LocalDateTime> getGuest2MaintenanceOrderTime(long guestId, long maintenanceId);
+    List<Guest2Maintenance> getGuest2Maintenance(long guestId, long maintenanceId);
     List<Order> getOrderList(String ascDesc, String fieldToSortBy, CriteriaBuilder cb, Root<?> root);
 }

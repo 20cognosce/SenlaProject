@@ -1,23 +1,16 @@
 package com.senla.service.impl;
 
-import com.senla.build.config.SortEnum;
 import com.senla.dao.GuestDao;
 import com.senla.dao.RoomDao;
 import com.senla.model.Guest;
-import com.senla.model.Guest_;
-import com.senla.model.Maintenance;
 import com.senla.model.Room;
 import com.senla.service.GuestService;
+import com.senla.util.SortEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,19 +38,17 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         Guest guest = guestDao.getById(guestId);
         Room room = roomDao.getById(roomId);
         if (room.isUnavailableToSettle()) {
-            throw new RuntimeException("Room is unavailable");
+            throw new IllegalArgumentException("Room is unavailable");
         }
         if (!Objects.isNull(guest.getRoom())) {
-            throw new IllegalArgumentException("Guest has room already. Remove it first");
+            throw new IllegalArgumentException("Guest has the room already. Remove it first");
         }
         roomDao.addGuestToRoom(room, guest);
         guestDao.updateGuestRoom(guest, room);
 
-        Room roomUpdated = roomDao.getById(roomId);
-        //TODO: здесь работа в любом случае внутри транзакции так что можно оставить без root.fetch
-        if (roomUpdated.getCurrentGuestList().size() == 1) {
+        if (room.getCurrentGuestList().size() == 1) {
             //pay only the first settled after the room was empty
-            guestDao.updateGuestPrice(guest, roomUpdated.getPrice());
+            guestDao.updateGuestPrice(guest, room.getPrice());
         }
     }
 
@@ -83,7 +74,7 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
 
     private List<Guest> getGuestsSorted(SortEnum sortEnum, String order) {
         String fieldToSort = getFieldToSortFromEnum(sortEnum);
-        return getAll(fieldToSort, order); //this.getAll is a hack to enable @Transactional
+        return getAll(fieldToSort, order);
     }
 
     @Override
@@ -109,22 +100,6 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     @Override
     public List<Guest> sortByCheckOutDate(String order) {
         return getGuestsSorted(SortEnum.BY_CHECKOUT_DATE, order);
-    }
-
-    @Override
-    public List<Maintenance> getGuestMaintenanceList(long guestId) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-
-        CriteriaQuery<Guest> cq = cb.createQuery(Guest.class);
-        Root<Guest> root = cq.from(Guest.class);
-        root.fetch("orderedMaintenances", JoinType.LEFT);
-
-        return entityManager.createQuery(cq
-                .select(root)
-                .where(cb.equal(root.get(Guest_.id), guestId))
-        )
-                .getSingleResult()
-                .getOrderedMaintenances();
     }
 
     @Override

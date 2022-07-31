@@ -1,4 +1,4 @@
-package com.senla.build.config;
+package com.senla.util;
 
 public enum SortEnum {
 

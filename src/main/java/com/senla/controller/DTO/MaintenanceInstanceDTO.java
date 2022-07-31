@@ -13,7 +13,7 @@ public class MaintenanceInstanceDTO {
 
     private final Long originalMaintenanceId;
     private final String name;
-    private final int price;
+    private final Integer price;
     private final MaintenanceCategory category;
     private final List<LocalDateTime> orderTimes;
     private final String guestName;

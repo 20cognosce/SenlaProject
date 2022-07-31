@@ -7,8 +7,8 @@ import lombok.Data;
 public class RoomCreationDTO {
 
     private final String name;
-    private final int price;
-    private final int capacity;
-    private final int starsNumber;
+    private final Integer price;
+    private final Integer capacity;
+    private final Integer starsNumber;
     private final RoomStatus roomStatus;
 }

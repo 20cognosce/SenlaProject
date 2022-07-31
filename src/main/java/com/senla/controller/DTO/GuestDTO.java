@@ -2,22 +2,24 @@ package com.senla.controller.DTO;
 
 import com.senla.model.Guest;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
 @Data
+@NoArgsConstructor
 public class GuestDTO {
 
-    private final Long id;
-    private final String name;
-    private final String passport;
-    private final int price;
-    private final Long roomId;
-    private final LocalDate checkInDate;
-    private final LocalDate checkOutDate;
-    private final List<MaintenanceInstanceDTO> orderedMaintenancesDtoList;
+    private Long id;
+    private String name;
+    private String passport;
+    private Integer price;
+    private Long roomId;
+    private LocalDate checkInDate;
+    private LocalDate checkOutDate;
+    private List<MaintenanceInstanceDTO> orderedMaintenancesDtoList;
 
     public GuestDTO(Guest guest, List<MaintenanceInstanceDTO> maintenanceInstanceDtoList) {
         this.id = guest.getId();

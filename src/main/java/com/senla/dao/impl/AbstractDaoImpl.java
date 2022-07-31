@@ -2,6 +2,8 @@ package com.senla.dao.impl;
 
 import com.senla.dao.AbstractDao;
 import com.senla.model.AbstractEntity;
+import com.senla.model.Guest2Maintenance;
+import com.senla.model.Guest2Maintenance_;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -10,7 +12,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,29 +45,26 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity> implements Abstr
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(daoEntityClass());
         Root<T> tRoot = cq.from(daoEntityClass());
-
         List<Order> orderList = getOrderList(order, fieldToSortBy, cb, tRoot);
         TypedQuery<T> query = entityManager.createQuery(cq
                 .select(tRoot)
                 .orderBy(orderList));
 
-        /*String str = "select e from " + daoEntityClass().getName() + " e" +
-                " order by " + fieldToSortBy + " asc";
-        TypedQuery<T> q = entityManager.createQuery(str, daoEntityClass());*/
         return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public List<LocalDateTime> getGuest2MaintenanceOrderTime(long guestId, long maintenanceId) {
-        List<Timestamp> resultList = entityManager.createNativeQuery(
-                        "SELECT order_timestamp FROM guest_2_maintenance where guest_id = ? and maintenance_id = ?")
-                .setParameter(1, guestId)
-                .setParameter(2, maintenanceId)
-                .getResultList();
-        List<LocalDateTime> localDateTimeList = new ArrayList<>();
-        resultList.forEach(timestamp -> localDateTimeList.add(timestamp.toLocalDateTime()));
-        return localDateTimeList;
+    public List<Guest2Maintenance> getGuest2Maintenance(long guestId, long maintenanceId) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Guest2Maintenance> cq = cb.createQuery(Guest2Maintenance.class);
+        Root<Guest2Maintenance> root = cq.from(Guest2Maintenance.class);
+
+        return entityManager.createQuery(cq
+                        .select(root)
+                        .where(cb.and(
+                                cb.equal(root.get(Guest2Maintenance_.guestId), guestId),
+                                cb.equal(root.get(Guest2Maintenance_.maintenanceId), maintenanceId)))
+                ).getResultList();
     }
 
     @Override

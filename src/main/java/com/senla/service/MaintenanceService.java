@@ -15,6 +15,7 @@ public interface MaintenanceService extends AbstractService<Maintenance, Mainten
     List<Maintenance> sortByPrice(String order);
     List<Maintenance> sortByCategory(String order);
 
+
     List<Maintenance> sortMaintenancesOfGuestByAddition(long guestId, String order);
     List<Maintenance> sortMaintenancesOfGuestByPrice(long guestId, String order);
     List<Maintenance> sortMaintenancesOfGuestByTime(long guestId, String order);

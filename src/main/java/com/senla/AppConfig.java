@@ -26,7 +26,6 @@ import java.util.Properties;
 //@EntityScan("com.senla")
 @Slf4j
 public class AppConfig {
-
     //ConfigurableApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
 
     @Bean
@@ -44,7 +43,6 @@ public class AppConfig {
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan(getClass().getPackage().getName()); //"com.senla"
         factory.setDataSource(dataSource());
         return factory;
     }

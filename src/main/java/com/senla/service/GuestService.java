@@ -2,7 +2,6 @@ package com.senla.service;
 
 import com.senla.dao.GuestDao;
 import com.senla.model.Guest;
-import com.senla.model.Maintenance;
 
 import java.util.List;
 
@@ -18,6 +17,4 @@ public interface GuestService extends AbstractService<Guest, GuestDao> {
     List<Guest> sortByAddition(String order);
     List<Guest> sortByAlphabet(String order);
     List<Guest> sortByCheckOutDate(String order);
-
-    List<Maintenance> getGuestMaintenanceList(long guestId);
 }

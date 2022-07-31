@@ -1,21 +1,17 @@
 package com.senla.service.impl;
 
-import com.senla.build.config.SortEnum;
 import com.senla.dao.RoomDao;
 import com.senla.model.Guest;
 import com.senla.model.Room;
-import com.senla.model.Room_;
 import com.senla.service.RoomService;
+import com.senla.util.SortEnum;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.ServiceUnavailableException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -24,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implements RoomService {
 
     private final RoomDao roomDao;
@@ -34,18 +31,7 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
     @Override
     public List<Guest> getLastNGuests(long roomId) throws NoSuchElementException {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-
-        CriteriaQuery<Room> cq = cb.createQuery(Room.class);
-        Root<Room> root = cq.from(Room.class);
-        root.fetch("currentGuestList", JoinType.LEFT);
-
-        List<Guest> currentGuestList = entityManager.createQuery(cq
-                        .select(root)
-                        .where(cb.equal(root.get(Room_.id), roomId))
-                )
-                .getSingleResult()
-                .getCurrentGuestList();
+        List<Guest> currentGuestList = getDefaultDao().getGuestList(roomId);
 
         //В комнате одновременно не будет тысяч гостей, так что пусть останется компаратор...
         return currentGuestList.stream().sorted(
@@ -54,18 +40,7 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
 
     @Override
     public List<Guest> getGuestsList(long roomId) throws NoSuchElementException {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-
-        CriteriaQuery<Room> cq = cb.createQuery(Room.class);
-        Root<Room> root = cq.from(Room.class);
-        root.fetch("currentGuestList", JoinType.LEFT);
-
-        return entityManager.createQuery(cq
-                        .select(root)
-                        .where(cb.equal(root.get(Room_.id), roomId))
-                )
-                .getSingleResult()
-                .getCurrentGuestList();
+        return getDefaultDao().getGuestList(roomId);
     }
 
     @Transactional
@@ -79,7 +54,9 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     public void updateRoom(Room updatedRoom) throws ServiceUnavailableException {
         Room detachedRoom = roomDao.getById(updatedRoom.getId());
         if ("no".equals(changeRoomStatusPossibility) && (detachedRoom.getRoomStatus() != updatedRoom.getRoomStatus())) {
-            throw new ServiceUnavailableException("Опция недоступна");
+            ServiceUnavailableException e = new ServiceUnavailableException("Опция недоступна");
+            log.error(e.getLocalizedMessage(), e);
+            throw e;
         }
         roomDao.update(updatedRoom);
     }
@@ -91,16 +68,7 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     }
 
     public List<Room> getRoomsSorted(SortEnum sortEnum, String order) {
-        String fieldToSort;
-
-        switch (sortEnum) {
-            case BY_ADDITION: fieldToSort = "id"; break;
-            case BY_PRICE: fieldToSort = "price"; break;
-            case BY_CAPACITY:  fieldToSort = "capacity"; break;
-            case BY_STARS: fieldToSort = "starsNumber"; break;
-            default: throw new NoSuchElementException("Such sortEnum does not exist");
-        }
-
+        String fieldToSort = getFieldToSortFromEnum(sortEnum);
         return this.getAll(fieldToSort, order);
     }
 

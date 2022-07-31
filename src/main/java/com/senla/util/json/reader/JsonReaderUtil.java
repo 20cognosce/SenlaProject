@@ -1,4 +1,4 @@
-package com.senla.build.json.reader;
+package com.senla.util.json.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

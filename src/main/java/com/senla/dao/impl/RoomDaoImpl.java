@@ -11,6 +11,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -89,6 +90,22 @@ public class RoomDaoImpl extends AbstractDaoImpl<Room> implements RoomDao {
                 .where(predicate));
 
         return query.getSingleResult();
+    }
+
+    @Override
+    public List<Guest> getGuestList(Long roomId) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Room> cq = cb.createQuery(Room.class);
+        Root<Room> root = cq.from(Room.class);
+        root.fetch("currentGuestList", JoinType.LEFT);
+
+        return entityManager.createQuery(cq
+                        .select(root)
+                        .where(cb.equal(root.get(Room_.id), roomId))
+                )
+                .getSingleResult()
+                .getCurrentGuestList();
     }
 
     private Predicate getPredicateForFreeRoomsOnDate(LocalDate date, Root<Room> room, CriteriaBuilder cb) {
