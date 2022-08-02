@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,10 +35,10 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
 
     @Override
     @Transactional
-    public void addGuestToRoom(long guestId, long roomId) {
+    public void addGuestToRoom(long guestId, long roomId, LocalDate checkInDate, LocalDate checkOutDate) {
         Guest guest = guestDao.getById(guestId);
         Room room = roomDao.getById(roomId);
-        if (room.isUnavailableToSettle()) {
+        if (!room.isAvailableToSettle()) {
             throw new IllegalArgumentException("Room is unavailable");
         }
         if (!Objects.isNull(guest.getRoom())) {
@@ -45,6 +46,8 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         }
         roomDao.addGuestToRoom(room, guest);
         guestDao.updateGuestRoom(guest, room);
+        guest.setCheckInDate(checkInDate);
+        guest.setCheckOutDate(checkOutDate);
 
         if (room.getCurrentGuestList().size() == 1) {
             //pay only the first settled after the room was empty
@@ -55,14 +58,15 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
     @Override
     @Transactional
     public void removeGuestFromRoom(long guestId) {
-        Guest guest;
-        guest = guestDao.getById(guestId);
+        Guest guest = guestDao.getById(guestId);
         if (Objects.isNull(guest.getRoom())) {
             return;
         }
         roomDao.removeGuest(guest.getRoom(), guest);
         guestDao.updateGuestRoom(guest, null);
         guestDao.updateGuestPrice(guest, 0);
+        guest.setCheckInDate(null);
+        guest.setCheckOutDate(null);
     }
 
     @Override

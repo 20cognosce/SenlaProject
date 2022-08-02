@@ -2,6 +2,7 @@ package com.senla.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,11 +16,12 @@ import javax.persistence.OneToMany;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
+@Entity
 public class Room extends AbstractEntity {
 
     @Column(name = "name")
@@ -63,8 +65,8 @@ public class Room extends AbstractEntity {
     }
 
     @JsonIgnore
-    public boolean isUnavailableToSettle() {
-        return (this.getRoomStatus() != RoomStatus.FREE && this.getRoomStatus() != RoomStatus.BUSY)
-                || (currentGuestList.size() >= getCapacity());
+    public boolean isAvailableToSettle() {
+        return getRoomStatus() == RoomStatus.FREE ||
+                (getRoomStatus() == RoomStatus.BUSY && getCapacity() > getCurrentGuestList().size());
     }
 }

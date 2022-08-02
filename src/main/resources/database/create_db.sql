@@ -12,6 +12,9 @@ create table room
 create table guest
 (
     id             serial PRIMARY KEY,
+    login          varchar(50) UNIQUE NOT NULL,
+    password       varchar,
+    role           varchar(20),
     name           varchar(100),
     price          decimal(19, 4),
     passport       varchar(20),
@@ -34,6 +37,13 @@ create table "guest_2_maintenance"
     guest_id        int references guest (id),
     maintenance_id  int references maintenance (id),
     order_timestamp timestamp
+);
+
+create table token
+(
+    id             serial PRIMARY KEY,
+    value          varchar,
+    guest_id       int references guest (id)
 );
 
 /*DROP SCHEMA public CASCADE;

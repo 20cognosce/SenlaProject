@@ -3,12 +3,13 @@ package com.senla.service;
 import com.senla.dao.GuestDao;
 import com.senla.model.Guest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface GuestService extends AbstractService<Guest, GuestDao> {
 
     void createGuest(Guest guest);
-    void addGuestToRoom(long guestId, long roomId);
+    void addGuestToRoom(long guestId, long roomId, LocalDate checkInDate, LocalDate checkOutDate);
     void deleteGuest(long guestId);
     void removeGuestFromRoom(long guestId);
 

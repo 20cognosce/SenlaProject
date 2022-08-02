@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -66,10 +67,12 @@ public class GuestController {
         return guestService.getAllAmount();
     }
 
-    @PostMapping
-    public void createGuest(@RequestBody GuestCreationDTO guestCreationDTO) {
+    @PostMapping("/register")
+    public void registerGuest(@RequestBody GuestCreationDTO guestCreationDTO) {
         Guest guest = converter.toGuest(guestCreationDTO);
         guestService.createGuest(guest);
+        //так как login - not null unique в БД,
+        //то при попытке создания пользователя с уже существующим логином EntityManager должен кинуть эксепшн
     }
 
     @DeleteMapping(value = "/{id}")
@@ -77,12 +80,14 @@ public class GuestController {
         guestService.deleteGuest(guestId);
     }
 
-    @PutMapping(value = "/{id}/room", params = {"room_id"})
+    @PutMapping(value = "/{id}/room", params = {"room_id", "check_in_date", "check_out_date"})
     public  void addGuestToRoom(
             @PathVariable("id") Long guestId,
-            @RequestParam("room_id") Long roomId) {
+            @RequestParam("room_id") Long roomId,
+            @RequestParam("check_in_date") LocalDate checkInDate,
+            @RequestParam("check_out_date") LocalDate checkOutDate) {
 
-        guestService.addGuestToRoom(guestId, roomId);
+        guestService.addGuestToRoom(guestId, roomId, checkInDate, checkOutDate);
     }
 
     @DeleteMapping(value = "/{id}/room")

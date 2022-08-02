@@ -1,6 +1,7 @@
 package com.senla.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,10 +11,13 @@ import org.hibernate.annotations.NotFoundAction;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,9 +28,17 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @Table(name = "guest")
 public class Guest extends AbstractEntity {
 
+    @Column(name = "login", nullable = false, unique = true)
+    private String login;
+    @Column(name = "password")
+    private String hashPassword;
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
     @Column(name = "name")
     private String name;
     @Column(name = "passport")
@@ -42,6 +54,9 @@ public class Guest extends AbstractEntity {
     @Column(name = "check_out_date")
     private LocalDate checkOutDate;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "guests")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "guests")
     private List<Maintenance> orderedMaintenances = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "guest")
+    private List<Token> tokens = new ArrayList<>();
 }

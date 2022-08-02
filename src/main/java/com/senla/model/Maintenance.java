@@ -1,6 +1,7 @@
 package com.senla.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 @Table(name = "maintenance")
 public class Maintenance extends AbstractEntity {
 
@@ -34,7 +36,7 @@ public class Maintenance extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private MaintenanceCategory category;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "guest_2_maintenance",
             joinColumns = @JoinColumn(name = "maintenance_id"),
