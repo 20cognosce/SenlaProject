@@ -34,9 +34,11 @@ public class MaintenanceConverter implements Converter<Maintenance, MaintenanceT
     }
 
     public Maintenance toMaintenance(MaintenanceTemplateDTO maintenanceTemplateDTO) {
-        return new Maintenance(maintenanceTemplateDTO.getName(),
-                maintenanceTemplateDTO.getPrice(),
-                maintenanceTemplateDTO.getCategory(),
-                null);
+        return Maintenance.builder()
+                .name(maintenanceTemplateDTO.getName())
+                .price(maintenanceTemplateDTO.getPrice())
+                .category(maintenanceTemplateDTO.getCategory())
+                .guests(null)
+                .build();
     }
 }

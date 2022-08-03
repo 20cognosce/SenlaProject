@@ -48,7 +48,6 @@ public class GuestConverter implements Converter <Guest, GuestDTO> {
                 .checkInDate(null)
                 .checkOutDate(null)
                 .orderedMaintenances(null)
-                .tokens(null)
                 .build();
     }
 }

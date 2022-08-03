@@ -8,7 +8,6 @@ import lombok.Setter;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -17,7 +16,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -56,7 +54,4 @@ public class Guest extends AbstractEntity {
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "guests")
     private List<Maintenance> orderedMaintenances = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "guest")
-    private List<Token> tokens = new ArrayList<>();
 }

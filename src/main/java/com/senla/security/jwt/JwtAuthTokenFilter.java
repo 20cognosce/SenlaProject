@@ -1,7 +1,6 @@
 package com.senla.security.jwt;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -37,7 +35,6 @@ public class JwtAuthTokenFilter extends GenericFilterBean {
             }
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
-            ((HttpServletResponse) servletResponse).sendError(HttpStatus.BAD_REQUEST.value());
             throw new IllegalArgumentException("JWT token is expired or invalid");
         }
         filterChain.doFilter(servletRequest, servletResponse);

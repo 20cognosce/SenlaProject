@@ -27,8 +27,12 @@ public class RoomConverter implements Converter<Room, RoomDTO> {
     }
 
     public Room toRoom(RoomCreationDTO roomCreationDTO) {
-        return new Room(roomCreationDTO.getName(), roomCreationDTO.getPrice(),
-                roomCreationDTO.getCapacity(), roomCreationDTO.getStarsNumber(),
-                roomCreationDTO.getRoomStatus());
+        return Room.builder()
+                .name(roomCreationDTO.getName())
+                .price(roomCreationDTO.getPrice())
+                .capacity(roomCreationDTO.getCapacity())
+                .starsNumber(roomCreationDTO.getStarsNumber())
+                .roomStatus(roomCreationDTO.getRoomStatus())
+                .build();
     }
 }

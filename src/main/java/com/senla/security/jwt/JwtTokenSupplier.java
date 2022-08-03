@@ -49,7 +49,7 @@ public class JwtTokenSupplier {
                 .compact();
     }
 
-    public boolean validateToken (String token) {
+    public boolean validateToken(String token) {
         try {
             return !Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getExpiration().before(new Date());
         } catch (Exception e) {

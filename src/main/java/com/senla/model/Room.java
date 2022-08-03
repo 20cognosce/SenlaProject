@@ -40,7 +40,6 @@ public class Room extends AbstractEntity {
     @Column(name = "details")
     private String details;
 
-    //new Room constructor
     public Room(String name, int price, int capacity, int starsNumber, RoomStatus roomStatus) {
         this.name = name;
         this.price = price;
