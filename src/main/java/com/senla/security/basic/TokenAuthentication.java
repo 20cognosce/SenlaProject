@@ -1,4 +1,4 @@
-package com.senla.security;
+package com.senla.security.basic;
 
 import lombok.Setter;
 import org.springframework.security.core.Authentication;

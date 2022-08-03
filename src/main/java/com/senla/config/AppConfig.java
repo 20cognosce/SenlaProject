@@ -1,4 +1,4 @@
-package com.senla;
+package com.senla.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -19,11 +19,9 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Properties;
 
-
 @Configuration
 @ComponentScan
 @EnableTransactionManagement
-//@EntityScan("com.senla")
 @Slf4j
 public class AppConfig {
     //ConfigurableApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);

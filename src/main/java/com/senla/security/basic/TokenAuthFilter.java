@@ -1,5 +1,6 @@
-package com.senla.security;
+package com.senla.security.basic;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -15,15 +16,18 @@ import java.io.IOException;
 @Component
 public class TokenAuthFilter implements Filter {
 
+    @Value("${authorization.header}")
+    private String authorizationHeader;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
+       Filter.super.init(filterConfig);
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        String token = request.getParameter("token");
+        String token = request.getHeader(authorizationHeader);
         TokenAuthentication tokenAuthentication = new TokenAuthentication(token);
 
         if (token == null) {
@@ -37,6 +41,6 @@ public class TokenAuthFilter implements Filter {
 
     @Override
     public void destroy() {
-
+        Filter.super.destroy();
     }
 }

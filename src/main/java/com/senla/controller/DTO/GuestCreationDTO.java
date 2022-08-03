@@ -1,16 +1,16 @@
 package com.senla.controller.DTO;
 
-import com.senla.model.Role;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.time.LocalDate;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class GuestCreationDTO {
 
-    private final String login;
-    private final String password;
-    private final Role role;
-    private final String name;
-    private final String passport;
+    private String login;
+    private String password;
+    private String name;
+    private String passport;
 }

@@ -1,8 +1,10 @@
-package com.senla.security;
+package com.senla.security.basic;
 
 import com.senla.dao.TokenDao;
 import com.senla.model.Token;
+import com.senla.security.basic.TokenAuthentication;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -10,8 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class TokenAuthProvider implements AuthenticationProvider {
@@ -23,14 +24,18 @@ public class TokenAuthProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         TokenAuthentication tokenAuthentication = (TokenAuthentication) authentication;
 
-        Optional<Token> tokenByValue = tokenDao.getTokenByValue(tokenAuthentication.getName());
+        Token tokenByValue;
+        try {
+             tokenByValue = tokenDao.getTokenByValue(tokenAuthentication.getName());
+        } catch (Exception e) {
+            log.error("Bad token", e);
+            throw new IllegalArgumentException("Bad token");
+        }
 
-        if (tokenByValue.isPresent()) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(tokenByValue.get().getGuest().getLogin());
-            tokenAuthentication.setUserDetails(userDetails);
-            tokenAuthentication.setAuthenticated(true);
-            return tokenAuthentication;
-        } else throw new IllegalArgumentException("Bad token");
+        UserDetails userDetails = userDetailsService.loadUserByUsername(tokenByValue.getGuest().getLogin());
+        tokenAuthentication.setUserDetails(userDetails);
+        tokenAuthentication.setAuthenticated(true);
+        return tokenAuthentication;
     }
 
     @Override

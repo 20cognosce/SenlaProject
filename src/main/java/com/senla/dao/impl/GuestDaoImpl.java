@@ -6,7 +6,6 @@ import com.senla.model.Room;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.TypedQuery;
-import java.util.Optional;
 
 @Repository
 public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
@@ -26,12 +25,12 @@ public class GuestDaoImpl extends AbstractDaoImpl<Guest> implements GuestDao {
     }
 
     @Override
-    public Optional<Guest> getGuestByLogin(String login) {
+    public Guest getGuestByLogin(String login) {
        TypedQuery<Guest> q = entityManager.createQuery(
                 "select g from Guest g where g.login = :login", Guest.class
         );
        q.setParameter("login", login);
-       return Optional.of(q.getSingleResult());
+       return q.getSingleResult();
     }
 
     @Override

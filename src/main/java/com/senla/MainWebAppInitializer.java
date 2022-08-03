@@ -1,5 +1,6 @@
 package com.senla;
 
+import com.senla.config.WebConfig;
 import org.springframework.lang.NonNull;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;

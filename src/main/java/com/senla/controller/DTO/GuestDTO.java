@@ -1,6 +1,7 @@
 package com.senla.controller.DTO;
 
 import com.senla.model.Guest;
+import com.senla.model.Role;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ public class GuestDTO {
     private Long id;
     private String name;
     private String passport;
+    private Role role;
     private Integer price;
     private Long roomId;
     private LocalDate checkInDate;
@@ -25,6 +27,7 @@ public class GuestDTO {
         this.id = guest.getId();
         this.name = guest.getName();
         this.passport = guest.getPassport();
+        this.role = guest.getRole();
         this.price = guest.getPrice();
         if (Objects.isNull(guest.getRoom())) {
             this.roomId = 0L;

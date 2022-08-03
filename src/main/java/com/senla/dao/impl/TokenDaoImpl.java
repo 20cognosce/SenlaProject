@@ -4,14 +4,18 @@ import com.senla.dao.TokenDao;
 import com.senla.model.Token;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import javax.persistence.TypedQuery;
 
 @Repository
 public class TokenDaoImpl extends AbstractDaoImpl<Token> implements TokenDao {
 
     @Override
-    public Optional<Token> getTokenByValue(String value) {
-        return Optional.empty();
+    public Token getTokenByValue(String value) {
+        TypedQuery<Token> q = entityManager.createQuery(
+                "select t from Token t where t.value = :value", Token.class
+        );
+        q.setParameter("value", value);
+        return q.getSingleResult();
     }
 
     @Override
