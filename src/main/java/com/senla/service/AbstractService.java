@@ -17,5 +17,5 @@ public interface AbstractService<T extends AbstractEntity, D extends AbstractDao
 
     String getFieldToSortFromEnum(SortEnum sort);
 
-    <O, DTO> O updateEntityFromDto(O original, Class<O> originalClass, DTO dto);
+    <O, DTO> O updateEntityFromDto(O original, DTO dto, Class<O> originalClass);
 }

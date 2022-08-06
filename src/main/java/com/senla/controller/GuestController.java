@@ -1,13 +1,11 @@
 package com.senla.controller;
 
-import com.senla.config.SecurityConfig;
 import com.senla.controller.DTO.GuestCreationDTO;
 import com.senla.controller.DTO.GuestDTO;
 import com.senla.controller.converters.GuestConverter;
 import com.senla.model.Guest;
 import com.senla.service.GuestService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,7 +28,6 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class GuestController {
 
-    private final ApplicationContext appContext;
     private final GuestService guestService;
     private final GuestConverter converter;
 
@@ -63,8 +59,6 @@ public class GuestController {
             all = guestService.sortByCheckOutDate(order);
         }
 
-        Arrays.stream(appContext.getBeanDefinitionNames()).forEach(System.out::println);
-        SecurityConfig sc = appContext.getBean(SecurityConfig.class);
         return all.stream().map(converter::convert).collect(toList());
     }
 

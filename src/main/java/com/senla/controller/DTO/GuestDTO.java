@@ -2,6 +2,8 @@ package com.senla.controller.DTO;
 
 import com.senla.model.Guest;
 import com.senla.model.Role;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +13,8 @@ import java.util.Objects;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class GuestDTO {
 
     private Long id;

@@ -119,7 +119,7 @@ public class RoomController {
             @RequestBody RoomDTO roomDTO) {
 
         Room detachedRoom = roomService.getById(id);
-        Room updatedRoom = roomService.updateEntityFromDto(detachedRoom, Room.class, roomDTO);
+        Room updatedRoom = roomService.updateEntityFromDto(detachedRoom, roomDTO, Room.class);
 
         try {
             roomService.updateRoom(updatedRoom);

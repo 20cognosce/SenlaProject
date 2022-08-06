@@ -24,7 +24,6 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
 
     @Override
     @Transactional
-    //Accept only without room
     public void createGuest(Guest guest) {
         if (Objects.isNull(guest.getRoom())) {
             guestDao.create(guest);
@@ -43,6 +42,9 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
         }
         if (!Objects.isNull(guest.getRoom())) {
             throw new IllegalArgumentException("Guest has the room already. Remove it first");
+        }
+        if (!checkOutDate.isAfter(checkInDate)) {
+            throw new IllegalArgumentException("Incorrect settlement dates");
         }
         roomDao.addGuestToRoom(room, guest);
         guestDao.updateGuestRoom(guest, room);
@@ -63,8 +65,8 @@ public class GuestServiceImpl extends AbstractServiceImpl<Guest, GuestDao> imple
             return;
         }
         roomDao.removeGuest(guest.getRoom(), guest);
+        guestDao.updateGuestPrice(guest, guest.getPrice() - guest.getRoom().getPrice());
         guestDao.updateGuestRoom(guest, null);
-        guestDao.updateGuestPrice(guest, 0);
         guest.setCheckInDate(null);
         guest.setCheckOutDate(null);
     }

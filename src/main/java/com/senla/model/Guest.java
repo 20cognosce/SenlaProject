@@ -53,5 +53,5 @@ public class Guest extends AbstractEntity {
     private LocalDate checkOutDate;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "guests")
-    private List<Maintenance> orderedMaintenances = new ArrayList<>();
+    private List<Maintenance> orderedMaintenances = new ArrayList<>(); //while creating via builder null will be assigned
 }

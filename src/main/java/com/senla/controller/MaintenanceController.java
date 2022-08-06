@@ -87,7 +87,7 @@ public class MaintenanceController {
             @RequestBody MaintenanceTemplateDTO maintenanceTemplateDTO) {
 
         Maintenance detachedMaintenance = maintenanceService.getById(id);
-        Maintenance updatedMaintenance = maintenanceService.updateEntityFromDto(detachedMaintenance, Maintenance.class, maintenanceTemplateDTO);
+        Maintenance updatedMaintenance = maintenanceService.updateEntityFromDto(detachedMaintenance, maintenanceTemplateDTO, Maintenance.class);
 
         maintenanceService.updateMaintenance(updatedMaintenance);
     }

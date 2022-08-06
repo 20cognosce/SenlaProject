@@ -15,6 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.senla.model.Role.ADMIN;
+import static com.senla.model.Role.USER;
+
 @RequiredArgsConstructor
 @EnableWebSecurity
 @ComponentScan("com.senla")
@@ -49,11 +52,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(jwtAuthProvider)
                 .authorizeRequests()
                 .antMatchers("/login/**", "/logout/**", "/guests/register/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/guests/**", "/rooms/**", "/maintenances/**").hasAnyAuthority("USER", "ADMIN")
-                .antMatchers(HttpMethod.POST, "/guests/**", "/rooms/**", "/maintenances/**").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.PUT, "/guests/**", "/rooms/**", "/maintenances/**").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.PATCH, "/guests/**", "/rooms/**", "/maintenances/**").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/guests/**", "/rooms/**", "/maintenances/**").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.GET, "/guests/**", "/rooms/**", "/maintenances/**").hasAnyAuthority(USER.name(), ADMIN.name())
+                .antMatchers(HttpMethod.POST, "/guests/**", "/rooms/**", "/maintenances/**").hasAuthority(ADMIN.name())
+                .antMatchers(HttpMethod.PUT, "/guests/**", "/rooms/**", "/maintenances/**").hasAuthority(ADMIN.name())
+                .antMatchers(HttpMethod.PATCH, "/guests/**", "/rooms/**", "/maintenances/**").hasAuthority(ADMIN.name())
+                .antMatchers(HttpMethod.DELETE, "/guests/**", "/rooms/**", "/maintenances/**").hasAuthority(ADMIN.name())
                 .and()
                 .logout().disable();
     }

@@ -31,7 +31,9 @@ public class GuestConverter implements Converter <Guest, GuestDTO> {
 
     public Guest toGuest(GuestCreationDTO guestCreationDTO) {
         Role role;
-        if ("admin".equals(guestCreationDTO.getLogin())) { //login уникален, поэтому будет только одна учетка админа
+        if (Role.ADMIN.name()
+                .toLowerCase()
+                .equals(guestCreationDTO.getLogin())) { //login уникален, поэтому будет только одна учетка админа
             role = Role.ADMIN;
         } else {
             role = Role.USER;

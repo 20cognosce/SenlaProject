@@ -4,20 +4,22 @@ import com.senla.model.Guest;
 import com.senla.model.Maintenance;
 import com.senla.model.MaintenanceCategory;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class MaintenanceInstanceDTO {
 
-    private final Long originalMaintenanceId;
-    private final String name;
-    private final Integer price;
-    private final MaintenanceCategory category;
-    private final List<LocalDateTime> orderTimes;
-    private final String guestName;
-    private final Long guestId;
+    private Long originalMaintenanceId;
+    private String name;
+    private Integer price;
+    private MaintenanceCategory category;
+    private List<LocalDateTime> orderTimes;
+    private String guestName;
+    private Long guestId;
 
     public MaintenanceInstanceDTO(Maintenance maintenance, Guest guest, List<LocalDateTime> orderTimes) {
         this.originalMaintenanceId = maintenance.getId();

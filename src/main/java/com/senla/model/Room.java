@@ -13,6 +13,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -36,7 +37,7 @@ public class Room extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private RoomStatus roomStatus;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "room")
-    private List<Guest> currentGuestList;
+    private List<Guest> currentGuestList = new ArrayList<>();
     @Column(name = "details")
     private String details;
 

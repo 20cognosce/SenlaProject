@@ -64,7 +64,7 @@ public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends Ab
     }
 
     @Override
-    public <O, DTO> O updateEntityFromDto(O original, Class<O> originalClass, DTO dto) {
+    public <O, DTO> O updateEntityFromDto(O original, DTO dto, Class<O> originalClass) {
         Field[] dtoFields = dto.getClass().getDeclaredFields();
 
         Arrays.stream(dtoFields).forEach(dtoField -> {
@@ -81,7 +81,7 @@ public abstract class AbstractServiceImpl<T extends AbstractEntity, D extends Ab
                  * Не сеттить null вообще? Но кажется, что когда-то через запрос присвоить null будет полезно
                  * Но тогда в запросе нужно передавать текущие значения сущности, чтобы они обновились на самих себя
                  *
-                 * Решил не сеттить null вообще, временная заглушка пока не пойму как это надо делать
+                 * Решил не сеттить null вообще, в таких случаях следует вызывать метод сервиса
                  */
             } catch (IllegalAccessException e) {
                 log.error(e.getLocalizedMessage(), e);
