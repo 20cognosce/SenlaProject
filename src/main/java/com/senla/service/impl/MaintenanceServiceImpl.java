@@ -55,7 +55,7 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
         return getAllMaintenancesSorted(SortEnum.BY_CATEGORY, order);
     }
 
-    public List<Maintenance> getAllMaintenancesSorted(SortEnum sortEnum, String order) {
+    private List<Maintenance> getAllMaintenancesSorted(SortEnum sortEnum, String order) {
         String fieldToSort = getFieldToSortFromEnum(sortEnum);
         return getAll(fieldToSort, order);
     }
@@ -75,7 +75,7 @@ public class MaintenanceServiceImpl extends AbstractServiceImpl<Maintenance, Mai
         return getMaintenancesOfGuestSorted(guestId, SortEnum.BY_TIME, order);
     }
 
-    public List<Maintenance> getMaintenancesOfGuestSorted(Long guestId, SortEnum sortEnum, String order) {
+    private List<Maintenance> getMaintenancesOfGuestSorted(Long guestId, SortEnum sortEnum, String order) {
         String fieldToSort = getFieldToSortFromEnum(sortEnum);
         return getDefaultDao().getMaintenancesOfGuestSorted(guestId, fieldToSort, order);
     }

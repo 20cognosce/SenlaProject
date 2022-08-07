@@ -26,7 +26,7 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
     private final RoomDao roomDao;
     @Value("${change.room.status.possibility}")
     String changeRoomStatusPossibility;
-    @Value("${last.n.guests}") //я не могу придумать семантику лучше для этой переменной
+    @Value("${last.n.guests}")
     int lastNGuests;
 
     @Override
@@ -67,12 +67,12 @@ public class RoomServiceImpl extends AbstractServiceImpl<Room, RoomDao> implemen
         roomDao.getById(roomId).setDetails(details);
     }
 
-    public List<Room> getRoomsSorted(SortEnum sortEnum, String order) {
+    private List<Room> getRoomsSorted(SortEnum sortEnum, String order) {
         String fieldToSort = getFieldToSortFromEnum(sortEnum);
         return this.getAll(fieldToSort, order);
     }
 
-    public List<Room> getFreeRoomsSorted(LocalDate specificDate, SortEnum sortEnum, String order) {
+    private List<Room> getFreeRoomsSorted(LocalDate specificDate, SortEnum sortEnum, String order) {
         String fieldToSort = getFieldToSortFromEnum(sortEnum);
         return getDefaultDao().getFreeRoomsByDateSorted(specificDate, fieldToSort, order);
     }

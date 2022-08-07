@@ -158,9 +158,6 @@ class GuestServiceImplTest {
                 () -> assertEquals(guest2.getCheckInDate(), date1),
                 () -> assertEquals(guest2.getCheckOutDate(), date2)
         );
-
-
-
     }
 
     @Test
@@ -252,36 +249,28 @@ class GuestServiceImplTest {
     @Test
     void sortByAddition() {
         String order = "asc";
-        SortEnum sort = SortEnum.BY_ADDITION;
 
         GuestService guestServiceSpy = spy(guestService);
         guestServiceSpy.sortByAddition(order);
-        verify(guestServiceSpy, times(1)).getFieldToSortFromEnum(sort);
+        verify(guestServiceSpy, times(1)).getAll("id", order);
     }
 
     @Test
     void sortByAlphabet() {
         String order = "asc";
-        SortEnum sort = SortEnum.BY_ALPHABET;
 
         GuestService guestServiceSpy = spy(guestService);
         guestServiceSpy.sortByAlphabet(order);
-        verify(guestServiceSpy, times(1)).getFieldToSortFromEnum(sort);
+        verify(guestServiceSpy, times(1)).getAll("name", order);
     }
 
     @Test
     void sortByCheckOutDate() {
         String order = "asc";
-        SortEnum sort = SortEnum.BY_CHECKOUT_DATE;
 
         GuestService guestServiceSpy = spy(guestService);
         guestServiceSpy.sortByCheckOutDate(order);
-        verify(guestServiceSpy, times(1)).getFieldToSortFromEnum(sort);
-    }
-
-    @Test
-    void testGetDefaultDao() {
-        assertEquals(guestDao, guestService.getDefaultDao());
+        verify(guestServiceSpy, times(1)).getAll("checkOutDate", order);
     }
 
     @Test
@@ -383,5 +372,10 @@ class GuestServiceImplTest {
 
         guestService.updateEntityFromDto(guest2, guestDTO, Guest.class);
         assertTrue(new ReflectionEquals(guest1, "").matches(guest2)); //by-field comparing
+    }
+
+    @Test
+    void testGetDefaultDao() {
+        assertEquals(guestDao, guestService.getDefaultDao());
     }
 }
